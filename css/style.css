@@ -1,7 +1,34 @@
 /* 字体 */
+/* 拉丁字符 */
 @font-face {
     font-family: 'LXGWWenKai';
-    src: url('/fonts/LXGWWenKai.ttf') format('truetype');
+    src: url('/fonts/LXGWWenKai-latin.woff2') format('woff2');
+    unicode-range: U+0020-007F;  /* 基本拉丁 */
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* CJK 基本汉字 */
+@font-face {
+    font-family: 'LXGWWenKai';
+    src: url('/fonts/LXGWWenKai-cjk.woff2') format('woff2');
+    unicode-range: U+4E00-9FFF;  /* 汉字 */
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* CJK 扩展字符 */
+@font-face {
+    font-family: 'LXGWWenKai';
+    src: url('/fonts/LXGWWenKai-ext.woff2') format('woff2');
+    unicode-range: U+3400-4DBF,U+20000-2A6DF;  /* 扩展汉字 */
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* 全局字体 */
+body {
+    font-family: 'LXGWWenKai', Georgia, serif;
 }
 /* 字体: LXGWWenKai
    来源: https://github.com/lxgw/LxgwWenKai
