@@ -21,14 +21,15 @@ body {
 
 /* header 样式 */
 header {
-  background-color: #f5e7c3;
+  background-color: transparent;
+  
   padding: 20px;
   text-align: center;
 }
 
 /* footer 样式 */
 footer {
-  background-color: #f5e7c3;
+  background-color: transparent;
   padding: 10px;
   text-align: center;
 }
