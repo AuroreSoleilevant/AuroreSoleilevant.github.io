@@ -19,6 +19,10 @@ body {
   padding: 0;
 }
 
+body, h1, h2, h3, h4, h5, h6, p, li, blockquote {
+    background-color: transparent !important;         /* 用来确保不覆盖 body 背景 */
+}
+
 /* header 样式 */
 header {
   background-color: transparent;
