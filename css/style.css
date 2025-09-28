@@ -1,0 +1,34 @@
+/* 这一css是用于所有常规网页的背景 */
+body {
+  background: #F5F5DC;
+  /* 圆点 */
+  background-image:
+    radial-gradient(circle at 30px 40px, rgba(238,221,204,0.55) 0px, rgba(238,221,204,0.55) 3px, transparent 3px),
+    radial-gradient(circle at 90px 110px, rgba(210,180,140,0.45) 0px, rgba(210,180,140,0.45) 2.5px, transparent 2.5px),
+    radial-gradient(circle at 160px 70px, rgba(238,221,204,0.52) 0px, rgba(238,221,204,0.52) 3.5px, transparent 3.5px),
+    radial-gradient(circle at 230px 130px, rgba(210,180,140,0.48) 0px, rgba(210,180,140,0.48) 2.8px, transparent 2.8px),
+    radial-gradient(circle at 320px 60px, rgba(238,221,204,0.53) 0px, rgba(238,221,204,0.53) 4px, transparent 4px),
+    radial-gradient(circle at 200px 180px, rgba(210,180,140,0.42) 0px, rgba(210,180,140,0.42) 2.2px, transparent 2.2px),
+    radial-gradient(circle at 350px 170px, rgba(238,221,204,0.50) 0px, rgba(238,221,204,0.50) 3px, transparent 3px);
+  background-size: 400px 200px;
+  background-repeat: repeat;
+  font-family: "Georgia", serif;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* header 样式 */
+header {
+  background-color: #f5e7c3;
+  padding: 20px;
+  text-align: center;
+}
+
+/* footer 样式 */
+footer {
+  background-color: #f5e7c3;
+  padding: 10px;
+  text-align: center;
+}
