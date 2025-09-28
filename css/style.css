@@ -1,44 +1,39 @@
-/* 字体 */
-/* 拉丁字符 */
+/* 字体: LXGWWenKai 按需拆分 + 延迟加载 */
 @font-face {
     font-family: 'LXGWWenKai';
-    src: url('/fonts/LXGWWenKai-latin.woff2') format('woff2');
-    unicode-range: U+0020-007F;  /* 基本拉丁 */
+    src: url('../fonts/LXGWWenKai-latin.woff2') format('woff2');
+    unicode-range: U+0020-007F;  /* 基本拉丁字符 */
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
 }
 
-/* CJK 基本汉字 */
 @font-face {
     font-family: 'LXGWWenKai';
-    src: url('/fonts/LXGWWenKai-cjk.woff2') format('woff2');
-    unicode-range: U+4E00-9FFF;  /* 汉字 */
+    src: url('../fonts/LXGWWenKai-cjk.woff2') format('woff2');
+    unicode-range: U+4E00-9FFF;  /* CJK 基本汉字 */
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
 }
 
-/* CJK 扩展字符 */
 @font-face {
     font-family: 'LXGWWenKai';
-    src: url('/fonts/LXGWWenKai-ext.woff2') format('woff2');
+    src: url('../fonts/LXGWWenKai-ext.woff2') format('woff2');
     unicode-range: U+3400-4DBF,U+20000-2A6DF;  /* 扩展汉字 */
     font-weight: normal;
     font-style: normal;
+    font-display: swap;
 }
 
 /* 全局字体 */
 body {
     font-family: 'LXGWWenKai', Georgia, serif;
 }
-/* 字体: LXGWWenKai
-   来源: https://github.com/lxgw/LxgwWenKai
-   授权: OFL-1.1 license
-   作者：LXGW
-*/
+
 /* 标题块 */
 .site-header {
   background: #232946;
-  /* 顶部块星点 */
   background-image:
     radial-gradient(circle at 20px 18px, #fffbe6 0px, #fffbe6 2px, transparent 2px),
     radial-gradient(circle at 80px 32px, #aee9f7 0px, #aee9f7 1.5px, transparent 1.5px),
@@ -60,11 +55,6 @@ body {
   min-height: 96px;
 }
 
-.site-header h1 {
-    background-color: transparent !important;
-    margin: 0 0 0 16px; 
-}
-
 .site-header .site-title {
   font-size: 2.8em;
   font-weight: bold;
@@ -77,7 +67,7 @@ body {
 
 /* body 全局背景 */
 body {
-  background-color: #F5F5DC !important;
+  background-color: #F5F5DC;
   background-image:
     radial-gradient(circle at 30px 40px, rgba(238,221,204,0.55) 0px, rgba(238,221,204,0.55) 3px, transparent 3px),
     radial-gradient(circle at 90px 110px, rgba(210,180,140,0.45) 0px, rgba(210,180,140,0.45) 2.5px, transparent 2.5px),
@@ -95,9 +85,9 @@ body {
   padding: 0;
 }
 
-/* Markdown 元素透明背景，防止文本块底色 */
+/* Markdown 元素透明背景 */
 h1, h2, h3, h4, h5, h6, p, li, blockquote {
-    background-color: transparent !important;
+  background-color: transparent !important;
 }
 
 /* header/footer */
