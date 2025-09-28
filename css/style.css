@@ -35,9 +35,7 @@ body {
     font-family: 'LXGWWenKai', Georgia, serif;
 }
 
-/* =====================
-   标题块基础
-===================== */
+/* 标题块骨架  */
 .site-header {
   background: #232946;
   position: relative;
@@ -50,9 +48,7 @@ body {
   overflow: hidden;
 }
 
-/* =====================
-   星空伪元素
-===================== */
+/* 星空伪元素 */
 .site-header::before,
 .site-header::after {
   content: "";
@@ -62,9 +58,7 @@ body {
   background: transparent;
 }
 
-/* ---------------------
-   星星组1
---------------------- */
+/* 标题星星组1 */
 .site-header::before {
   background-image:
     radial-gradient(circle, #fffbe6 3px, transparent 3px),
@@ -76,6 +70,7 @@ body {
   animation: twinkle 4s infinite ease-in-out;
 }
 
+/* 标题星星组2 */
 .site-header::after {
   background-image:
     radial-gradient(circle, #ffe4b5 3px, transparent 3px),
@@ -88,9 +83,7 @@ body {
   animation-delay: 1.7s;
 }
 
-/* =====================
-   闪烁动画
-===================== */
+/* 闪烁动画 */
 @keyframes twinkle {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
