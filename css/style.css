@@ -1,3 +1,50 @@
+/* 字体 */
+@font-face {
+    font-family: 'LXGWWenKai';
+    src: url('../fonts/LXGWWenKai.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+/* 字体: LXGWWenKai
+   来源: https://github.com/lxgw/LxgwWenKai
+   授权: OFL-1.1 license
+   作者：LXGW
+*/
+/* 标题块 */
+.site-header {
+  background: #232946;
+  /* 顶部块星点 */
+  background-image:
+    radial-gradient(circle at 20px 18px, #fffbe6 0px, #fffbe6 2px, transparent 2px),
+    radial-gradient(circle at 80px 32px, #aee9f7 0px, #aee9f7 1.5px, transparent 1.5px),
+    radial-gradient(circle at 160px 12px, #ffd6e0 0px, #ffd6e0 2.2px, transparent 2.2px),
+    radial-gradient(circle at 230px 28px, #e0e7ff 0px, #e0e7ff 1.8px, transparent 1.8px),
+    radial-gradient(circle at 320px 22px, #fff 0px, #fff 2.5px, transparent 2.5px),
+    radial-gradient(circle at 200px 40px, #ffe4b5 0px, #ffe4b5 1.8px, transparent 1.8px),
+    radial-gradient(circle at 350px 16px, #baffc9 0px, #baffc9 2px, transparent 2px);
+  background-size: 400px 60px;
+  background-repeat: repeat-x;
+  color: #fff;
+  padding: 0 32px;
+  margin-bottom: 40px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 12px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  min-height: 96px;
+}
+
+.site-header .site-title {
+  font-size: 2.8em;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-block;
+}
+
 /* body 全局背景 */
 body {
   background-color: #F5F5DC !important;
@@ -11,14 +58,14 @@ body {
     radial-gradient(circle at 350px 170px, rgba(238,221,204,0.50) 0px, rgba(238,221,204,0.50) 3px, transparent 3px);
   background-size: 400px 200px;
   background-repeat: repeat;
-  font-family: "Georgia", serif;
+  font-family: 'LXGWWenKai', Georgia, serif;
   color: #333;
   line-height: 1.6;
   margin: 0;
   padding: 0;
 }
 
-/* Markdown 元素透明背景 */
+/* Markdown 元素透明背景，防止文本块底色 */
 h1, h2, h3, h4, h5, h6, p, li, blockquote {
     background-color: transparent !important;
 }
