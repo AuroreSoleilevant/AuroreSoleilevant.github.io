@@ -1,7 +1,7 @@
 /* 字体 */
 @font-face {
     font-family: 'LXGWWenKai';
-    src: url('../fonts/LXGWWenKai.ttf') format('truetype');
+    src: url('/fonts/LXGWWenKai.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
