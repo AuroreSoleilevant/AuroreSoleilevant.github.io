@@ -35,7 +35,7 @@
 
 .site-header h1 {
     background-color: transparent !important;
-    margin: 0 0 0 16px; /* 如果想和标题稍微错开 */
+    margin: 0 0 0 16px; 
 }
 
 .site-header .site-title {
