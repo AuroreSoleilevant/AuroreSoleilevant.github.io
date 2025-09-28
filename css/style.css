@@ -1,4 +1,8 @@
-/* 字体: LXGWWenKai 按需拆分 + 延迟加载 */
+/* 字体: LXGWWenKai
+来源: https://github.com/lxgw/LxgwWenKai
+授权: OFL-1.1 license
+作者：LXGW	
+*/
 @font-face {
     font-family: 'LXGWWenKai';
     src: url('../fonts/LXGWWenKai-latin.woff2') format('woff2');
@@ -31,30 +35,69 @@ body {
     font-family: 'LXGWWenKai', Georgia, serif;
 }
 
-/* 标题块 */
+/* =====================
+   标题块基础
+===================== */
 .site-header {
   background: #232946;
-  background-image:
-    radial-gradient(circle at 20px 18px, #fffbe6 0px, #fffbe6 2px, transparent 2px),
-    radial-gradient(circle at 80px 32px, #aee9f7 0px, #aee9f7 1.5px, transparent 1.5px),
-    radial-gradient(circle at 160px 12px, #ffd6e0 0px, #ffd6e0 2.2px, transparent 2.2px),
-    radial-gradient(circle at 230px 28px, #e0e7ff 0px, #e0e7ff 1.8px, transparent 1.8px),
-    radial-gradient(circle at 320px 22px, #fff 0px, #fff 2.5px, transparent 2.5px),
-    radial-gradient(circle at 200px 40px, #ffe4b5 0px, #ffe4b5 1.8px, transparent 1.8px),
-    radial-gradient(circle at 350px 16px, #baffc9 0px, #baffc9 2px, transparent 2px);
-  background-size: 400px 60px;
-  background-repeat: repeat-x;
-  color: #fff;
+  position: relative;
   padding: 0 32px;
-  margin-bottom: 40px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  min-height: 96px;
   border-radius: 12px;
-  text-align: left;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   display: flex;
   align-items: center;
-  min-height: 96px;
+  overflow: hidden;
 }
 
+/* =====================
+   星空伪元素
+===================== */
+.site-header::before,
+.site-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: transparent;
+}
+
+/* ---------------------
+   星星组1
+--------------------- */
+.site-header::before {
+  background-image:
+    radial-gradient(circle, #fffbe6 3px, transparent 3px),
+    radial-gradient(circle, #aee9f7 3px, transparent 3px),
+    radial-gradient(circle, #ffd6e0 3px, transparent 3px);
+  background-size: 250px 250px;
+  background-position:
+    10% 20%, 55% 50%, 80% 65%;
+  animation: twinkle 4s infinite ease-in-out;
+}
+
+.site-header::after {
+  background-image:
+    radial-gradient(circle, #ffe4b5 3px, transparent 3px),
+    radial-gradient(circle, #baffc9 3px, transparent 3px),
+    radial-gradient(circle, #aee9f7 3px, transparent 3px);
+  background-size: 300px 300px;
+  background-position:
+    30% 35%, 65% 60%, 90% 75%;
+  animation: twinkle 5s infinite ease-in-out;
+  animation-delay: 1.7s;
+}
+
+/* =====================
+   闪烁动画
+===================== */
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+
+/* 网站名 */
 .site-header .site-title {
   font-size: 2.8em;
   font-weight: bold;
