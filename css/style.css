@@ -1,7 +1,6 @@
-/* 这一css是用于所有常规网页的背景 */
+/* body 全局背景 */
 body {
-  background: #F5F5DC;
-  /* 圆点 */
+  background-color: #F5F5DC !important;
   background-image:
     radial-gradient(circle at 30px 40px, rgba(238,221,204,0.55) 0px, rgba(238,221,204,0.55) 3px, transparent 3px),
     radial-gradient(circle at 90px 110px, rgba(210,180,140,0.45) 0px, rgba(210,180,140,0.45) 2.5px, transparent 2.5px),
@@ -19,21 +18,14 @@ body {
   padding: 0;
 }
 
-body, h1, h2, h3, h4, h5, h6, p, li, blockquote {
-    background-color: transparent !important;         /* 用来确保不覆盖 body 背景 */
+/* Markdown 元素透明背景 */
+h1, h2, h3, h4, h5, h6, p, li, blockquote {
+    background-color: transparent !important;
 }
 
-/* header 样式 */
-header {
+/* header/footer */
+header, footer {
   background-color: transparent;
-  
+  text-align: center;
   padding: 20px;
-  text-align: center;
-}
-
-/* footer 样式 */
-footer {
-  background-color: transparent;
-  padding: 10px;
-  text-align: center;
 }
