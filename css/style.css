@@ -48,18 +48,27 @@ body {
   overflow: hidden;
 }
 
-/* 星空伪元素 */
-.site-header::before,
+/* 网站名：伪元素A */
+.site-title::before {
+  content: "Spica";
+  font-size: 2.8em;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+}
+.site-title {
+  text-decoration: none;  /* 去掉下划线 */
+  position: relative;
+  z-index: 2;
+}
+
+/* 星空层容器1：伪元素A */
 .site-header::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: transparent;
-}
-
-/* 标题星星组1 */
-.site-header::before {
+  z-index: 1;
   background-image:
     radial-gradient(circle, #fffbe6 3px, transparent 3px),
     radial-gradient(circle, #aee9f7 3px, transparent 3px),
@@ -70,8 +79,12 @@ body {
   animation: twinkle 4s infinite ease-in-out;
 }
 
-/* 标题星星组2 */
-.site-header::after {
+/* 星空层容器2：伪元素B */
+.site-header .stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
   background-image:
     radial-gradient(circle, #ffe4b5 3px, transparent 3px),
     radial-gradient(circle, #baffc9 3px, transparent 3px),
@@ -83,22 +96,11 @@ body {
   animation-delay: 1.7s;
 }
 
+
 /* 闪烁动画 */
 @keyframes twinkle {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
-}
-
-
-/* 网站名 */
-.site-header .site-title {
-  font-size: 2.8em;
-  font-weight: bold;
-  letter-spacing: 0.05em;
-  color: #fff;
-  text-decoration: none;
-  cursor: pointer;
-  display: inline-block;
 }
 
 /* body 全局背景 */
