@@ -35,18 +35,25 @@ body {
     font-family: 'LXGWWenKai', Georgia, serif;
 }
 
-/* 标题块骨架  */
+/* 标题块骨架 */
 .site-header {
   background: #232946;
-  position: relative;
+  position: fixed;     /* 固定在视口 */
+  top: 0;
+  left: 0;
+  right: 0;
   padding: 0 32px;
   min-height: 96px;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-radius: 0 0 12px 12px;  /* 只保留下边圆角 */
   display: flex;
   align-items: center;
   overflow: hidden;
+  z-index: 1000;       /* 确保覆盖内容 */
+  
+  /* 阴影效果（只在下方显现） */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
+
 
 /* 网站名：伪元素A */
 .site-title::before {
