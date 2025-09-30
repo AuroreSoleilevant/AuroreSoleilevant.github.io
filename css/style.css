@@ -279,3 +279,24 @@ main {
   .contact-btn { width: 36px; height: 36px; }
   .contact-btn img { width: 60%; }
 }
+
+.footer-links {
+  position: absolute;
+  top: 50%;                    /* 垂直居中底栏 */
+  left: 16px;                   /* 左边距，与版权右边距一致 */
+  transform: translateY(-50%);  /* 精确垂直居中 */
+  display: flex;
+  gap: 24px;                     /* 三组文字的水平间隔，可调 */
+  font-size: 1.25rem;            /* 与版权文字一致 */
+  opacity: 0.85;
+}
+
+.footer-links a {
+  color: rgba(255,255,255,0.85); /* 可见白色文字 */
+  text-decoration: underline;     /* 下划线 */
+  transition: opacity 150ms ease;
+}
+
+.footer-links a:hover {
+  opacity: 1; /* 悬停略微高亮 */
+}
