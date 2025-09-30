@@ -196,6 +196,7 @@ main {
 
 /* 底栏 */
 .site-footer {
+  position: relative;
   background: #232946;
   color: #fff;
   font-family: 'LXGWWenKai', Georgia, serif;
@@ -207,6 +208,7 @@ main {
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.25); /* 顶部阴影 */
   box-sizing: border-box;
   width: 100%;
+  min-height: 80px; /* 底栏高度变量 */
 }
 
 .site-footer {
@@ -214,4 +216,66 @@ main {
   max-width: 100vw;     /* 避免超出视口 */
   padding: 16px 32px;
   box-sizing: border-box;
+}
+
+.site-footer::after {   /* 底栏版权语句 */
+  content: "© 2025 Aurore Soleilevant";
+  position: absolute;
+  top: 50%;              /* 定位到容器的中线 */
+  right: 16px;           /* 再靠右 */
+  transform: translateY(-50%); /* 用来垂直居中 */
+  font-size: 1.25rem;
+  opacity: 0.85;
+}
+
+/* 底部三按钮容器 */
+.footer-contacts {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%); /* 把容器中心放到底栏中心 */
+  display: flex;
+  align-items: center;  /* 垂直居中每个圆形按钮 */
+  gap: 30px;            /* 中间按钮与两侧按钮的等距变量 */
+  z-index: 5;           /* 确保在伪元素或其他内容之上 */
+}
+
+/* 单个圆形按钮的样式 */
+.contact-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;         /* 圆圈直径变量 */
+  height: 48px;        /* 改的时候记得调成和上一个一样的 */
+  border-radius: 50%;
+  background: rgba(255,255,255,0.50);    /* 颜色变量 */
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  text-decoration: none;
+  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+  overflow: hidden;
+}
+
+/* 联系方式图标 */
+.contact-btn img {
+  width: 75%;        /* 图片占据圆圈的比 */
+  height: auto;
+  display: block;
+  pointer-events: none;            /* 防止图标捕获点击，点击由 a 处理 */
+}
+
+/* 圆圈跳跃 */
+.contact-btn:hover,
+.contact-btn:focus {
+  transform: translateY(-4px);
+  background: rgba(255,255,255,0.18);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  outline: none;
+}
+
+/* 圆圈的响应式适配 */
+@media (max-width: 420px) {
+  .footer-contacts { gap: 12px; }
+  .contact-btn { width: 36px; height: 36px; }
+  .contact-btn img { width: 60%; }
 }
