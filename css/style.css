@@ -300,3 +300,11 @@ main {
 .footer-links a:hover {
   opacity: 1; /* 悬停略微高亮 */
 }
+
+p {
+  font-size: 25px;   /* 正文统一字号 */
+}
+
+h1.shaking-text {
+  font-size: 4rem;   /* 标题统一字号 */
+}
