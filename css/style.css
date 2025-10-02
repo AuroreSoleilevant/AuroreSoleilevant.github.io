@@ -174,13 +174,27 @@ header, footer {
 main {
   padding: 0 32px;        /* 左右各留 32px 空间 */
   box-sizing: border-box; /* 保证 padding 不影响宽度计算 */
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+  flex: 1; /* 占据剩余空间，推动 footer 到底部 */
+  padding: 120px 32px 32px 32px; /* 上方留出顶栏高度 */
+}
+
+main.loaded {
+  opacity: 1;
 }
 
 /* 段落间距设定 */
 main p {
-  margin-left: 0;
-  margin-right: 0;
+  margin-left: 96px;
+  margin-right: 96px;
   line-height: 1.6;
+}
+
+/* 标题间距设定 */
+main h1 {
+  margin-left: 96px;
+  margin-right: 96px;
 }
 
 body {
@@ -188,12 +202,6 @@ body {
   flex-direction: column;
   min-height: 100vh;
   margin: 0; /* 避免浏览器默认 margin 影响布局 */
-}
-
-main {
-  flex: 1; /* 占据剩余空间，推动 footer 到底部 */
-  padding: 120px 32px 32px 32px; /* 上方留出顶栏高度 */
-  box-sizing: border-box;
 }
 
 /* 底栏 */
@@ -309,13 +317,4 @@ p {
 
 h1.shaking-text {
   font-size: 4rem;   /* 标题统一字号 */
-}
-
-main {                /* 加载淡入淡出 */
-  opacity: 0;
-  transition: opacity 0.4s ease-in-out;
-}
-
-main.loaded {
-  opacity: 1;
 }
