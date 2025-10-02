@@ -395,10 +395,24 @@ h1.shaking-text {
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* 消失可用淡出（由移除 visible 实现） */
+/* 兴许消失可用淡出（由移除 visible 实现） */
 
 /* 小屏适配：稍微缩小按钮和边距 */
 @media (max-width: 420px) {
   :root { --backtop-size: 40px; --backtop-right: 12px; --backtop-bottom: 76px; }
   .back-to-top { font-size: calc(var(--backtop-size) * 0.5); }
+}
+
+:root {
+  --divider-thickness: 10px;  /* 分割线粗度变量 */
+}
+
+.section-divider {
+  border: none;
+  height: var(--divider-thickness, 5px);
+  margin: 32px 64px;
+  background: linear-gradient(to right, rgba(0,0,0,0.15), rgba(0,0,0,0.15)) 
+              repeat-x,
+              radial-gradient(circle, rgba(0,0,0,0.20) 1px, transparent 1px);
+  background-size: 8px 2px, 8px 8px;
 }
