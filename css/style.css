@@ -310,3 +310,12 @@ p {
 h1.shaking-text {
   font-size: 4rem;   /* 标题统一字号 */
 }
+
+main {                /* 加载淡入淡出 */
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+main.loaded {
+  opacity: 1;
+}
