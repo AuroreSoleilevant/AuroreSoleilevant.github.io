@@ -321,3 +321,84 @@ h1.shaking-text {
 
 /* 如果系统设置了去掉动画，则不加载淡入淡出 */
 @media (prefers-reduced-motion: reduce) { main, main.loaded { transition: none !important; } }
+
+/* ---------- 回到顶部按钮样式---------- */
+/* 一些可配置变量*/
+:root {
+  --backtop-size: 48px;                 /* 圆直径 */
+  --backtop-bg: rgba(60, 245, 245, 0.40);    /* 背景色 */
+  --backtop-color: #ffffff;             /* 图标颜色 */
+  --backtop-hover: rgba(255,255,255,0.22);
+  --backtop-right: 16px;                /* 距右边距 */
+  --backtop-bottom: 96px;               /* 距离视口底部（测试下来也许会被 JS 覆盖为 footer 高度 + margin） */
+  --backtop-z: 1200;
+}
+
+/* 按钮基础 */
+.back-to-top {
+  position: fixed;
+  right: var(--backtop-right);
+  bottom: var(--backtop-bottom);
+  width: var(--backtop-size);
+  height: var(--backtop-size);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--backtop-bg);
+  color: var(--backtop-color);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+  text-decoration: none;
+  font-size: calc(var(--backtop-size) * 0.8);    /* 按钮内的^的大小变量 */
+  line-height: 1;
+  transform: scale(1); /* 或默认值，确保按钮不被缩放 */
+  cursor: pointer;
+  z-index: var(--backtop-z);
+  opacity: 0;
+  pointer-events: none; /* 隐藏时不可点 */
+  transition:
+    transform 260ms cubic-bezier(.2,.9,.2,1),
+    opacity 260ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.back-to-top span {
+  display: inline-block;
+  transform: translateY(6px); /* 微调 ^ 偏下 */
+}
+
+/* hover / focus 效果 */
+.back-to-top:hover,
+.back-to-top:focus {
+  background: var(--backtop-hover);
+  transform: scale(1.03);
+  outline: none;
+}
+
+/* 聚拢出现 */
+.back-to-top.visible {
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 出现时附带一次 pop 动画（聚拢 -> 放大 -> 回到正常） */
+.back-to-top.pop {
+  animation: backtop-pop 320ms cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes backtop-pop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* 消失可用淡出（由移除 visible 实现） */
+
+/* 小屏适配：稍微缩小按钮和边距 */
+@media (max-width: 420px) {
+  :root { --backtop-size: 40px; --backtop-right: 12px; --backtop-bottom: 76px; }
+  .back-to-top { font-size: calc(var(--backtop-size) * 0.5); }
+}
