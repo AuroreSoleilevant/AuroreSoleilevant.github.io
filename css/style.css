@@ -325,7 +325,7 @@ h1.shaking-text {
 /* ---------- 回到顶部按钮样式---------- */
 /* 一些可配置变量*/
 :root {
-  --backtop-size: 48px;                 /* 圆直径 */
+  --backtop-size: 64px;                 /* 圆直径 */
   --backtop-bg: rgba(60, 245, 245, 0.40);    /* 背景色 */
   --backtop-color: #ffffff;             /* 图标颜色 */
   --backtop-hover: rgba(255,255,255,0.22);
@@ -350,7 +350,7 @@ h1.shaking-text {
   border: 1px solid rgba(255,255,255,0.10);
   box-shadow: 0 6px 18px rgba(0,0,0,0.18);
   text-decoration: none;
-  font-size: calc(var(--backtop-size) * 0.8);    /* 按钮内的^的大小变量 */
+  font-size: calc(var(--backtop-size) * 0.9);    /* 按钮内的^的大小变量 */
   line-height: 1;
   transform: scale(1); /* 或默认值，确保按钮不被缩放 */
   cursor: pointer;
@@ -366,7 +366,7 @@ h1.shaking-text {
 
 .back-to-top span {
   display: inline-block;
-  transform: translateY(6px); /* 微调 ^ 偏下 */
+  transform: translateY(9px); /* 微调 ^ 偏下 */
 }
 
 /* hover / focus 效果 */

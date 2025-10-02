@@ -2,10 +2,44 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>Moi | Spica</title>
+  <title>404 Not Found | Spica</title>
   <link rel="preload" href="/fonts/LXGWWenKai-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/LXGWWenKai-cjk.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+    /* 404 页面居中样式 */
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 120px; /* 顶栏高度 */
+      gap: 24px;
+    }
+
+    main img {
+      max-width: 80%;
+      height: auto;
+      border-radius: 12px;
+    }
+
+    main p {
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    main a {
+      text-decoration: underline;
+      color: #232946;
+      transition: opacity 150ms ease;
+    }
+
+    main a:hover {
+      opacity: 0.8;
+    }
+  </style>
 
   <script src="/js/fade.js"></script>      <!-- 加载淡入 -->
   <script src="/js/backtop.js"></script>   <!-- 回到顶部按钮 -->
@@ -17,8 +51,8 @@
   </header>
 
   <main style="padding-top: 120px;">
-    <h1>404 - 页面未找到</h1>
-    <p>抱歉，你访问的页面不存在！</p>
+    <img src="/images/404.jpg" title="404 Cat" alt="404 Cat">
+    <p>也许这个页面被怪物吃掉了？只有天知道。</p>
     <p><a href="/">返回首页</a></p>
   </main>
 
