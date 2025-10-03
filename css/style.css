@@ -315,6 +315,12 @@ p {
   font-size: 25px;   /* 正文统一字号 */
 }
 
+ul {                   /* 列表统一字号 */
+  font-size: 20px;
+  margin-left: 96px;
+  margin-right: 96px; 
+}
+
 h1.shaking-text {
   font-size: 4rem;   /* 标题统一字号 */
 }
@@ -407,7 +413,7 @@ h1.shaking-text {
   --divider-thickness: 10px;  /* 分割线粗度变量 */
 }
 
-.section-divider {
+.section-divider {   /* 分割线定义 */
   border: none;
   height: var(--divider-thickness, 5px);
   margin: 32px 64px;
@@ -415,4 +421,11 @@ h1.shaking-text {
               repeat-x,
               radial-gradient(circle, rgba(0,0,0,0.20) 1px, transparent 1px);
   background-size: 8px 2px, 8px 8px;
+}
+
+.page-dates {    /* 左下角日期 */
+  margin-left: 20px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: rgba(0,0,0,0.6);
 }
