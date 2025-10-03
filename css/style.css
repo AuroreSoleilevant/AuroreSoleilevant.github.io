@@ -423,9 +423,46 @@ h1.shaking-text {
   background-size: 8px 2px, 8px 8px;
 }
 
-.page-dates {    /* 左下角日期 */
+.page-dates {
   margin-left: 20px;
   margin-bottom: 20px;
   font-size: 14px;
   color: rgba(0,0,0,0.6);
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+.loaded + .page-dates,
+.page-dates.entered { /* 或者 main 加 loaded 后触发 */
+  opacity: 1;
+}
+
+/* 跳转底栏动效 */
+/* footer slide helpers — 确保与上面 JS 的类一致 */
+.site-footer {
+  transition: transform 360ms cubic-bezier(.2,.9,.2,1), opacity 260ms ease;
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* 向下全部退出（离开页面） */
+.site-footer.slide-down {
+  transform: translateY(110%);
+  opacity: 0;
+}
+
+/* 初始在下方（用于 enter 动画的初始状态） */
+.site-footer.pre-enter {
+  transform: translateY(110%);
+  opacity: 0;
+}
+
+/* 进入到可见位置（enter 动画） */
+.site-footer.entered {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+footer {
+  transition: transform 300ms ease, opacity 300ms ease;
 }
