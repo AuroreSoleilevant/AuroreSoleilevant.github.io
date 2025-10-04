@@ -32,22 +32,6 @@
     font-display: swap;
 }
 
-/* 全局字体 */
-body {
-    font-family: 'LXGWWenKai', Georgia, serif;
-}
-
-/* 清除默认宽高 */
-html, body {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-*, *::before, *::after {
-  box-sizing: inherit;
-}
-
-
 /* 标题块骨架 */
 .site-header {
   background: #232946;
@@ -131,11 +115,20 @@ html, body {
   animation-delay: 1.7s;
 }
 
-
 /* 闪烁动画 */
 @keyframes twinkle {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
+}
+
+/* 清除默认宽高 */
+html, body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+*, *::before, *::after {
+  box-sizing: inherit;
 }
 
 /* body 全局背景 */
@@ -151,11 +144,15 @@ body {
     radial-gradient(circle at 350px 170px, rgba(238,221,204,0.50) 0px, rgba(238,221,204,0.50) 3px, transparent 3px);
   background-size: 400px 200px;
   background-repeat: repeat;
-  font-family: 'LXGWWenKai', Georgia, serif;
+  font-family: 'LXGWWenKai', Georgia, serif;  /* 全局字体 */
   color: #333;
   line-height: 1.6;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0; /* 避免浏览器默认 margin 影响布局 */
 }
 
 /* Markdown 元素透明背景 */
@@ -195,13 +192,6 @@ main p {
 main h1 {
   margin-left: 96px;
   margin-right: 96px;
-}
-
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  margin: 0; /* 避免浏览器默认 margin 影响布局 */
 }
 
 /* 底栏 */
