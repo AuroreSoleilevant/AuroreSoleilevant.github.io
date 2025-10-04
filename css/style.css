@@ -92,10 +92,12 @@
     radial-gradient(circle, #fffbe6 3px, transparent 3px),
     radial-gradient(circle, #aee9f7 3px, transparent 3px),
     radial-gradient(circle, #ffd6e0 3px, transparent 3px);
+  transform: rotate(1deg);
   background-size: 250px 250px;
   background-position:
     10% 20%, 55% 50%, 80% 65%;
   animation: twinkle 4s infinite ease-in-out;
+  animation-delay: 2.9s;
 }
 
 /* 星空层容器2：伪元素B */
@@ -108,11 +110,29 @@
     radial-gradient(circle, #ffe4b5 3px, transparent 3px),
     radial-gradient(circle, #baffc9 3px, transparent 3px),
     radial-gradient(circle, #aee9f7 3px, transparent 3px);
+  transform: rotate(1.5deg);
   background-size: 300px 300px;
   background-position:
     30% 35%, 65% 60%, 90% 75%;
   animation: twinkle 5s infinite ease-in-out;
-  animation-delay: 1.7s;
+  animation-delay: 3.9s;
+}
+
+/* 星空层容器3：伪元素C */
+.site-header .stars2 {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image:
+    radial-gradient(circle, #dc22f976 3px, transparent 3px),
+    radial-gradient(circle, #83f7ff9b 3px, transparent 3px),
+    radial-gradient(circle, #d0ff004a 3px, transparent 3px);
+  transform: rotate(3deg);
+  background-size: 280px 280px;
+  background-position:
+    25% 40%, 70% 55%, 85% 70%;
+  animation: twinkle 5s infinite ease-in-out, drift3-down 60s linear infinite;
 }
 
 /* 闪烁动画 */
@@ -120,6 +140,17 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
 }
+
+/* 漂移动画 */
+@keyframes drift3-down {
+  0% {
+    background-position: 25% 80%, 50% 110%, 85% 150%; /* 屏幕外上方 */
+  }
+  100% {
+    background-position: 25% -20%, 50% -15%, 85% -10%; /* 屏幕外下方 */
+  }
+}
+
 
 /* 清除默认宽高 */
 html, body {
@@ -322,7 +353,7 @@ h1.shaking-text {
 /* 一些可配置变量*/
 :root {
   --backtop-size: 64px;                 /* 圆直径 */
-  --backtop-bg: rgba(60, 245, 245, 0.40);    /* 背景色 */
+  --backtop-bg: rgba(217, 255, 121, 0.4);    /* 背景色 */
   --backtop-color: #ffffff;             /* 图标颜色 */
   --backtop-hover: rgba(255,255,255,0.22);
   --backtop-right: 16px;                /* 距右边距 */
