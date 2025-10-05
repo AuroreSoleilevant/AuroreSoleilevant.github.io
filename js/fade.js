@@ -1,13 +1,14 @@
-// 淡入淡出
 (() => {
+  // ----- 配置常量 -----
   const FADE_CLASS = 'loaded';
+  const FOOTER_URL = '/outil/footer.inc/index.html'; // 如果需要改路径请在这里改
+  const PLACEHOLDER_ID = 'footer-placeholder';
   let isTransitioning = false;
 
-  // --- 工具函数 ---
+  // ----- 工具函数 -----
   function getFooter() {
     return document.querySelector('.site-footer');
   }
-
   function getMain() {
     return document.querySelector('main');
   }
@@ -25,55 +26,47 @@
     }
   }
 
-  // --- footer 动画控制（确保每次 enter 都被触发） ---
-  function prepareFooterInitial() {
-    const f = getFooter();
+  // ----- footer 动画控制（确保每次 enter 都被触发） -----
+  // 可接受具体元素参数，增加鲁棒性
+  function prepareFooterInitial(el) {
+    const f = el || getFooter();
     if (!f) return;
-    // 确保处于 "下方初始" 状态，清除其他类
+    // 强制进入“预进入”初始状态：移除可能存在的进入/退出类，再加 pre-enter
     f.classList.remove('slide-down', 'entered');
     f.classList.add('pre-enter');
-    // 强制重绘，确保浏览器把 pre-enter 视为当前状态
+    // 清除可能的内联 transform（避免干扰），并强制重排
+    f.style.transform = '';
     void f.offsetWidth;
   }
 
-  function footerEnter() {
-    const f = getFooter();
+  function footerEnter(el) {
+    const f = el || getFooter();
     if (!f) return;
-    // 从下方进入：先确保处于 pre-enter
+    // 确保处于预进入态（防止调用方忘了准备）
     f.classList.remove('slide-down', 'entered');
     f.classList.add('pre-enter');
-    // 强制重绘以固定初始状态
     void f.offsetWidth;
-
-    // 双 rAF 保证在所有浏览器中稳定触发 transition
+    // 两次 rAF 的组合保证 transition 会被浏览器识别
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         f.classList.add('entered');
-        // 清理 pre-enter after the transition duration (keeps DOM classes tidy)
         const t = Math.max(getTransitionMs(f), 60);
+        // 在动画开始后把 pre-enter 清掉（留点余量）
         setTimeout(() => f.classList.remove('pre-enter'), t + 20);
       });
     });
   }
 
-  function footerExit() {
-    const f = getFooter();
+  function footerExit(el) {
+    const f = el || getFooter();
     if (!f) return;
-    // 从当前状态滑出到底部（保证移除进入类）
+    // 直接从任何状态进入 slide-down（退出）
     f.classList.remove('pre-enter', 'entered');
-    // 强制重绘再加 slide-down，确保 transition 正常触发
     void f.offsetWidth;
     f.classList.add('slide-down');
   }
 
-  function footerRestore() {
-    const f = getFooter();
-    if (!f) return;
-    f.classList.remove('slide-down', 'pre-enter', 'entered');
-    f.style.transform = '';
-  }
-
-  // --- main 淡入（可靠触发） ---
+  // ----- main 淡入（可靠触发） -----
   function fadeInMain() {
     const main = getMain();
     if (!main) return;
@@ -87,7 +80,7 @@
     });
   }
 
-  // --- 点击处理：统一淡出行为并触发 footer exit ---
+  // ----- 点击处理：统一淡出行为并触发 footer exit -----
   function onDocumentClick(e) {
     const a = e.target.closest('a');
     if (!a) return;
@@ -140,14 +133,126 @@
     }, wait);
   }
 
-  // --- 初始化绑定 ---
-  // DOMContentLoaded: 页面初次加载，准备 footer 初始状态并淡入 main
+  // ----- footer 插入后的处理：等待图片加载并派发事件 -----
+  // 这里我们在插入时就把 footer 置为 pre-enter（确保后续 enter 一定有效）
+  function notifyFooterInserted(footerEl) {
+    if (!footerEl) {
+      document.dispatchEvent(new CustomEvent('footer:inserted', { detail: null }));
+      return;
+    }
+
+    // 先把 footer 设为预进入初始态（移除 entered/slide-down，添加 pre-enter）
+    footerEl.classList.remove('entered', 'slide-down');
+    footerEl.classList.add('pre-enter');
+    footerEl.style.transform = '';
+    // 强制重排，保证后续添加 entered 能被识别为 transition
+    void footerEl.offsetWidth;
+
+    const imgs = footerEl.querySelectorAll('img');
+    const loads = imgs.length ? Array.from(imgs).map(img => img.complete ? Promise.resolve() : new Promise(r => img.addEventListener('load', r, { once: true }))) : [];
+    Promise.all(loads).then(() => {
+      // 小延时更稳妥（确保样式表生效）
+      setTimeout(() => {
+        document.dispatchEvent(new CustomEvent('footer:inserted', { detail: { footer: footerEl } }));
+      }, 20);
+    }).catch(() => {
+      setTimeout(() => {
+        document.dispatchEvent(new CustomEvent('footer:inserted', { detail: { footer: footerEl } }));
+      }, 60);
+    });
+  }
+
+  // ----- 智能 fetch + 插入逻辑（避免被重复插入或空覆盖） -----
+  let _fetchRetries = 0;
+  const _maxRetries = 4;
+  function fetchAndInsertFooter() {
+    const placeholder = document.getElementById(PLACEHOLDER_ID);
+    if (!placeholder) {
+      console.warn('fetchAndInsertFooter: 未找到 #' + PLACEHOLDER_ID);
+      return;
+    }
+
+    // 如果占位里已经有 .site-footer，说明页面可能被服务器端渲染，此时直接触发动画初始化
+    const existing = placeholder.querySelector('.site-footer');
+    if (existing) {
+      // 确保初始化状态并通知（notify 内部会派发事件）
+      notifyFooterInserted(existing);
+      return;
+    }
+
+    fetch(FOOTER_URL, { cache: 'no-cache' })
+      .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then(html => {
+        if (!html || !html.trim()) throw new Error('返回内容为空');
+        // 只有在 placeholder 仍存在且为空时才插入（避免覆盖别的脚本已插入的内容）
+        const currPlaceholder = document.getElementById(PLACEHOLDER_ID);
+        if (!currPlaceholder) {
+          console.warn('fetchAndInsertFooter: placeholder 在插入前被移除，放弃插入。');
+          return;
+        }
+        if (currPlaceholder.querySelector('.site-footer')) {
+          // 已被别处插入，直接通知
+          notifyFooterInserted(currPlaceholder.querySelector('.site-footer'));
+          return;
+        }
+
+        currPlaceholder.innerHTML = html;
+        const footerEl = currPlaceholder.querySelector('.site-footer');
+        notifyFooterInserted(footerEl);
+
+        // 观察：如果插入后又被清空/移除，尝试少量重试（退避）
+        const mo = new MutationObserver((mutations, obs) => {
+          const now = currPlaceholder.innerHTML || '';
+          if (!now.trim()) {
+            obs.disconnect();
+            if (_fetchRetries < _maxRetries) {
+              _fetchRetries++;
+              const delay = 120 * _fetchRetries;
+              console.warn('fetchAndInsertFooter: 插入后内容被清空，' + _fetchRetries + ' 次重试，' + delay + 'ms 后再次尝试。');
+              setTimeout(fetchAndInsertFooter, delay);
+            } else {
+              console.error('fetchAndInsertFooter: 多次重试失败，停止自动恢复。');
+            }
+          }
+        });
+        mo.observe(currPlaceholder, { childList: true, subtree: true });
+      })
+      .catch(err => {
+        console.error('fetchAndInsertFooter 错误：', err);
+        if (_fetchRetries < _maxRetries) {
+          _fetchRetries++;
+          setTimeout(fetchAndInsertFooter, 200 * _fetchRetries);
+        }
+      });
+  }
+
+  // ----- 在 IIFE 内监听自定义事件 footer:inserted -----
+  // 当 fetch 插入 footer 后会派发此事件，IIFE 内部会在收到时触发入场动画
+  document.addEventListener('footer:inserted', (ev) => {
+    // 优先使用事件里传来的 footer 元素（以防页面上有多个 footer 或 querySelector 返回旧元素）
+    const el = ev && ev.detail && ev.detail.footer ? ev.detail.footer : null;
+    // 重新准备初始状态并触发 enter（与 DOMContentLoaded 时一致）
+    prepareFooterInitial(el);
+    // 通过 rAF 调用 enter（确保 transition 被正确触发）
+    requestAnimationFrame(() => footerEnter(el));
+  });
+
+  // ----- 初始化绑定 -----
   document.addEventListener('DOMContentLoaded', () => {
+    // 当 DOM 准备好时（确保 placeholder 存在或不）先做主页面淡入
     prepareFooterInitial();
     requestAnimationFrame(() => {
       fadeInMain();
-      footerEnter();
+      // 仅当 footer 已在 DOM 中（例如服务器端已插入）时才触发 enter
+      const f = getFooter();
+      if (f) footerEnter(f);
     });
+
+    // 触发 footer 的 fetch & 插入（如果需要）
+    fetchAndInsertFooter();
   });
 
   // pageshow: 包含 bfcache 恢复的情形，确保 enter 能触发
@@ -159,14 +264,23 @@
     const f = getFooter();
     if (f) {
       f.classList.remove('slide-down');
+      // 重新准备并触发
+      prepareFooterInitial(f);
+      requestAnimationFrame(() => footerEnter(f));
+    } else {
+      // 仍准备一次全局状态（以防占位里随后插入）
+      prepareFooterInitial();
     }
-    prepareFooterInitial();
-    requestAnimationFrame(() => footerEnter());
   });
 
+  // 点击拦截（页面内部导航过渡）
   document.addEventListener('click', onDocumentClick, true);
 
+  // 离开页面时阻止重复触发
   window.addEventListener('beforeunload', () => {
     isTransitioning = true;
   });
+
+  // 可选导出（如果你想从外部手动触发）
+  window.__fetchAndInsertFooter = fetchAndInsertFooter;
 })();

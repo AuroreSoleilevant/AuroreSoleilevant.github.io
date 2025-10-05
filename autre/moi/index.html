@@ -33,6 +33,55 @@
   transform: none !important;  /* 清除可能的 shake transform */
   white-space: nowrap;         /* 防止文字换行 */
   }
+  
+  /* 本页左右两栏布局（右侧为图片） */
+    .content-row {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;        /* 窄屏自动换行 */
+      margin: 0 auto;
+      max-width: 1300px;
+      padding: 0 16px;
+      box-sizing: border-box;
+    }
+
+    .content-text {
+      flex: 1 1 420px;
+      min-width: 240px;
+      font-size: 25px; /* 正文字号 */
+      line-height: 1.6; /* 行高 */
+    }
+
+    .content-image {
+      flex: 0 0 auto; /* 根据内容自动宽度 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 140px;
+    }
+
+    .content-image img {
+      width: 400px;
+      height: auto;
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .content-image img:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    @media (max-width: 720px) {
+      .content-row { gap: 12px; padding: 0 10px; }
+      .content-image { flex: 1 1 100%; order: 2; margin-top: 10px; }
+      .content-text  { order: 1; }
+      .shaking-text  { font-size: 42px; }
+    }
 
   </style>
 
@@ -66,6 +115,25 @@
     <img src="/images/ASH.png" aria-label="这是晨曦初阳的头像，也就是一只青春马娘的头像。她有淡蓝色的短发和淡橙色的皮肤，并目视着你" class="about-img">
   </a>
   </h1>
+  <!-- 内容左右两栏 -->
+  <div class="content-row" style="margin-top: 30px;">
+    <!-- 左侧文字 -->
+    <div class="content-text">
+      <p style="margin-left:5px; margin-right:5px;">欢迎来到Spica！这里是晨曦初阳的个人小站，会用来放置一些文章、小说、资源或者奇怪的小东西。</p>
+      <p style="margin-left:5px; margin-right:5px;">站名Spica来自拉丁语，意为角宿一，是全天空（当然，地球上的天空）第十六亮的恒星，也是室女座最明亮的恒星哦~其实准确来说是两颗恒星组成的双子系统，在古时候也被称为“室女的麦穗”，是收获的象征！就让我们在过去，现在与未来，一起收获星光吧！</p>
+    </div>
+
+  <div class="content-image" style="margin-top: 30px;">
+      <img
+        style="margin-left:5px; margin-right:5px;"
+        src="/images/Etoile_Spica.png"
+        title="角宿一"
+        aria-label="这是一张星空的图片，角宿一在图片中心，它是一颗蓝色的恒星，而周围有许多各色的小星星。本站为视觉障碍者的网页屏幕阅读器进行了适配，所有图像均附带了文本描述，只有您才能发现这些语段。如果有遗漏的描述内容，请务必联系我进行更正！联系方式可以在网页末尾找到，您会听到对应的三个按钮"
+        onerror="this.onerror=null; this.src='https://via.placeholder.com/320x240.png?text=Spica';"
+        loading="lazy"
+      >
+    </div>
+  </div>
   <p>
   关于我······有什么好说的呢？我也不知道呢！晨曦初阳，也就是我，只是一个普通的大学生，硬要说的话还有些关于文学创作与摄影的爱好！你可以在这个小站里找到我写的故事，或者拍摄的一些照片哦~如果要联系我，请选择底栏上三个小按钮中适合你的那一个，我会尽快回复的！此外，如果发现了本网站的BUG，也务必告诉我，感激不尽！
   </p>
@@ -83,32 +151,7 @@
   </div>
 
   <!-- 底栏，需带着 -->
-  <footer class="site-footer">
-    <div class="footer-contacts" aria-hidden="false">
-  <!-- Github按钮 -->
-  <a class="contact-btn" href="https://github.com/AuroreSoleilevant" target="_blank" title="GitHub" aria-label="GitHub按钮">
-    <img src="/icons/icon-Github.svg">
-  </a>
-
-  <!-- 邮箱按钮 -->
-  <a class="contact-btn" href="mailto:darenzhou666@gmail.com" target="_blank" title="Email" aria-label="Email按钮">
-    <img src="/icons/icon-Email.svg">
-  </a>
-
-  <!-- QQ按钮 -->
-  <a class="contact-btn" href="/images/QQ_code.png" target="_blank" title="QQ" aria-label="QQ按钮">
-    <img src="/icons/icon-QQ.svg">
-  </a>
-</div>
-
- <!-- 左下角文本链接 -->
-<div class="footer-links">
-  <a href="/autre/licence/">许可证</a>
-  <a href="/autre/merci/">感谢名单</a>
-  <a href="/autre/moi/">关于我</a>
-</div>
-
-  </footer>
+  <div id="footer-placeholder"></div>
 
 </body>
 </html>
