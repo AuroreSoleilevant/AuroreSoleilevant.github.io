@@ -151,6 +151,23 @@
   }
 }
 
+.nav-links {
+  display: flex;
+  gap: 65px;
+  margin-left: 130px;
+  z-index: 2;
+}
+
+.nav-item {
+  color: #ffffffcc;
+  font-size: 1.75em;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+  display: inline-block;
+  opacity: 1; /* 初始透明度 */
+  transition: opacity 0.3s ease; /* 鼠标离开过渡也可用 */
+}
 
 /* 清除默认宽高 */
 html, body {
