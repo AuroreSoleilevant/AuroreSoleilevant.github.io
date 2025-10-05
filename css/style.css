@@ -242,6 +242,11 @@ main h1 {
   margin-right: 96px;
 }
 
+/* 居中文本定义 */
+.text-center {
+  text-align: center;
+}
+
 /* 底栏 */
 .site-footer {
   position: relative;

@@ -7,6 +7,35 @@
   <link rel="preload" href="/fonts/LXGWWenKai-cjk.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/style.css">
 
+  <style>
+  .about-title {
+  display: flex;            /* 水平排列文字和图片 */
+  flex-direction: row;  /* 水平排列 */
+  align-items: center;      /* 垂直居中对齐 */
+  gap: 1.2em;                /* 标题与图片间距*/
+  }
+
+  .about-title a {
+  display: inline-block;
+  }
+
+  .about-img {
+  width: 15%;  /* 相对字体大小或容器 */
+  height: auto;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  vertical-align: middle;  /* 与文字基线对齐中间 */
+  }
+
+  .about-text {
+  display: inline-block;       /* 确保 span 是单个 flex 项 */
+  transform: none !important;  /* 清除可能的 shake transform */
+  white-space: nowrap;         /* 防止文字换行 */
+  }
+
+  </style>
+
   <script src="/js/fade.js"></script>      <!-- 加载淡入 -->
   <script src="/js/backtop.js"></script>   <!-- 回到顶部按钮 -->
   <script src="/js/blink.js"></script>     <!-- 顶栏导航闪烁 -->
@@ -31,8 +60,11 @@
   <!-- 主体内容 -->
 <main style="padding-top: 75px;">
   <!-- 大标题 -->
-  <h1 class="shaking-text" style="font-size: 4rem;">
-  关于我
+  <h1 class="shaking-text about-title" style="font-size: 4rem;">
+  <span class="about-text">关于我</span>
+  <a href="/images/ASH.png" target="_blank" title="晨曦初阳">
+    <img src="/images/ASH.png" alt="晨曦初阳的头像" class="about-img">
+  </a>
   </h1>
   <p>
   关于我······有什么好说的呢？我也不知道呢！晨曦初阳，也就是我，只是一个普通的大学生，硬要说的话还有些关于文学创作与摄影的爱好！你可以在这个小站里找到我写的故事，或者拍摄的一些照片哦~如果要联系我，请选择底栏上三个小按钮中适合你的那一个，我会尽快回复的！此外，如果发现了本网站的BUG，也务必告诉我，感激不尽！
@@ -47,7 +79,7 @@
 
   <!-- 左下角日期 -->
   <div class="page-dates">
-  发布：30/9/2025　修改：3/10/2025
+  发布：30/9/2025　修改：5/10/2025
   </div>
 
   <!-- 底栏，需带着 -->
