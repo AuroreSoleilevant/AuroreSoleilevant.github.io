@@ -60,13 +60,19 @@
       min-width: 140px;
     }
 
-
     .content-image img {
-    width: 400px;   /* 图片宽度 */
-    height: auto;
-    max-width: 100%; /* 超过容器自动缩小 */
+      width: 400px;
+      height: auto;
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
+    .content-image img:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+    }
 
     @media (max-width: 720px) {
       .content-row { gap: 12px; padding: 0 10px; }
@@ -74,6 +80,210 @@
       .content-text  { order: 1; }
       .shaking-text  { font-size: 42px; }
     }
+  
+/*磁贴样式*/
+/* 变量组*/
+:root {
+  --tile-radius: 14px;
+  --tile-blur: 6px;
+
+  --tile-elev-y: 4px;
+  --tile-elev-blur: 20px;
+  --tile-elev-color: rgba(0,0,0,0.25);
+  --tile-glow-color: rgba(255,255,255,0.08);
+}
+
+/* ---------- 容器：一行三列 ---------- */
+.tiles {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tile p{
+  margin-left: 1.5em !important;
+  margin-right: 1.5em !important;
+}
+
+/* 支持 a.tile 或 任意元素 .tile （防止被全局 a 规则影响） */
+.tiles > a.tile,
+.tiles > .tile {
+  /* 保持为块级且在 flex 中伸缩 */
+  display: block;
+  flex: 1 1 300px;
+  min-height: 200px;
+  box-sizing: border-box;
+
+  /* 布局属性 */
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--tile-radius);
+  text-decoration: none; /* 链接外观独立 */
+  color: inherit;
+
+  /* ----- 视觉纹理 ----- */
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(to bottom right, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+    var(--tile-color, rgba(25,35,60,0.05));
+  background-size: 10px 10px, auto, auto;
+
+  /* 基础阴影与光晕 */
+  box-shadow:
+    0 var(--tile-elev-y) var(--tile-elev-blur) var(--tile-elev-color),
+    0 0 15px var(--tile-glow-color);
+
+  /* 毛玻璃 / mica 效果（需要半透明 tile-color 才可见） */
+  -webkit-backdrop-filter: blur(var(--tile-blur)) saturate(120%);
+  backdrop-filter: blur(var(--tile-blur)) saturate(120%);
+
+  /* 创建局部堆叠上下文，用来减少外部干扰 */
+  isolation: isolate;
+
+  /* 交互过渡（仅 transform 和 box-shadow） */
+  transition: transform 280ms cubic-bezier(.2,.9,.3,1),
+              box-shadow 280ms cubic-bezier(.2,.9,.3,1);
+  will-change: transform, box-shadow;
+}
+
+/* ---------- 顶部高光（保留原有效果） ---------- */
+.tiles > a.tile::before,
+.tiles > .tile::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 20%;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0));
+  pointer-events: none;
+  z-index: 1; /* 在 svg 之上，但在文本之下 */
+}
+
+/* ---------- 光泽滑动（::after） ---------- */
+.tiles > a.tile::after,
+.tiles > .tile::after {
+  content: "";
+  position: absolute;
+  inset: -10% -40%;
+  transform: translateX(-120%) rotate(-12deg);
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.08) 45%,
+    rgba(255,255,255,0.02) 55%,
+    rgba(255,255,255,0) 100%);
+  pointer-events: none;
+  z-index: 2;      /* 在 ::before 之上，但文本层更高 */
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.8s cubic-bezier(.2,.9,.2,1);
+}
+
+/* 光泽在 hover 时滑过（非循环） */
+.tiles > a.tile:hover::after,
+.tiles > .tile:hover::after,
+.tiles > a.tile:focus-within::after,
+.tiles > .tile:focus-within::after {
+  opacity: 1;
+  transform: translateX(120%) rotate(-12deg);
+}
+
+/* ---------- SVG 背景（装饰性，位于最底层） ---------- */
+.tiles > a.tile .tile-svg,
+.tiles > .tile .tile-svg {
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  z-index: 0; /* 在最下方 */
+  opacity: 0.16;
+  transform: translate(-50%, -50%) scale(1); /* 水平+垂直居中 */
+  transform-origin: 50% 50%;
+  transition: transform 0.6s cubic-bezier(.2,.9,.2,1), opacity 0.35s ease;
+  will-change: transform, opacity;
+}
+
+/* hover 时微放大并上移 */
+.tiles > a.tile:hover .tile-svg,
+.tiles > .tile:hover .tile-svg,
+.tiles > a.tile:focus-within .tile-svg,
+.tiles > .tile:focus-within .tile-svg {
+  transform: translate(-50%, calc(-50% + var(--_hover-translate))) scale(1.06);
+  opacity: 0.22;
+}
+
+/* ---------- 文本层始终位于最上层---------- */
+.tiles > a.tile > * ,
+.tiles > .tile > * {
+  position: relative;
+  z-index: 3;
+}
+
+/* ---------- 阴影与抬起效果：hover / active / focus-visible ---------- */
+.tiles > a.tile,
+.tiles > .tile {
+  --_hover-translate: -8px;
+  --_active-translate: -2px;
+}
+
+.tiles > a.tile:hover,
+.tiles > .tile:hover,
+.tiles > a.tile:focus-within,
+.tiles > .tile:focus-within {
+  transform: translateY(var(--_hover-translate));
+  box-shadow:
+    0 calc(var(--tile-elev-y) * 2) calc(var(--tile-elev-blur) + 10px) rgba(0,0,0,0.35),
+    0 0 20px var(--tile-glow-color);
+}
+
+/* 点击（按下）短暂反馈 */
+.tiles > a.tile:active,
+.tiles > .tile:active {
+  transform: translateY(var(--_active-translate)) scale(0.997);
+  box-shadow:
+    0 2px 10px rgba(0,0,0,0.20),
+    0 0 10px var(--tile-glow-color);
+  transition-duration: 120ms;
+}
+
+/* 键盘可见焦点（focus-visible）样式 */
+.tiles > a.tile:focus-visible,
+.tiles > .tile:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.12);
+  outline-offset: 4px;
+  transform: translateY(calc(var(--_hover-translate) * 0.75));
+  box-shadow:
+    0 calc(var(--tile-elev-y) * 1.5) calc(var(--tile-elev-blur) + 6px) rgba(0,0,0,0.30),
+    0 0 18px var(--tile-glow-color);
+}
+
+/* ---------- 响应式：窄屏堆叠 ---------- */
+@media (max-width: 940px) {
+  .tiles { flex-direction: column; }
+}
+
+/* ---------- 无障碍：偏好减少动画时禁用动画 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .tiles > a.tile,
+  .tiles > .tile,
+  .tiles > a.tile .tile-svg,
+  .tiles > .tile .tile-svg,
+  .tiles > a.tile::after,
+  .tiles > .tile::after {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+  .tiles > a.tile .tile-svg,
+  .tiles > .tile .tile-svg { opacity: 0.16; }
+  .tiles > a.tile::after,
+  .tiles > .tile::after { opacity: 0; }
+}
+
   </style>
 
   <script src="/js/fade.js"></script>      <!-- 加载淡入 -->
@@ -118,7 +328,6 @@
       <img
         style="margin-left:5px; margin-right:5px;"
         src="/images/Etoile_Spica.png"
-        alt="Spica"
         title="角宿一"
         aria-label="这是一张星空的图片，角宿一在图片中心，它是一颗蓝色的恒星，而周围有许多各色的小星星。本站为视觉障碍者的网页屏幕阅读器进行了适配，所有图像均附带了文本描述，只有您才能发现这些语段。如果有遗漏的描述内容，请务必联系我进行更正！联系方式可以在网页末尾找到，您会听到对应的三个按钮"
         onerror="this.onerror=null; this.src='https://via.placeholder.com/320x240.png?text=Spica';"
@@ -127,7 +336,34 @@
     </div>
   </div>
 
-  <p class="text-center" style="font-size: 2rem;"><b>那么，今天要来点什么吗？</b></p>
+  <p class="text-center" style="font-size: 2.5rem;"><b>那么，今天要来点什么吗？</b></p>
+
+  <div class="tiles">
+  <a class="tile" href="https://www.google.com" style="--tile-color: rgba(201,60,86,0.22);">
+  <img class="tile-svg" src="/icons/icon-texte.svg" alt="" aria-hidden="true">
+  <h1 class="text-center" style="font-size: 2.2rem;">文章</h1>
+  <p class="text-center" style="font-size: 1.5rem;">我们总是会经历很多事情，然后分享在其中得到的一切，这不是快乐么？</p>
+  <p class="text-center" style="font-size: 1rem;">一共有0篇文章！</p>
+  <p class="text-center" style="font-size: 1rem;">上次更新：暂无</p>
+  </a>
+
+  <a class="tile" href="https://www.google.com" style="--tile-color: rgba(80,44,107,0.20);">
+  <img class="tile-svg" src="/icons/icon-histoire.svg" alt="" aria-hidden="true">
+  <h1 class="text-center" style="font-size: 2.2rem;">故事</h1>
+  <p class="text-center" style="font-size: 1.5rem;">既然经历了许多，那么必然思绪也会溢出来不少，何尝不换作故事与果汁呢？</p>
+  <p class="text-center" style="font-size: 1rem;">一共有0篇文章！</p>
+  <p class="text-center" style="font-size: 1rem;">上次更新：暂无</p>
+  </a>
+
+  <a class="tile" href="https://www.google.com" style="--tile-color: rgba(255,160,64,0.18);">
+  <img class="tile-svg" src="/icons/icon-laboratoire.svg" alt="" aria-hidden="true">
+  <h1 class="text-center" style="font-size: 2.2rem;">实验室</h1>
+  <p class="text-center" style="font-size: 1.5rem;">一个好的功能总需要点火焰、噪音和爆炸，不是么？</p>
+  <p class="text-center" style="font-size: 1rem;">一共有0篇文章！</p>
+  <p class="text-center" style="font-size: 1rem;">上次更新：暂无</p>
+  </a>
+
+</div>
 
 </main>
 
@@ -141,17 +377,17 @@
     <div class="footer-contacts" aria-hidden="false">
   <!-- Github按钮 -->
   <a class="contact-btn" href="https://github.com/AuroreSoleilevant" target="_blank" title="GitHub" aria-label="GitHub按钮">
-    <img src="/icons/icon-Github.svg" alt="">
+    <img src="/icons/icon-Github.svg">
   </a>
 
   <!-- 邮箱按钮 -->
   <a class="contact-btn" href="mailto:darenzhou666@gmail.com" target="_blank" title="Email" aria-label="Email按钮">
-    <img src="/icons/icon-Email.svg" alt="">
+    <img src="/icons/icon-Email.svg">
   </a>
 
   <!-- QQ按钮 -->
   <a class="contact-btn" href="/images/QQ_code.png" target="_blank" title="QQ" aria-label="QQ按钮">
-    <img src="/icons/icon-QQ.svg" alt="">
+    <img src="/icons/icon-QQ.svg">
   </a>
 </div>
 
