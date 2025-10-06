@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Moi | Spica</title>
-  <link rel="preload" href="/fonts/LXGWWenKai-latin.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/LXGWWenKai-cjk.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/style.css">
+  <!-- 调用列表 -->
+  <script src="/js/common-head.js"></script>
 
   <style>
   .about-title {
@@ -85,26 +84,11 @@
 
   </style>
 
-  <script src="/js/fade.js"></script>      <!-- 加载淡入 -->
-  <script src="/js/backtop.js"></script>   <!-- 回到顶部按钮 -->
-  <script src="/js/blink.js"></script>     <!-- 顶栏导航闪烁 -->
-
 </head>
 <body>
 
   <!-- 顶栏，需带着 -->
-  <header class="site-header">
-    <a href="/" class="site-title"></a>
-    <!-- 分区导航 -->
-    <nav class="nav-links">
-    <a href="https://www.google.com" class="nav-item">文章</a>
-    <a href="https://www.google.com" class="nav-item">故事</a>
-    <a href="https://www.google.com" class="nav-item">实验室</a>
-    </nav>
-     <!-- 星组 -->
-    <div class="stars"></div>
-    <div class="stars2"></div>
-  </header>
+  <div id="header-placeholder"></div>
 
   <!-- 主体内容 -->
 <main style="padding-top: 75px;">
@@ -147,7 +131,7 @@
 
   <!-- 左下角日期 -->
   <div class="page-dates">
-  发布：30/9/2025　修改：5/10/2025
+  发布：30/9/2025　修改：6/10/2025
   </div>
 
   <!-- 底栏，需带着 -->

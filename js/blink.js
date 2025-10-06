@@ -1,25 +1,19 @@
-/* blink.js
-   鼠标悬停导航按钮闪烁，离开后平滑衰减到 opacity=1
-*/
-
 (function(){
   const defaultDuration = 2400; // 闪烁周期 ms
   const fadeOutDuration = 400;  // 离开后平滑回到1的时间 ms
-  const minOpacity = 0.05;       // 闪烁最低透明度
-  const maxOpacity = 1;         // 闪烁最高透明度
+  const minOpacity = 0.05;
+  const maxOpacity = 1;
 
   function initNavBlink() {
     document.querySelectorAll('.nav-item').forEach(elem => {
       let animationFrame = null;
       let startTime = null;
       let hovering = false;
-      let fadeStartTime = null;
 
       function animate(time) {
         if (!startTime) startTime = time;
         const elapsed = time - startTime;
-        const t = (elapsed % defaultDuration) / defaultDuration; // 0~1
-        // 正弦函数闪烁
+        const t = (elapsed % defaultDuration) / defaultDuration; 
         const opacity = minOpacity + (maxOpacity - minOpacity) * (0.5 * (1 + Math.sin(Math.PI * 2 * t - Math.PI/2)));
         elem.style.opacity = opacity;
         if (hovering) {
@@ -58,9 +52,17 @@
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initNavBlink);
-  } else {
+  // 等顶栏插入后初始化
+  document.addEventListener('header:inserted', () => {
     initNavBlink();
+  });
+
+  // 如果页面本身有静态顶栏，也在 DOMContentLoaded 时初始化
+  if (document.querySelector('.nav-item')) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initNavBlink);
+    } else {
+      initNavBlink();
+    }
   }
 })();

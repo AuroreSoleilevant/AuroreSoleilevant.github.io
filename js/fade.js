@@ -1,9 +1,14 @@
 (() => {
   // ----- 配置常量 -----
   const FADE_CLASS = 'loaded';
-  const FOOTER_URL = '/outil/footer.inc/index.html'; // 路径
+  const FOOTER_URL = '/outil/footer.inc/index.html'; // 底栏路径
   const PLACEHOLDER_ID = 'footer-placeholder';
   let isTransitioning = false;
+
+  const HEADER_URL = '/outil/header.inc/index.html';  // 顶栏路径
+  const PLACEHOLDER_ID_HEADER = 'header-placeholder';
+  let _headerRetries = 0;
+  const _headerMaxRetries = 4;
 
   // ----- 工具函数 -----
   function getFooter() {
@@ -11,6 +16,9 @@
   }
   function getMain() {
     return document.querySelector('main');
+  }
+  function getHeader() {
+    return document.querySelector('.site-header');
   }
 
   // 获取元素 transition 的第一个持续时间（ms），有 fallback
@@ -252,6 +260,9 @@
 
     // 触发 footer 的 fetch & 插入
     fetchAndInsertFooter();
+
+    // 触发 header 的 fetch & 插入（不需要动画，仅插入）
+    fetchAndInsertHeader();
   });
 
   // pageshow: 包含 bfcache 恢复的情形，确保 enter 能触发
@@ -280,6 +291,82 @@
     isTransitioning = true;
   });
 
-  // 导出
+  // ----- header 简单插入逻辑（无动画，便于未来做收拢） -----
+  // 使用独立占位 ID 和重试计数，便于未来改为收拢配置对象
+  function notifyHeaderInserted(headerEl) {
+    if (!headerEl) {
+      document.dispatchEvent(new CustomEvent('header:inserted', { detail: null }));
+      return;
+    }
+    // 无动画：直接派发事件，供未来扩展使用
+    setTimeout(() => {
+      document.dispatchEvent(new CustomEvent('header:inserted', { detail: { header: headerEl } }));
+    }, 0);
+  }
+
+  function fetchAndInsertHeader() {
+    const placeholder = document.getElementById(PLACEHOLDER_ID_HEADER);
+    if (!placeholder) {
+      // 不强制报错，仅提示（页面可能不需要 header 占位）
+      console.warn('fetchAndInsertHeader: 未找到 #' + PLACEHOLDER_ID_HEADER);
+      return;
+    }
+
+    // 如果占位里已经有 .site-header，说明页面可能被服务器端渲染，此时直接触发通知
+    const existing = placeholder.querySelector('.site-header');
+    if (existing) {
+      notifyHeaderInserted(existing);
+      return;
+    }
+
+    fetch(HEADER_URL, { cache: 'no-cache' })
+      .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.text();
+      })
+      .then(html => {
+        if (!html || !html.trim()) throw new Error('header 返回内容为空');
+        const currPlaceholder = document.getElementById(PLACEHOLDER_ID_HEADER);
+        if (!currPlaceholder) {
+          console.warn('fetchAndInsertHeader: placeholder 在插入前被移除，放弃插入。');
+          return;
+        }
+        if (currPlaceholder.querySelector('.site-header')) {
+          notifyHeaderInserted(currPlaceholder.querySelector('.site-header'));
+          return;
+        }
+
+        currPlaceholder.innerHTML = html;
+        const headerEl = currPlaceholder.querySelector('.site-header');
+        notifyHeaderInserted(headerEl);
+
+        // 观察：如果插入后又被清空/移除，尝试少量重试（退避）
+        const mo = new MutationObserver((mutations, obs) => {
+          const now = currPlaceholder.innerHTML || '';
+          if (!now.trim()) {
+            obs.disconnect();
+            if (_headerRetries < _headerMaxRetries) {
+              _headerRetries++;
+              const delay = 120 * _headerRetries;
+              console.warn('fetchAndInsertHeader: 插入后内容被清空，' + _headerRetries + ' 次重试，' + delay + 'ms 后再次尝试。');
+              setTimeout(fetchAndInsertHeader, delay);
+            } else {
+              console.error('fetchAndInsertHeader: 多次重试失败，停止自动恢复。');
+            }
+          }
+        });
+        mo.observe(currPlaceholder, { childList: true, subtree: true });
+      })
+      .catch(err => {
+        console.error('fetchAndInsertHeader 错误：', err);
+        if (_headerRetries < _headerMaxRetries) {
+          _headerRetries++;
+          setTimeout(fetchAndInsertHeader, 200 * _headerRetries);
+        }
+      });
+  }
+
+  // 导出（保持兼容性）
   window.__fetchAndInsertFooter = fetchAndInsertFooter;
+  window.__fetchAndInsertHeader = fetchAndInsertHeader;
 })();
