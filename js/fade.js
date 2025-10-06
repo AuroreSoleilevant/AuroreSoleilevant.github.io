@@ -1,7 +1,7 @@
 (() => {
   // ----- 配置常量 -----
   const FADE_CLASS = 'loaded';
-  const FOOTER_URL = '/outil/footer.inc/index.html'; // 如果需要改路径请在这里改
+  const FOOTER_URL = '/outil/footer.inc/index.html'; // 路径
   const PLACEHOLDER_ID = 'footer-placeholder';
   let isTransitioning = false;
 
@@ -27,11 +27,11 @@
   }
 
   // ----- footer 动画控制（确保每次 enter 都被触发） -----
-  // 可接受具体元素参数，增加鲁棒性
+  // 可接受具体元素参数
   function prepareFooterInitial(el) {
     const f = el || getFooter();
     if (!f) return;
-    // 强制进入“预进入”初始状态：移除可能存在的进入/退出类，再加 pre-enter
+    // 强制进入初始状态：移除可能存在的进入/退出类，再加 pre-enter
     f.classList.remove('slide-down', 'entered');
     f.classList.add('pre-enter');
     // 清除可能的内联 transform（避免干扰），并强制重排
@@ -42,11 +42,11 @@
   function footerEnter(el) {
     const f = el || getFooter();
     if (!f) return;
-    // 确保处于预进入态（防止调用方忘了准备）
+    // 确保处于预进入态
     f.classList.remove('slide-down', 'entered');
     f.classList.add('pre-enter');
     void f.offsetWidth;
-    // 两次 rAF 的组合保证 transition 会被浏览器识别
+    // 两次 rAF 保证 transition 会被浏览器识别
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         f.classList.add('entered');
@@ -134,14 +134,13 @@
   }
 
   // ----- footer 插入后的处理：等待图片加载并派发事件 -----
-  // 这里我们在插入时就把 footer 置为 pre-enter（确保后续 enter 一定有效）
   function notifyFooterInserted(footerEl) {
     if (!footerEl) {
       document.dispatchEvent(new CustomEvent('footer:inserted', { detail: null }));
       return;
     }
 
-    // 先把 footer 设为预进入初始态（移除 entered/slide-down，添加 pre-enter）
+    // 先把 footer 设为预进入初始态
     footerEl.classList.remove('entered', 'slide-down');
     footerEl.classList.add('pre-enter');
     footerEl.style.transform = '';
@@ -151,7 +150,7 @@
     const imgs = footerEl.querySelectorAll('img');
     const loads = imgs.length ? Array.from(imgs).map(img => img.complete ? Promise.resolve() : new Promise(r => img.addEventListener('load', r, { once: true }))) : [];
     Promise.all(loads).then(() => {
-      // 小延时更稳妥（确保样式表生效）
+      // 确保样式表生效
       setTimeout(() => {
         document.dispatchEvent(new CustomEvent('footer:inserted', { detail: { footer: footerEl } }));
       }, 20);
@@ -162,7 +161,7 @@
     });
   }
 
-  // ----- 智能 fetch + 插入逻辑（避免被重复插入或空覆盖） -----
+  // ----- 避免被重复插入或空覆盖 -----
   let _fetchRetries = 0;
   const _maxRetries = 4;
   function fetchAndInsertFooter() {
@@ -232,7 +231,7 @@
   // ----- 在 IIFE 内监听自定义事件 footer:inserted -----
   // 当 fetch 插入 footer 后会派发此事件，IIFE 内部会在收到时触发入场动画
   document.addEventListener('footer:inserted', (ev) => {
-    // 优先使用事件里传来的 footer 元素（以防页面上有多个 footer 或 querySelector 返回旧元素）
+    // 优先使用事件里传来的 footer 元素，以防页面上有多个 footer 或 querySelector 返回旧元素
     const el = ev && ev.detail && ev.detail.footer ? ev.detail.footer : null;
     // 重新准备初始状态并触发 enter（与 DOMContentLoaded 时一致）
     prepareFooterInitial(el);
@@ -251,7 +250,7 @@
       if (f) footerEnter(f);
     });
 
-    // 触发 footer 的 fetch & 插入（如果需要）
+    // 触发 footer 的 fetch & 插入
     fetchAndInsertFooter();
   });
 
@@ -281,6 +280,6 @@
     isTransitioning = true;
   });
 
-  // 可选导出（如果你想从外部手动触发）
+  // 导出
   window.__fetchAndInsertFooter = fetchAndInsertFooter;
 })();
