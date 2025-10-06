@@ -1,5 +1,6 @@
 (() => {
   const head = document.head;
+  const version1 = "061025.1";  //style.css版本号
 
   // ================================
   // 全局 CSS / 字体配置
@@ -9,7 +10,7 @@
   const links = [
     { rel: "preload", href: "/fonts/LXGWWenKai-latin.woff2", as: "font", type: "font/woff2", crossorigin: true },
     { rel: "preload", href: "/fonts/LXGWWenKai-cjk.woff2", as: "font", type: "font/woff2", crossorigin: true },
-    { rel: "stylesheet", href: "/css/style.css" },  // 全局样式表
+    { rel: "stylesheet", href: `/css/style.css?v=${version1}` },  // 全局样式表
   ];
 
   // 创建并插入 link 标签
