@@ -41,6 +41,10 @@
   --tile-elev-blur: 20px;
   --tile-elev-color: rgba(0,0,0,0.25);
   --tile-glow-color: rgba(255,255,255,0.08);
+
+  --tile-thumb-size: 72px;      /* 条，缩略图大小（正方形）*/
+  --tile-thumb-radius: 10px;    /* 条，缩略图圆角 */
+  --tile-strip-gap: 16px;       /* 条，缩略图与文本间距 */
 }
 
 /* ---------- 容器：一行三列 ---------- */
@@ -239,6 +243,71 @@
   .tiles > .tile::after { opacity: 0; }
 }
 
+/* 长条形磁贴：复用 .tile 的视觉与交互，只改变内部布局 */
+.tiles > a.tile.tile-strip,
+.tiles > .tile.tile-strip {
+  /* 覆盖为水平 flex 布局（复用原来！磁贴的外观、阴影、transition 等） */
+  display: flex;
+  align-items: center;
+  gap: var(--tile-strip-gap);
+  padding: 0 1.5em;            /* 保持与原来文本左右边距一致 */
+  box-sizing: border-box;
+  min-height: calc(var(--tile-thumb-size) + 16px); /* 给内容一点垂直空间 */
+  flex: 1 1 100%;              /* 让它撑满行*/
+}
+
+/* 缩略图 */
+.tile-strip .tile-thumb {
+  width: var(--tile-thumb-size);
+  height: var(--tile-thumb-size);
+  flex: 0 0 var(--tile-thumb-size);
+  border-radius: var(--tile-thumb-radius);
+  object-fit: cover;           /* 保持图像裁切良好 */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  background: rgba(255,255,255,0.03); /* 占位背景（若图片透明） */
+  z-index: 2;                  /* 在 SVG(0) 之上，但文本(3) 之下 */
+  pointer-events: none;        /* 缩略图不捕获指针（链接由父元素捕获） */
+  transition: transform 280ms cubic-bezier(.2,.9,.3,1), box-shadow 280ms ease;
+}
+
+/* 缩略图 hover 微动效*/
+.tiles > a.tile.tile-strip:hover .tile-thumb,
+.tiles > .tile.tile-strip:hover .tile-thumb,
+.tiles > a.tile.tile-strip:focus-within .tile-thumb,
+.tiles > .tile.tile-strip:focus-within .tile-thumb {
+  transform: translateY(-4px) scale(1.03);
+}
+
+/* 右侧文本容器：单行、右对齐且垂直居中 */
+.tile-strip .tile-content {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;     /* 垂直居中 */
+  justify-content: flex-end; /* 右对齐文本 */
+  text-align: right;
+  min-width: 0;            /* 允许内联文本溢出隐藏（配合 text-overflow） */
+}
+
+/* 确保只有一行显示（省略超长文本） */
+.tile-strip .tile-content > * {
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 文字尺寸*/
+.tile-strip h1 { font-size: 1.25rem; font-weight: 600; }
+.tile-strip p { font-size: 1rem; opacity: 0.95; }
+
+/* 窄屏下：如果需要可以堆叠为常规磁贴 */
+@media (max-width: 640px) {
+  .tiles > a.tile.tile-strip,
+  .tiles > .tile.tile-strip {
+    flex-direction: row; /* 保持水平；如需堆叠改为 column */
+    min-height: calc(var(--tile-thumb-size) + 8px);
+  }
+
   </style>
 
 </head>
@@ -288,7 +357,19 @@
   <div style="height: 5em;"></div>
   <p class="text-center" style="font-size: 2.5rem;"><b>推荐！寻找好看的ᕕ( ᐛ )ᕗ</b></p>
   <p class="text-center">-开发中-</p>
+  
+  <div style="height: 5em;"></div>
+  <p class="text-center" style="font-size: 2.5rem;"><b>友情链接，友谊就是魔法(・∀・)</b></p>
 
+  <div class="tiles">
+  <a class="tile tile-strip" href="https://www.zexnocs.top/" target="_blank" style="--tile-color: rgba(40,140,134,0.12);">
+    <img src="https://www.zexnocs.top/img/avatar.jpg" alt="zExNocs" title="zExNocs" class="tile-thumb">
+    <div class="tile-content">
+      <h1>茶会大猫猫 ———— 蒟蒻zExNocs's Blog</h1>
+    </div>
+  </a>
+
+  </div>
 </main>
 
   <!-- 左下角日期 -->
