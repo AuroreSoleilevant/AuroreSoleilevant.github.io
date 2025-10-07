@@ -326,20 +326,13 @@ main h1 {
   outline: none;
 }
 
-/* 圆圈的响应式适配 */
-@media (max-width: 420px) {
-  .footer-contacts { gap: 12px; }
-  .contact-btn { width: 36px; height: 36px; }
-  .contact-btn img { width: 60%; }
-}
-
 .footer-links {
   position: absolute;
   top: 50%;                    /* 垂直居中底栏 */
   left: 16px;                   /* 左边距，与版权右边距一致 */
   transform: translateY(-50%);  /* 精确垂直居中 */
   display: flex;
-  gap: 24px;                     /* 三组文字的水平间隔，可调 */
+  gap: 24px;                     /* 三组文字的水平间隔 */
   font-size: 1.25rem;            /* 与版权文字一致 */
   opacity: 0.85;
 }
@@ -399,8 +392,6 @@ h1.shaking-text {
   border: 1px solid rgba(255,255,255,0.10);
   box-shadow: 0 6px 18px rgba(0,0,0,0.18);
   text-decoration: none;
-  font-size: calc(var(--backtop-size) * 0.9);    /* 按钮内的^的大小变量 */
-  line-height: 1;
   transform: scale(1); /* 或默认值，确保按钮不被缩放 */
   cursor: pointer;
   z-index: var(--backtop-z);
@@ -413,9 +404,14 @@ h1.shaking-text {
     box-shadow 160ms ease;
 }
 
-.back-to-top span {
-  display: inline-block;
-  transform: translateY(9px); /* 微调 ^ 偏下 */
+/* 回到顶部图标 */
+.back-to-top .backtop-icon {
+  display: block;
+  width: 80%;
+  height: 80%;
+  transform: translateY(0); /* 如果需要微调可改为 translateY(2px) 等 */
+  line-height: 1;
+  pointer-events: none; /* 图像不拦截点击，事件由按钮处理 */
 }
 
 /* hover / focus 效果 */
@@ -443,14 +439,7 @@ h1.shaking-text {
   60%  { transform: scale(1.12); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
 }
-
 /* 兴许消失可用淡出（由移除 visible 实现） */
-
-/* 小屏适配：稍微缩小按钮和边距 */
-@media (max-width: 420px) {
-  :root { --backtop-size: 40px; --backtop-right: 12px; --backtop-bottom: 76px; }
-  .back-to-top { font-size: calc(var(--backtop-size) * 0.5); }
-}
 
 :root {
   --divider-thickness: 10px;  /* 分割线粗度变量 */
@@ -829,5 +818,74 @@ footer {
   ul {
     margin-left: 72px;
     margin-right: 72px;
+  }
+}
+
+/* === 响应式主（文章等）内容区上边距 === */
+.main-content {
+  padding-top: 75px; /* 默认值 - 桌面端 */
+}
+
+/* 平板设备 */
+@media (max-width: 1024px) {
+  .main-content {
+    padding-top: 65px;
+  }
+}
+
+/* 手机设备 */
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: 55px;
+  }
+}
+
+/* 小屏手机 */
+@media (max-width: 480px) {
+  .main-content {
+    padding-top: 45px;
+  }
+}
+
+/* 底栏响应式 */
+/* ---------- 小屏与手机 ------------- */
+@media (max-width: 480px) {
+  .site-footer {
+    min-height: 80px; /* 增高底栏，给上下两行留空间 */
+    padding: 14px 16px;
+  }
+
+  /* 把按钮放到底部（保留水平居中） */
+  .footer-contacts {
+    position: absolute;
+    top: auto;           /* 取消垂直居中 */
+    bottom: 12px;        /* 距底部一定距离 */
+    left: 50%;
+    transform: translateX(-50%); /* 仅水平居中 */
+    gap: 20px;
+    z-index: 6;
+  }
+
+  /* 上下位置变量，负则高，两个得一样 */
+  .footer-links {
+    left: 12px;
+    transform: translateY(-140%);
+  }
+  .site-footer::after {
+    right: 12px;
+    transform: translateY(-140%);
+  }
+}
+
+@media (max-width: 350px) {
+  /* 底栏字体调整 */
+  .footer-links {
+    font-size: 0.675rem; /* 调整链接字体 */
+    transform: translateY(-160%);
+  }
+
+  .site-footer::after {
+    font-size: 0.675rem; /* 调整版权字体 */
+    transform: translateY(-160%);
   }
 }

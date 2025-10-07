@@ -2,13 +2,15 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="pfcmMKiUt7UatYNyY205M5vCxZO10F-vjZ6Gv2hF68o" />
   <meta name="description" content="这里是晨曦初阳的个人博客，用来分享我的一切~">
   <meta name="keywords" content="博客, 生活, 编程, 写作，摄影，彩虹小马，文学">
   <meta name="author" content="Aurore Soleilevant">
   <title>Spica</title>
   <!-- 调用列表 -->
-  <script src="/js/common-head.js"></script>
+  <script src="/js/common-head.js?v=07102025.1"></script>
+
 
   <!-- 本页的CSS -->
   <style>
@@ -307,6 +309,48 @@
     flex-direction: row; /* 保持水平；如需堆叠改为 column */
     min-height: calc(var(--tile-thumb-size) + 8px);
   }
+}
+
+  .mobile-break {
+  display: none;
+}
+
+ .mobile-break320 {
+  display: none;
+}
+
+ .fsize2{
+  font-size: 2rem;
+ }
+
+ .fsize2p5{
+  font-size: 2.5rem;
+ }
+
+ .dishaut{
+  height: 5em;
+ }
+
+@media (max-width: 480px) {
+  .mobile-break {
+    display: block;
+  }
+
+   .fsize2{
+  font-size: 1rem;
+ }
+
+ .fsize2p5{
+  font-size: 1.5rem;
+ }
+ 
+}
+
+@media (max-width:320px) {
+  .mobile-break320 {
+    display: block;
+  }
+}
 
   </style>
 
@@ -318,15 +362,15 @@
   <div id="header-placeholder"></div>
 
   <!-- 主体内容 -->
-<main style="padding-top: 120px;">
+<main >
   <!-- 大标题 -->
   <h1 class="shaking-text" title="Ciallo = Ciao + Hello = 你好">
-  欢迎 Ciallo～(∠・ω< )⌒☆
+  欢迎<span class="mobile-break"></span> Ciallo～<span class="mobile-break320"></span>(∠・ω< )⌒☆
   </h1>
 
-  <p class="text-center" style="font-size: 2rem;">欢迎来到Spica！这里是晨曦初阳的个人小站，希望你可以在这里度过愉快的时光~</p>
+  <p class="text-center fsize2">欢迎来到Spica！这里是晨曦初阳的个人小站，希望你可以在这里度过愉快的时光~</p>
 
-  <p class="text-center" style="font-size: 2.5rem;"><b>那么，今天要来点什么吗(ゝ∀･)</b></p>
+  <p class="text-center fsize2p5"><b>那么，今天要来点什么吗(ゝ∀･)</b></p>
 
   <div class="tiles">
   <a class="tile" href="https://www.google.com" style="--tile-color: rgba(201,60,86,0.22);">
@@ -354,12 +398,12 @@
   </a>
   </div>
 
-  <div style="height: 5em;"></div>
-  <p class="text-center" style="font-size: 2.5rem;"><b>推荐！寻找好看的ᕕ( ᐛ )ᕗ</b></p>
+  <div class="dishaut"></div>
+  <p class="text-center fsize2p5"><b>推荐！寻找好看的<span class="mobile-break"></span> ᕕ( ᐛ )ᕗ</b></p>
   <p class="text-center">-开发中-</p>
   
-  <div style="height: 5em;"></div>
-  <p class="text-center" style="font-size: 2.5rem;"><b>友情链接，友谊就是魔法(・∀・)</b></p>
+  <div class="dishaut"></div>
+  <p class="text-center fsize2p5"><b>友情链接，友谊就是魔法<span class="mobile-break"></span> (・∀・)</b></p>
 
   <div class="tiles">
   <a class="tile tile-strip" href="https://www.zexnocs.top/" target="_blank" style="--tile-color: rgba(40,140,134,0.12);">

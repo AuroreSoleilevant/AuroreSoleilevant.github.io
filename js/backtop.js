@@ -14,7 +14,7 @@
     btn.className = 'back-to-top';
     btn.title = '回到顶部';
     btn.setAttribute('aria-label', '回到顶部');
-    btn.innerHTML = '<span>^</span>';
+    btn.innerHTML = '<img class="backtop-icon" src="/icons/icon-top.svg" alt="" aria-hidden="true">';
     // 插入 body 末尾
     document.body.appendChild(btn);
     btn.addEventListener('click', () => {
@@ -92,11 +92,47 @@
     } catch (err) {
       window.scrollTo(0, 0);
     }
-    // 隐藏按钮，防止重复点击；短延迟后刷新可见性（等平滑滚动或用户已在顶）
+    // 隐藏按钮，防止重复点击；短延迟后刷新可见性
     hideButton();
     setTimeout(() => {
       checkVisibility();
-    }, 600); // 若你用较长 smooth 时间可加大
+    }, 600);
+  }
+
+  // 初始化绑定
+  function init() {
+  createButton();
+  updateBottomOffset();
+  checkVisibility();
+
+  window.addEventListener('scroll', throttle(checkVisibility, 120), { passive: true });
+  window.addEventListener('resize', throttle(() => {
+    updateBottomOffset();
+    checkVisibility();
+  }, 200));
+  window.addEventListener('pageshow', () => {
+    updateBottomOffset();
+    checkVisibility();
+  });
+
+  // 绑定点击事件（只绑定一次）
+  btn.addEventListener('click', onClick);
+
+  // 移动端触摸结束时强制重置按钮状态
+  btn.addEventListener('touchstart', e => {
+  btn.classList.remove('pop');
+  void btn.offsetWidth;
+  });
+  btn.addEventListener('touchend', e => {
+  btn.blur();
+  setTimeout(() => {
+    hideButton();
+    checkVisibility();
+  }, 50);
+  });
+
+  // 键盘可访问性
+  btn.addEventListener('keydown', onKey);
   }
 
   // 键盘可访问性（Enter/Space 激活）
