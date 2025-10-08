@@ -247,6 +247,13 @@ main h1 {
   text-align: center;
 }
 
+/* 居于底部定义 */
+.container {
+  display: flex;
+  flex-direction: column; /* 垂直排列内容 */
+  justify-content: flex-end; /* 内容贴底部 */
+}
+
 /* 底栏 */
 .site-footer {
   position: relative;

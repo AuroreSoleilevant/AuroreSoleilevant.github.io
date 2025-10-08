@@ -257,6 +257,8 @@
   .tiles > a.tile p,
   .tiles > .tile p {
     display: none;
+    margin-left: 1em;
+    margin-right: 1em;
   }
 
   .tiles > a.tile .tile-svg,
@@ -277,73 +279,105 @@
   }
 }
 
+/* ---------------- 400px 及以下 ---------------- */
 @media (max-width: 400px) {
-  /* 隐藏所有说明文字 */
-  .tiles > a.tile p.show-mobile {
-    display: none;
-    height: 0;
-    margin: 0;
-    padding: 0;
-  }
-
-  .tiles > a.tile p {
-    display: none;
-    height: 0;
-    margin: 0;
-    padding: 0;
-  }
-
-  /* 调整标题大小，避免溢出 */
-  .tiles > a.tile h3 {
-    font-size: 1rem;
-    margin: 0.5rem 0;
-  }
-
-  /* 让磁贴成为正方形 */
-  .tiles > a.tile {
-    width: 45vw;
-    height: 45vw; /* 保持方形 */
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* 居中标题 */
-    align-items: center;
-  }
-
-    .tiles > a.tile > * {
-    flex: 0 0 auto;
-  }
-
-  /* 调整容器对齐与间距 */
+  /* 容器：保持横排三列、不换行；给阴影留空间 */
   .tiles {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 8px 10px;
-    gap: 12px;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+    padding: 8px 10px !important;
+    overflow-x: hidden !important; /* 可改为 auto 允许横向滚动 */
+    background: transparent !important; /* 恢复透明容器 */
+    align-items: flex-start !important;
+  }
+
+  /* 每个磁贴：等宽三列并保持正方形（使用 aspect-ratio） */
+  .tiles > a.tile,
+  .tiles > .tile {
+    flex: 0 0 calc((100% - 24px) / 3) !important; /* 3 列布局（24px = 2 * gap） */
+    width: calc((100% - 24px) / 3) !important;
+    aspect-ratio: 1 / 1 !important;               /* 保证宽高相等 */
+    min-width: 84px !important;                   /* 极窄屏时的下限 */
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 8px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important; /* 标题垂直居中 */
+    align-items: center !important;     /* 标题水平居中 */
+    border-radius: 10px !important;
+    overflow: hidden !important;
+    /* 恢复彩色半透明背景，避免被响应式误覆盖成白色 */
+    background:
+      radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(to bottom right, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+      var(--tile-color, rgba(25,35,60,0.05)) !important;
+    /* 适度柔和阴影（不至于连成块） */
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12) !important;
+  }
+
+  /* 确保子元素不被拉伸占位 */
+  .tiles > a.tile > *,
+  .tiles > .tile > * {
+    flex: 0 0 auto !important;
+  }
+
+  /* 隐藏所有介绍性文字（彻底不占位） */
+  .tiles > a.tile p,
+  .tiles > .tile p {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 0 !important;
+  }
+
+  /* 如果你之前用 .show-mobile 类把这两个 p 重新显示过，在 <=400 时也强制隐藏它们 */
+  .tiles > a.tile p.show-mobile,
+  .tiles > .tile p.show-mobile {
+    display: none !important;
+  }
+
+  /* 标题：放大并自适应（避免溢出），居中显示 */
+  .tiles > a.tile h1,
+  .tiles > .tile h1,
+  .tiles > a.tile h2,
+  .tiles > .tile h2,
+  .tiles > a.tile h3,
+  .tiles > .tile h3 {
+    display: block !important;
+    font-size: clamp(1.1rem, 5.2vw, 1.6rem) !important; /* 自适应放大（可调） */
+    line-height: 1.05 !important;
+    margin: 0 !important;
+    text-align: center !important;
+    z-index: 3 !important; /* 确保文字在 svg 之上 */
+    color: inherit !important;
+  }
+
+  /* SVG 图标：绝对居中、缩小、不与标题冲突 */
+  .tiles > a.tile .tile-svg,
+  .tiles > .tile .tile-svg {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 40% !important;   /* 图标大小（可调） */
+    height: auto !important;
+    opacity: 0.16 !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+  }
+
+  /* 轻触时的视觉反馈 */
+  .tiles > a.tile:active,
+  .tiles > .tile:active {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.14) !important;
+    transition-duration: 120ms !important;
   }
 }
-
-/* 字号标准化*/
-  .mobile-break {
-  display: none;
-}
-
- .mobile-break320 {
-  display: none;
-}
-
- .fsize2{
-  font-size: 2rem;
- }
-
- .fsize2p5{
-  font-size: 2.5rem;
- }
-
- .dishaut{
-  height: 5em;
- }
 
 /* 长条形磁贴：复用 .tile 的视觉与交互，只改变内部布局 */
 .tiles > a.tile.tile-strip,
@@ -408,26 +442,5 @@
   .tiles > .tile.tile-strip {
     flex-direction: row;
     min-height: calc(var(--tile-thumb-size) + 8px);
-  }
-}
-
-@media (max-width: 480px) {
-  .mobile-break {
-    display: block;
-  }
-
-   .fsize2{
-  font-size: 1rem;
- }
-
- .fsize2p5{
-  font-size: 1.5rem;
- }
- 
-}
-
-@media (max-width:320px) {
-  .mobile-break320 {
-    display: block;
   }
 }

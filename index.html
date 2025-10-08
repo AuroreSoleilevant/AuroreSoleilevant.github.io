@@ -33,6 +33,52 @@
       75%  { transform: translateY(10px); }
       100% { transform: translateY(0px); }
     }
+  
+  /* 字号标准化*/
+  .mobile-break {
+  display: none;
+}
+
+ .mobile-break320 {
+  display: none;
+}
+
+ .fsize2{
+  font-size: 2rem;
+ }
+
+ .fsize2p5{
+  font-size: 2.5rem;
+ }
+
+ .dishaut{
+  height: 5em;
+ }
+
+ @media (max-width: 480px) {
+  .mobile-break {
+    display: block;
+  }
+
+   .fsize2{
+  font-size: 1rem;
+ }
+
+ .fsize2p5{
+  font-size: 1.5rem;
+ }
+
+   .dishaut{    /* 通用顶部空格 */
+  height: 0rem;
+ }
+ 
+}
+
+@media (max-width:320px) {
+  .mobile-break320 {
+    display: block;
+  }
+}
 
   </style>
 
@@ -52,7 +98,7 @@
 
   <p class="text-center fsize2">欢迎来到Spica！这里是晨曦初阳的个人小站，希望你可以在这里度过愉快的时光~</p>
 
-  <p class="text-center fsize2p5"><b>那么，今天要来点什么吗 (ゝ∀･)</b></p>
+  <p class="text-center fsize2p5"><b>那么，今天要来点什么吗<span class="mobile-break"></span> (ゝ∀･)</b></p>
 
   <div class="tiles">
   <a class="tile" href="https://www.google.com" style="--tile-color: rgba(201,60,86,0.22);">
@@ -75,8 +121,8 @@
   <img class="tile-svg" src="/icons/icon-laboratoire.svg" alt="" aria-hidden="true">
   <h1 class="text-center">实验室</h1>
   <p class="text-center">一个好的功能总需要点火焰、噪音和爆炸，不是么？</p>
-  <p class="text-center show-mobile">一共有0个实验！</p>
-  <p class="text-center show-mobile">上次更新：暂无</p>
+  <p class="text-center show-mobile container">一共有0个实验！</p>
+  <p class="text-center show-mobile container">上次更新：暂无</p>
   </a>
   </div>
 
