@@ -24,14 +24,20 @@
 }
 
 .tile p{
-  margin-left: 1.5em !important;
-  margin-right: 1.5em !important;
+  margin-left: 1.5em;
+  margin-right: 1.5em;
+  font-size: 1.5rem;
 }
 
 .tile h1{
-  margin-left: 1.5em !important;
-  margin-right: 1.5em !important;
+  margin-left: 1.5em;
+  margin-right: 1.5em;
+  font-size: 2.2rem;
 }
+
+.tiles > a.tile p.show-mobile {
+    font-size: 1rem;
+  }
 
 /* 支持 a.tile 或 任意元素 .tile （防止被全局 a 规则影响） */
 .tiles > a.tile,
@@ -243,14 +249,14 @@
   .tiles > a.tile h1,
   .tiles > .tile h1 {
     display: block;
-    font-size: 1rem !important;
+    font-size: 1rem;
     margin: 6px 0 0;
     text-align: center;
   }
 
   .tiles > a.tile p,
   .tiles > .tile p {
-    display: none !important;
+    display: none;
   }
 
   .tiles > a.tile .tile-svg,
@@ -266,25 +272,25 @@
   }
 
   .tiles > a.tile p.show-mobile {
-    display: block !important;
-    font-size: 0.6rem !important;
+    display: block;
+    font-size: 0.6rem;
   }
 }
 
 @media (max-width: 400px) {
   /* 隐藏所有说明文字 */
   .tiles > a.tile p.show-mobile {
-    display: none !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    display: none;
+    height: 0;
+    margin: 0;
+    padding: 0;
   }
 
   .tiles > a.tile p {
-    display: none !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    display: none;
+    height: 0;
+    margin: 0;
+    padding: 0;
   }
 
   /* 调整标题大小，避免溢出 */
@@ -312,7 +318,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: flex-start !important;
+    align-items: flex-start;
     padding: 8px 10px;
     gap: 12px;
   }
