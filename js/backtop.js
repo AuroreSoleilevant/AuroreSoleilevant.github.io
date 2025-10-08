@@ -1,25 +1,26 @@
 // backtop.js — 自动创建并控制回到顶部按钮
 (function () {
-  const ID = 'back-to-top';
-  const VISIBLE_CLASS = 'visible';
-  const POP_CLASS = 'pop';
+  const ID = "back-to-top";
+  const VISIBLE_CLASS = "visible";
+  const POP_CLASS = "pop";
   const SHOW_THRESHOLD = 120; // 向下滚动多少像素后才显示（可改）
   let btn = document.getElementById(ID);
 
   // 创建按钮（如果 HTML 中不存在）
   function createButton() {
     if (btn) return btn;
-    btn = document.createElement('button');
+    btn = document.createElement("button");
     btn.id = ID;
-    btn.className = 'back-to-top';
-    btn.title = '回到顶部';
-    btn.setAttribute('aria-label', '回到顶部');
-    btn.innerHTML = '<img class="backtop-icon" src="/icons/icon-top.svg" alt="" aria-hidden="true">';
+    btn.className = "back-to-top";
+    btn.title = "回到顶部";
+    btn.setAttribute("aria-label", "回到顶部");
+    btn.innerHTML =
+      '<img class="backtop-icon" src="/icons/icon-top.svg" alt="" aria-hidden="true">';
     // 插入 body 末尾
     document.body.appendChild(btn);
-    btn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    btn.blur(); // 移除焦点，恢复普通状态
+    btn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      btn.blur(); // 移除焦点，恢复普通状态
     });
     return btn;
   }
@@ -31,16 +32,30 @@
 
   // 更新底部 offset（避让 footer）
   function updateBottomOffset() {
-    const footer = document.querySelector('.site-footer');
-    let offset = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--backtop-bottom')) || 96;
+    const footer = document.querySelector(".site-footer");
+    let offset =
+      parseInt(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--backtop-bottom"
+        )
+      ) || 96;
     if (footer) {
-      const fh = footer.offsetHeight || Math.round(footer.getBoundingClientRect().height) || 0;
+      const fh =
+        footer.offsetHeight ||
+        Math.round(footer.getBoundingClientRect().height) ||
+        0;
       const gap = 16; // 按钮与 footer 之间的间距（可调）
       const newBottom = fh + gap;
-      document.documentElement.style.setProperty('--backtop-bottom', `${newBottom}px`);
+      document.documentElement.style.setProperty(
+        "--backtop-bottom",
+        `${newBottom}px`
+      );
     } else {
       // fallback 保持默认或先前设置
-      document.documentElement.style.setProperty('--backtop-bottom', `${offset}px`);
+      document.documentElement.style.setProperty(
+        "--backtop-bottom",
+        `${offset}px`
+      );
     }
   }
 
@@ -88,7 +103,7 @@
     e.preventDefault();
     // 平滑回顶
     try {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       window.scrollTo(0, 0);
     }
@@ -101,43 +116,48 @@
 
   // 初始化绑定
   function init() {
-  createButton();
-  updateBottomOffset();
-  checkVisibility();
-
-  window.addEventListener('scroll', throttle(checkVisibility, 120), { passive: true });
-  window.addEventListener('resize', throttle(() => {
+    createButton();
     updateBottomOffset();
     checkVisibility();
-  }, 200));
-  window.addEventListener('pageshow', () => {
-    updateBottomOffset();
-    checkVisibility();
-  });
 
-  // 绑定点击事件（只绑定一次）
-  btn.addEventListener('click', onClick);
+    window.addEventListener("scroll", throttle(checkVisibility, 120), {
+      passive: true,
+    });
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        updateBottomOffset();
+        checkVisibility();
+      }, 200)
+    );
+    window.addEventListener("pageshow", () => {
+      updateBottomOffset();
+      checkVisibility();
+    });
 
-  // 移动端触摸结束时强制重置按钮状态
-  btn.addEventListener('touchstart', e => {
-  btn.classList.remove('pop');
-  void btn.offsetWidth;
-  });
-  btn.addEventListener('touchend', e => {
-  btn.blur();
-  setTimeout(() => {
-    hideButton();
-    checkVisibility();
-  }, 50);
-  });
+    // 绑定点击事件（只绑定一次）
+    btn.addEventListener("click", onClick);
 
-  // 键盘可访问性
-  btn.addEventListener('keydown', onKey);
+    // 移动端触摸结束时强制重置按钮状态
+    btn.addEventListener("touchstart", (e) => {
+      btn.classList.remove("pop");
+      void btn.offsetWidth;
+    });
+    btn.addEventListener("touchend", (e) => {
+      btn.blur();
+      setTimeout(() => {
+        hideButton();
+        checkVisibility();
+      }, 50);
+    });
+
+    // 键盘可访问性
+    btn.addEventListener("keydown", onKey);
   }
 
   // 键盘可访问性（Enter/Space 激活）
   function onKey(e) {
-    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+    if (e.key === "Enter" || e.key === " " || e.key === "Spacebar") {
       if (document.activeElement === btn) {
         e.preventDefault();
         onClick(e);
@@ -151,19 +171,24 @@
     updateBottomOffset();
     checkVisibility();
 
-    window.addEventListener('scroll', throttle(checkVisibility, 120), { passive: true });
-    window.addEventListener('resize', throttle(() => {
-      updateBottomOffset();
-      checkVisibility();
-    }, 200));
-    window.addEventListener('pageshow', () => {
+    window.addEventListener("scroll", throttle(checkVisibility, 120), {
+      passive: true,
+    });
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        updateBottomOffset();
+        checkVisibility();
+      }, 200)
+    );
+    window.addEventListener("pageshow", () => {
       // bfcache 恢复后重新计算并判断
       updateBottomOffset();
       checkVisibility();
     });
 
-    btn.addEventListener('click', onClick);
-    btn.addEventListener('keydown', onKey);
+    btn.addEventListener("click", onClick);
+    btn.addEventListener("keydown", onKey);
   }
 
   // 简单防抖/节流函数
@@ -174,7 +199,10 @@
       const now = Date.now();
       const remaining = wait - (now - last);
       if (remaining <= 0) {
-        if (timeout) { clearTimeout(timeout); timeout = null; }
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
         last = now;
         fn.apply(this, args);
       } else if (!timeout) {
@@ -188,8 +216,8 @@
   }
 
   // DOM 就绪时初始化（若 script 放在 body 末尾也可直接调用）
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
   }

@@ -1,21 +1,33 @@
 (() => {
   const head = document.head;
-  const version1 = "061025.1";  //style.css版本号
+  const version1 = "061025.1"; //style.css版本号
 
   // ================================
   // 全局 CSS / 字体配置
   // （字体）添加模板：
-  // { rel, href, as?, type?, crossorigin? } 
+  // { rel, href, as?, type?, crossorigin? }
   // ================================
   const links = [
-    { rel: "preload", href: "/fonts/LXGWWenKai-latin.woff2", as: "font", type: "font/woff2", crossorigin: true },
-    { rel: "preload", href: "/fonts/LXGWWenKai-cjk.woff2", as: "font", type: "font/woff2", crossorigin: true },
-    { rel: "stylesheet", href: `/css/style.css?v=${version1}` },  // 全局样式表
-    { rel:"icon", href:"/icons/logo.png", type:"image/x-icon"}
+    {
+      rel: "preload",
+      href: "/fonts/LXGWWenKai-latin.woff2",
+      as: "font",
+      type: "font/woff2",
+      crossorigin: true,
+    },
+    {
+      rel: "preload",
+      href: "/fonts/LXGWWenKai-cjk.woff2",
+      as: "font",
+      type: "font/woff2",
+      crossorigin: true,
+    },
+    { rel: "stylesheet", href: `/css/style.css?v=${version1}` }, // 全局样式表
+    { rel: "icon", href: "/icons/logo.png", type: "image/x-icon" },
   ];
 
   // 创建并插入 link 标签
-  links.forEach(linkInfo => {
+  links.forEach((linkInfo) => {
     const link = document.createElement("link");
     Object.entries(linkInfo).forEach(([key, value]) => {
       if (value === true) link.setAttribute(key, ""); // 布尔属性
@@ -29,12 +41,12 @@
   // 同步顺序加载 JS
   // ================================
   const scripts = [
-    "/js/fade.js",     // 顶栏 / 底栏动画逻辑
-    "/js/backtop.js",  // 回到顶部按钮
-    "/js/blink.js",    // 顶栏闪烁
+    "/js/fade.js", // 顶栏 / 底栏动画逻辑
+    "/js/backtop.js", // 回到顶部按钮
+    "/js/blink.js", // 顶栏闪烁
   ];
 
-  scripts.forEach(src => {
+  scripts.forEach((src) => {
     try {
       // 使用 XMLHttpRequest 同步获取脚本内容
       const xhr = new XMLHttpRequest();
@@ -52,5 +64,4 @@
       console.error("加载失败：", src, err);
     }
   });
-
 })();

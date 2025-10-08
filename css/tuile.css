@@ -6,12 +6,12 @@
 
   --tile-elev-y: 4px;
   --tile-elev-blur: 20px;
-  --tile-elev-color: rgba(0,0,0,0.25);
-  --tile-glow-color: rgba(255,255,255,0.08);
+  --tile-elev-color: rgba(0, 0, 0, 0.25);
+  --tile-glow-color: rgba(255, 255, 255, 0.08);
 
-  --tile-thumb-size: 72px;      /* 条，缩略图大小（正方形）*/
-  --tile-thumb-radius: 10px;    /* 条，缩略图圆角 */
-  --tile-strip-gap: 16px;       /* 条，缩略图与文本间距 */
+  --tile-thumb-size: 72px; /* 条，缩略图大小（正方形）*/
+  --tile-thumb-radius: 10px; /* 条，缩略图圆角 */
+  --tile-strip-gap: 16px; /* 条，缩略图与文本间距 */
 }
 
 /* ---------- 容器：一行三列 ---------- */
@@ -23,28 +23,34 @@
   box-sizing: border-box;
 }
 
-.tile p{
+.tile p {
   margin-left: 1.5em;
   margin-right: 1.5em;
   font-size: 1.5rem;
 }
 
-.tile h1{
+.tile h1 {
   margin-left: 1.5em;
   margin-right: 1.5em;
   font-size: 2.2rem;
 }
 
 .tiles > a.tile p.show-mobile {
-    font-size: 1rem;
-  }
+  font-size: 1rem;
+  margin-top: auto;
+}
+
+.tiles > a.tile p.show-mobileBBB {
+  margin-top: 0px;
+}
 
 /* 支持 a.tile 或 任意元素 .tile （防止被全局 a 规则影响） */
 .tiles > a.tile,
 .tiles > .tile {
   /* 保持为块级且在 flex 中伸缩 */
-  display: block;
+  display: flex;
   flex: 1 1 300px;
+  flex-direction: column;
   min-height: 200px;
   box-sizing: border-box;
 
@@ -56,15 +62,21 @@
   color: inherit;
 
   /* ----- 视觉纹理 ----- */
-  background:
-    radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(to bottom right, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
-    var(--tile-color, rgba(25,35,60,0.05));
+  background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.02)
+    ),
+    var(--tile-color, rgba(25, 35, 60, 0.05));
   background-size: 10px 10px, auto, auto;
 
   /* 基础阴影与光晕 */
-  box-shadow:
-    0 var(--tile-elev-y) var(--tile-elev-blur) var(--tile-elev-color),
+  box-shadow: 0 var(--tile-elev-y) var(--tile-elev-blur) var(--tile-elev-color),
     0 0 15px var(--tile-glow-color);
 
   /* 毛玻璃 / mica 效果（需要半透明 tile-color 才可见） */
@@ -75,8 +87,8 @@
   isolation: isolate;
 
   /* 交互过渡（仅 transform 和 box-shadow） */
-  transition: transform 280ms cubic-bezier(.2,.9,.3,1),
-              box-shadow 280ms cubic-bezier(.2,.9,.3,1);
+  transition: transform 280ms cubic-bezier(0.2, 0.9, 0.3, 1),
+    box-shadow 280ms cubic-bezier(0.2, 0.9, 0.3, 1);
   will-change: transform, box-shadow;
 }
 
@@ -90,7 +102,11 @@
   width: 100%;
   height: 20%;
   border-radius: inherit;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.12), rgba(255,255,255,0));
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0)
+  );
   pointer-events: none;
   z-index: 1; /* 在 svg 之上，但在文本之下 */
 }
@@ -102,15 +118,17 @@
   position: absolute;
   inset: -10% -40%;
   transform: translateX(-120%) rotate(-12deg);
-  background: linear-gradient(90deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0.08) 45%,
-    rgba(255,255,255,0.02) 55%,
-    rgba(255,255,255,0) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 45%,
+    rgba(255, 255, 255, 0.02) 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
   pointer-events: none;
-  z-index: 2;      /* 在 ::before 之上，但文本层更高 */
+  z-index: 2; /* 在 ::before 之上，但文本层更高 */
   opacity: 0;
-  transition: opacity 0.35s ease, transform 0.8s cubic-bezier(.2,.9,.2,1);
+  transition: opacity 0.35s ease, transform 0.8s cubic-bezier(0.2, 0.9, 0.2, 1);
 }
 
 /* 光泽在 hover 时滑过（非循环） */
@@ -135,7 +153,7 @@
   opacity: 0.16;
   transform: translate(-50%, -50%) scale(1); /* 水平+垂直居中 */
   transform-origin: 50% 50%;
-  transition: transform 0.6s cubic-bezier(.2,.9,.2,1), opacity 0.35s ease;
+  transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.35s ease;
   will-change: transform, opacity;
 }
 
@@ -149,7 +167,7 @@
 }
 
 /* ---------- 文本层始终位于最上层---------- */
-.tiles > a.tile > * ,
+.tiles > a.tile > *,
 .tiles > .tile > * {
   position: relative;
   z-index: 3;
@@ -167,8 +185,8 @@
 .tiles > a.tile:focus-within,
 .tiles > .tile:focus-within {
   transform: translateY(var(--_hover-translate));
-  box-shadow:
-    0 calc(var(--tile-elev-y) * 2) calc(var(--tile-elev-blur) + 10px) rgba(0,0,0,0.35),
+  box-shadow: 0 calc(var(--tile-elev-y) * 2) calc(var(--tile-elev-blur) + 10px)
+      rgba(0, 0, 0, 0.35),
     0 0 20px var(--tile-glow-color);
 }
 
@@ -176,20 +194,18 @@
 .tiles > a.tile:active,
 .tiles > .tile:active {
   transform: translateY(var(--_active-translate)) scale(0.997);
-  box-shadow:
-    0 2px 10px rgba(0,0,0,0.20),
-    0 0 10px var(--tile-glow-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), 0 0 10px var(--tile-glow-color);
   transition-duration: 120ms;
 }
 
 /* 键盘可见焦点（focus-visible）样式 */
 .tiles > a.tile:focus-visible,
 .tiles > .tile:focus-visible {
-  outline: 2px solid rgba(255,255,255,0.12);
+  outline: 2px solid rgba(255, 255, 255, 0.12);
   outline-offset: 4px;
   transform: translateY(calc(var(--_hover-translate) * 0.75));
-  box-shadow:
-    0 calc(var(--tile-elev-y) * 1.5) calc(var(--tile-elev-blur) + 6px) rgba(0,0,0,0.30),
+  box-shadow: 0 calc(var(--tile-elev-y) * 1.5) calc(var(--tile-elev-blur) + 6px)
+      rgba(0, 0, 0, 0.3),
     0 0 18px var(--tile-glow-color);
 }
 
@@ -206,9 +222,13 @@
     transform: none !important;
   }
   .tiles > a.tile .tile-svg,
-  .tiles > .tile .tile-svg { opacity: 0.16; }
+  .tiles > .tile .tile-svg {
+    opacity: 0.16;
+  }
   .tiles > a.tile::after,
-  .tiles > .tile::after { opacity: 0; }
+  .tiles > .tile::after {
+    opacity: 0;
+  }
 }
 
 /* =========== 手机响应 =========== */
@@ -228,10 +248,17 @@
   .tiles > .tile {
     position: relative;
     flex: 0 0 calc((100% - 24px) / 3);
-    background: 
-      radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(to bottom right, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
-      var(--tile-color, rgba(25,35,60,0.05));
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.02) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.02)
+      ),
+      var(--tile-color, rgba(25, 35, 60, 0.05));
     border-radius: 12px;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
     transition: box-shadow 0.25s ease, transform 0.25s ease;
@@ -283,13 +310,13 @@
 @media (max-width: 400px) {
   /* 容器：保持横排三列、不换行；给阴影留空间 */
   .tiles {
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    gap: 12px !important;
-    padding: 8px 10px !important;
-    overflow-x: hidden !important; /* 可改为 auto 允许横向滚动 */
-    background: transparent !important; /* 恢复透明容器 */
-    align-items: flex-start !important;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 12px;
+    padding: 8px 10px;
+    overflow-x: hidden; /* 可改为 auto 允许横向滚动 */
+    background: transparent; /* 恢复透明容器 */
+    align-items: flex-start;
   }
 
   /* 每个磁贴：等宽三列并保持正方形（使用 aspect-ratio） */
@@ -297,25 +324,31 @@
   .tiles > .tile {
     flex: 0 0 calc((100% - 24px) / 3) !important; /* 3 列布局（24px = 2 * gap） */
     width: calc((100% - 24px) / 3) !important;
-    aspect-ratio: 1 / 1 !important;               /* 保证宽高相等 */
-    min-width: 84px !important;                   /* 极窄屏时的下限 */
-    min-height: 0 !important;
-    height: auto !important;
-    padding: 8px !important;
-    box-sizing: border-box !important;
+    aspect-ratio: 1 / 1; /* 保证宽高相等 */
+    min-width: 84px; /* 极窄屏时的下限 */
+    min-height: 0;
+    height: auto;
+    padding: 8px;
+    box-sizing: border-box;
     display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important; /* 标题垂直居中 */
-    align-items: center !important;     /* 标题水平居中 */
-    border-radius: 10px !important;
-    overflow: hidden !important;
-    /* 恢复彩色半透明背景，避免被响应式误覆盖成白色 */
-    background:
-      radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(to bottom right, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
-      var(--tile-color, rgba(25,35,60,0.05)) !important;
-    /* 适度柔和阴影（不至于连成块） */
-    box-shadow: 0 3px 10px rgba(0,0,0,0.12) !important;
+    flex-direction: column;
+    justify-content: center; /* 标题垂直居中 */
+    align-items: center; /* 标题水平居中 */
+    border-radius: 10px;
+    overflow: hidden;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.02) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.02)
+      ),
+      var(--tile-color, rgba(25, 35, 60, 0.05)) !important;
+    /* 适度柔和阴影 */
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12) !important;
   }
 
   /* 确保子元素不被拉伸占位 */
@@ -334,7 +367,6 @@
     line-height: 0 !important;
   }
 
-  /* 如果你之前用 .show-mobile 类把这两个 p 重新显示过，在 <=400 时也强制隐藏它们 */
   .tiles > a.tile p.show-mobile,
   .tiles > .tile p.show-mobile {
     display: none !important;
@@ -347,35 +379,43 @@
   .tiles > .tile h2,
   .tiles > a.tile h3,
   .tiles > .tile h3 {
-    display: block !important;
-    font-size: clamp(1.1rem, 5.2vw, 1.6rem) !important; /* 自适应放大（可调） */
-    line-height: 1.05 !important;
-    margin: 0 !important;
-    text-align: center !important;
+    display: block;
+    font-size: clamp(1.1rem, 5.2vw, 1.6rem) !important; /* 自适应放大 */
+    line-height: 1.05;
+    margin: 0;
+    text-align: center;
     z-index: 3 !important; /* 确保文字在 svg 之上 */
-    color: inherit !important;
+    color: inherit;
   }
 
   /* SVG 图标：绝对居中、缩小、不与标题冲突 */
   .tiles > a.tile .tile-svg,
   .tiles > .tile .tile-svg {
     position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: 40% !important;   /* 图标大小（可调） */
-    height: auto !important;
-    opacity: 0.16 !important;
-    pointer-events: none !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40%; /* 图标大小（可调） */
+    height: auto;
+    opacity: 0.16;
+    pointer-events: none;
     z-index: 1 !important;
   }
 
   /* 轻触时的视觉反馈 */
   .tiles > a.tile:active,
   .tiles > .tile:active {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.14) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14) !important;
     transition-duration: 120ms !important;
+  }
+}
+
+@media (max-width: 800px) {
+  .tile p {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    font-size: 1.25rem;
   }
 }
 
@@ -386,10 +426,10 @@
   display: flex;
   align-items: center;
   gap: var(--tile-strip-gap);
-  padding: 0 1.5em;            /* 保持与原来文本左右边距一致 */
+  padding: 0 1.5em; /* 保持与原来文本左右边距一致 */
   box-sizing: border-box;
   min-height: calc(var(--tile-thumb-size) + 16px); /* 给内容一点垂直空间 */
-  flex: 1 1 100%;              /* 让它撑满行*/
+  flex: 1 1 100%; /* 让它撑满行*/
 }
 
 /* 缩略图 */
@@ -398,12 +438,13 @@
   height: var(--tile-thumb-size);
   flex: 0 0 var(--tile-thumb-size);
   border-radius: var(--tile-thumb-radius);
-  object-fit: cover;           /* 保持图像裁切良好 */
-  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
-  background: rgba(255,255,255,0.03); /* 占位背景（若图片透明） */
-  z-index: 2;                  /* 在 SVG(0) 之上，但文本(3) 之下 */
-  pointer-events: none;        /* 缩略图不捕获指针（链接由父元素捕获） */
-  transition: transform 280ms cubic-bezier(.2,.9,.3,1), box-shadow 280ms ease;
+  object-fit: cover; /* 保持图像裁切良好 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.03); /* 占位背景（若图片透明） */
+  z-index: 2; /* 在 SVG(0) 之上，但文本(3) 之下 */
+  pointer-events: none; /* 缩略图不捕获指针（链接由父元素捕获） */
+  transition: transform 280ms cubic-bezier(0.2, 0.9, 0.3, 1),
+    box-shadow 280ms ease;
 }
 
 /* 缩略图 hover 微动效*/
@@ -418,10 +459,10 @@
 .tile-strip .tile-content {
   flex: 1 1 auto;
   display: flex;
-  align-items: center;     /* 垂直居中 */
+  align-items: center; /* 垂直居中 */
   justify-content: flex-end; /* 右对齐文本 */
   text-align: right;
-  min-width: 0;            /* 允许内联文本溢出隐藏（配合 text-overflow） */
+  min-width: 0; /* 允许内联文本溢出隐藏（配合 text-overflow） */
 }
 
 /* 确保只有一行显示（省略超长文本） */
@@ -433,14 +474,11 @@
 }
 
 /* 文字尺寸*/
-.tile-strip h1 { font-size: 1.25rem; font-weight: 600; }
-.tile-strip p { font-size: 1rem; opacity: 0.95; }
-
-/* 窄屏下：如果需要可以堆叠为常规磁贴 */
-@media (max-width: 640px) {
-  .tiles > a.tile.tile-strip,
-  .tiles > .tile.tile-strip {
-    flex-direction: row;
-    min-height: calc(var(--tile-thumb-size) + 8px);
-  }
+.tile-strip h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+.tile-strip p {
+  font-size: 1rem;
+  opacity: 0.95;
 }
