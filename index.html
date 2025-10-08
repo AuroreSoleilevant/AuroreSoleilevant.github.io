@@ -222,11 +222,6 @@
     0 0 18px var(--tile-glow-color);
 }
 
-/* ---------- 响应式：窄屏堆叠 ---------- */
-@media (max-width: 940px) {
-  .tiles { flex-direction: column; }
-}
-
 /* ---------- 无障碍：偏好减少动画时禁用动画 ---------- */
 @media (prefers-reduced-motion: reduce) {
   .tiles > a.tile,
@@ -243,6 +238,119 @@
   .tiles > .tile .tile-svg { opacity: 0.16; }
   .tiles > a.tile::after,
   .tiles > .tile::after { opacity: 0; }
+}
+
+/* =========== 手机响应 =========== */
+@media (max-width: 480px) {
+  .tiles {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 10px;
+    background: transparent;
+    overflow-x: hidden;
+  }
+
+  .tiles > a.tile,
+  .tiles > .tile {
+    position: relative;
+    flex: 0 0 calc((100% - 24px) / 3);
+    background: 
+      radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(to bottom right, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+      var(--tile-color, rgba(25,35,60,0.05));
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+    padding: 10px 8px;
+    min-width: 96px;
+    min-height: 110px;
+  }
+
+  .tiles > a.tile:hover,
+  .tiles > .tile:hover {
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18);
+    transform: translateY(-3px);
+  }
+
+  .tiles > a.tile h1,
+  .tiles > .tile h1 {
+    display: block;
+    font-size: 1rem !important;
+    margin: 6px 0 0;
+    text-align: center;
+  }
+
+  .tiles > a.tile p,
+  .tiles > .tile p {
+    display: none !important;
+  }
+
+  .tiles > a.tile .tile-svg,
+  .tiles > .tile .tile-svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    width: 48%;
+    height: auto;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+
+  .tiles > a.tile p.show-mobile {
+    display: block !important;
+    font-size: 0.6rem !important;
+  }
+}
+
+@media (max-width: 400px) {
+  /* 隐藏所有说明文字 */
+  .tiles > a.tile p.show-mobile {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .tiles > a.tile p {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 调整标题大小，避免溢出 */
+  .tiles > a.tile h3 {
+    font-size: 1rem;
+    margin: 0.5rem 0;
+  }
+
+  /* 让磁贴成为正方形 */
+  .tiles > a.tile {
+    width: 45vw;
+    height: 45vw; /* 保持方形 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 居中标题 */
+    align-items: center;
+  }
+
+    .tiles > a.tile > * {
+    flex: 0 0 auto;
+  }
+
+  /* 调整容器对齐与间距 */
+  .tiles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start !important;
+    padding: 8px 10px;
+    gap: 12px;
+  }
 }
 
 /* 长条形磁贴：复用 .tile 的视觉与交互，只改变内部布局 */
@@ -303,10 +411,11 @@
 .tile-strip p { font-size: 1rem; opacity: 0.95; }
 
 /* 窄屏下：如果需要可以堆叠为常规磁贴 */
+/*
 @media (max-width: 640px) {
   .tiles > a.tile.tile-strip,
   .tiles > .tile.tile-strip {
-    flex-direction: row; /* 保持水平；如需堆叠改为 column */
+    flex-direction: row;
     min-height: calc(var(--tile-thumb-size) + 8px);
   }
 }
@@ -351,6 +460,7 @@
     display: block;
   }
 }
+*/
 
   </style>
 
@@ -377,24 +487,24 @@
   <img class="tile-svg" src="/icons/icon-texte.svg" alt="" aria-hidden="true">
   <h1 class="text-center" style="font-size: 2.2rem;">文章</h1>
   <p class="text-center" style="font-size: 1.5rem;">我们总是会经历很多事情，然后分享在其中得到的一切，这不是快乐么？</p>
-  <p class="text-center" style="font-size: 1rem;">一共有0篇文章！</p>
-  <p class="text-center" style="font-size: 1rem;">上次更新：暂无</p>
+  <p class="text-center show-mobile" style="font-size: 1rem;">一共有0篇文章！</p>
+  <p class="text-center show-mobile" style="font-size: 1rem;">上次更新：暂无</p>
   </a>
 
   <a class="tile" href="https://www.google.com" style="--tile-color: rgba(80,44,107,0.20);">
   <img class="tile-svg" src="/icons/icon-histoire.svg" alt="" aria-hidden="true">
   <h1 class="text-center" style="font-size: 2.2rem;">故事</h1>
   <p class="text-center" style="font-size: 1.5rem;">既然经历许多，那必定思绪也会溢出来不少，何尝不换作故事与果汁呢？</p>
-  <p class="text-center" style="font-size: 1rem;">一共有0篇文章！</p>
-  <p class="text-center" style="font-size: 1rem;">上次更新：暂无</p>
+  <p class="text-center show-mobile" style="font-size: 1rem;">一共有0篇文章！</p>
+  <p class="text-center show-mobile" style="font-size: 1rem;">上次更新：暂无</p>
   </a>
 
   <a class="tile" href="https://www.google.com" style="--tile-color: rgba(255,160,64,0.18);">
   <img class="tile-svg" src="/icons/icon-laboratoire.svg" alt="" aria-hidden="true">
   <h1 class="text-center" style="font-size: 2.2rem;">实验室</h1>
   <p class="text-center" style="font-size: 1.5rem;">一个好的功能总需要点火焰、噪音和爆炸，不是么？</p>
-  <p class="text-center" style="font-size: 1rem;">一共有0篇文章！</p>
-  <p class="text-center" style="font-size: 1rem;">上次更新：暂无</p>
+  <p class="text-center show-mobile" style="font-size: 1rem;">一共有0篇文章！</p>
+  <p class="text-center show-mobile" style="font-size: 1rem;">上次更新：暂无</p>
   </a>
   </div>
 
@@ -418,7 +528,7 @@
 
   <!-- 左下角日期 -->
   <div class="page-dates">
-  发布：28/9/2025　修改：6/10/2025
+  发布：28/9/2025　修改：8/10/2025
   </div>
 
   <!-- 底栏，需带着 -->

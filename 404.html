@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 Not Found | Spica</title>
   <!-- 调用列表 -->
   <script src="/js/common-head.js"></script>
@@ -38,14 +39,35 @@
     main a:hover {
       opacity: 0.8;
     }
+
+    .paddingT120{
+      padding-top: 120px;
+    }
+
+    @media (max-width: 480px) {
+      .paddingT120{
+      padding-top: 80px;
+    }
+
+    main p {
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    main img {
+      max-width: 95%;
+      height: auto;
+      border-radius: 12px;
+    }
+    }
   </style>
 
 </head>
 <body>
   <div id="header-placeholder"></div>
 
-  <main style="padding-top: 120px;">
-    <img src="/images/404.jpg" title="404 Cat" alt="404 Cat" aria-label="这是一只猫被埋在一堆纸张下的照片，代表404 Not Found">
+  <main class = "paddingT120">
+    <img src="/images/404.jpg" title="404 Cat" alt="这是一只猫被埋在一堆纸张下的照片，代表404 Not Found">
     <p>也许这个页面被怪物吃掉了？只有天知道。</p>
     <p><a href="/">返回首页</a></p>
   </main>
