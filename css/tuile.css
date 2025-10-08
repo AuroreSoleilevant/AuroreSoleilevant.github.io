@@ -92,7 +92,7 @@
   will-change: transform, box-shadow;
 }
 
-/* ---------- 顶部高光（保留原有效果） ---------- */
+/* ---------- 顶部高光 ---------- */
 .tiles > a.tile::before,
 .tiles > .tile::before {
   content: "";
@@ -419,66 +419,283 @@
   }
 }
 
-/* 长条形磁贴：复用 .tile 的视觉与交互，只改变内部布局 */
-.tiles > a.tile.tile-strip,
-.tiles > .tile.tile-strip {
-  /* 覆盖为水平 flex 布局（复用原来！磁贴的外观、阴影、transition 等） */
+/* ---------- 长条磁贴 ---------- */
+/* 仅作用于直接位于 .tiles 下并同时含 .tile 和 .tile-strip-new 的元素 */
+.tiles > a.tile.tile-strip-new,
+.tiles > .tile.tile-strip-new {
   display: flex;
+  flex-direction: row; /* 横向：左图右文 */
   align-items: center;
   gap: var(--tile-strip-gap);
-  padding: 0 1.5em; /* 保持与原来文本左右边距一致 */
+  padding: 0.9rem 1.5rem; /* 与原文本左右间距保持一致 */
   box-sizing: border-box;
-  min-height: calc(var(--tile-thumb-size) + 16px); /* 给内容一点垂直空间 */
-  flex: 1 1 100%; /* 让它撑满行*/
+  min-height: calc(var(--tile-thumb-size) + 16px);
+  flex: 1 1 100%;
 }
 
-/* 缩略图 */
-.tile-strip .tile-thumb {
-  width: var(--tile-thumb-size);
-  height: var(--tile-thumb-size);
-  flex: 0 0 var(--tile-thumb-size);
+/* 缩略图（左侧） */
+.tiles > a.tile.tile-strip-new .tile-thumb,
+.tiles > .tile.tile-strip-new .tile-thumb {
+  width: var(--tile-thumb-size-responsive);
+  height: var(--tile-thumb-size-responsive);
+  flex: 0 0 var(--tile-thumb-size-responsive);
   border-radius: var(--tile-thumb-radius);
-  object-fit: cover; /* 保持图像裁切良好 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
-  background: rgba(255, 255, 255, 0.03); /* 占位背景（若图片透明） */
-  z-index: 2; /* 在 SVG(0) 之上，但文本(3) 之下 */
-  pointer-events: none; /* 缩略图不捕获指针（链接由父元素捕获） */
+  object-fit: cover;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.03);
+  z-index: 2;
+  pointer-events: none;
   transition: transform 280ms cubic-bezier(0.2, 0.9, 0.3, 1),
     box-shadow 280ms ease;
+  transform-origin: center;
 }
 
-/* 缩略图 hover 微动效*/
-.tiles > a.tile.tile-strip:hover .tile-thumb,
-.tiles > .tile.tile-strip:hover .tile-thumb,
-.tiles > a.tile.tile-strip:focus-within .tile-thumb,
-.tiles > .tile.tile-strip:focus-within .tile-thumb {
-  transform: translateY(-4px) scale(1.03);
+/* 缩略图 hover / focus 微动效（仅本类） */
+.tiles > a.tile.tile-strip-new:hover .tile-thumb,
+.tiles > .tile.tile-strip-new:hover .tile-thumb,
+.tiles > a.tile.tile-strip-new:focus-within .tile-thumb,
+.tiles > .tile.tile-strip-new:focus-within .tile-thumb {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
 }
 
-/* 右侧文本容器：单行、右对齐且垂直居中 */
-.tile-strip .tile-content {
+/* 右侧文本容器（左图右文） */
+.tiles > a.tile.tile-strip-new .tile-content,
+.tiles > .tile.tile-strip-new .tile-content {
   flex: 1 1 auto;
   display: flex;
-  align-items: center; /* 垂直居中 */
-  justify-content: flex-end; /* 右对齐文本 */
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end; /* 右对齐文本 */
   text-align: right;
-  min-width: 0; /* 允许内联文本溢出隐藏（配合 text-overflow） */
+  min-width: 0; /* 支持溢出裁切 */
+  z-index: 3; /* 始终在最上层文本层 */
 }
 
-/* 确保只有一行显示（省略超长文本） */
-.tile-strip .tile-content > * {
+/* 标题与描述：支持最多两行省略 */
+.tiles > a.tile.tile-strip-new .tile-content > h1,
+.tiles > .tile.tile-strip-new .tile-content > h1 {
   margin: 0;
-  white-space: nowrap;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* 文字尺寸*/
-.tile-strip h1 {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-.tile-strip p {
+.tiles > a.tile.tile-strip-new .tile-content > p,
+.tiles > .tile.tile-strip-new .tile-content > p {
+  margin: 0.35rem 0 0 0;
   font-size: 1rem;
   opacity: 0.95;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tiles > .tile.tile-strip-new {
+  --tile-thumb-size-responsive: var(--tile-thumb-size);
+}
+
+.tiles > a.tile.tile-strip-new:active,
+.tiles > .tile.tile-strip-new:active {
+  transform: translateY(var(--_active-translate)) scale(0.997);
+  transition-duration: 120ms;
+}
+
+/* 手机 */
+@media (max-width: 480px) {
+  .tiles > a.tile.tile-strip-new,
+  .tiles > .tile.tile-strip-new {
+    flex-direction: row !important;
+    align-items: center;
+    min-height: auto;
+    padding: 0.8rem 1rem;
+    gap: 12px;
+  }
+
+  .tiles > a.tile.tile-strip-new .tile-thumb,
+  .tiles > .tile.tile-strip-new .tile-thumb {
+    width: 50px !important;
+    height: 50px !important;
+    flex: 0 0 50px !important;
+    margin: 0 !important;
+  }
+
+  .tiles > a.tile.tile-strip-new .tile-content,
+  .tiles > .tile.tile-strip-new .tile-content {
+    align-items: flex-end !important;
+    text-align: right !important;
+  }
+
+  .tiles > a.tile.tile-strip-new .tile-content h1,
+  .tiles > .tile.tile-strip-new .tile-content h1 {
+    font-size: 0.95rem !important;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}
+
+@media (min-width: 401px) {
+  .tiles > a.tile.tile-strip-new .short-title,
+  .tiles > .tile.tile-strip-new .short-title {
+    display: none !important;
+  }
+}
+
+/* 小屏手机：400px 及以下 - 长条磁贴适配 */
+@media (max-width: 400px) {
+  .tiles > a.tile.tile-strip-new,
+  .tiles > .tile.tile-strip-new {
+    /* 重置方形磁贴的样式，恢复长条磁贴的布局 */
+    flex: 1 1 100% !important;
+    width: auto !important;
+    aspect-ratio: unset !important;
+    min-width: auto !important;
+    min-height: auto !important;
+    height: auto !important;
+    flex-direction: row !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+    padding: 0.5rem 0.7rem !important;
+    gap: 8px !important;
+    border-radius: 8px !important;
+    background: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.02) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        to bottom right,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.02)
+      ),
+      var(--tile-color, rgba(25, 35, 60, 0.05)) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* 长条磁贴的缩略图 - 缩小到36px */
+  .tiles > a.tile.tile-strip-new .tile-thumb,
+  .tiles > .tile.tile-strip-new .tile-thumb {
+    width: 2px !important;
+    height: 2px !important;
+    flex: 0 0 36px !important;
+    margin: 0 !important;
+    border-radius: 6px !important;
+    --tile-thumb-size-responsive: 5px !important;
+  }
+
+  /* 长条磁贴的内容区域 - 确保左对齐 */
+  .tiles > a.tile.tile-strip-new .tile-content,
+  .tiles > .tile.tile-strip-new .tile-content {
+    align-items: flex-end !important; /* 改为左对齐 */
+    text-align: right !important; /* 改为左对齐 */
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  /* 长条磁贴的标题 */
+  .tiles > a.tile.tile-strip-new .tile-content h1,
+  .tiles > .tile.tile-strip-new .tile-content h1 {
+    font-size: 0.75rem !important;
+    line-height: 1.1 !important;
+    text-align: right !important; /* 改为左对齐 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100% !important;
+  }
+
+  /* 标题切换 */
+  .tiles > a.tile.tile-strip-new .full-title,
+  .tiles > .tile.tile-strip-new .full-title {
+    display: none !important;
+  }
+
+  .tiles > a.tile.tile-strip-new .short-title,
+  .tiles > .tile.tile-strip-new .short-title {
+    display: block !important;
+  }
+
+  /* 长条磁贴的点击效果 */
+  .tiles > a.tile.tile-strip-new:active,
+  .tiles > .tile.tile-strip-new:active {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12) !important;
+    transition-duration: 120ms !important;
+  }
+}
+
+/* 小屏幕下自动垂直堆叠——只影响本类，不影响原 .tile */
+@media (max-width: 380px) {
+  .tiles > a.tile.tile-strip-new,
+  .tiles > .tile.tile-strip-new {
+    flex-direction: column;
+    padding: 0.8rem;
+    gap: 8px;
+  }
+  .tiles > a.tile.tile-strip-new .tile-thumb,
+  .tiles > .tile.tile-strip-new .tile-thumb {
+    width: var(--tile-thumb-size) !important;
+    height: var(--tile-thumb-size) !important;
+    margin: 0 auto !important;
+  }
+  .tiles > a.tile.tile-strip-new .tile-content,
+  .tiles > .tile.tile-strip-new .tile-content {
+    align-items: center !important;
+    text-align: center !important;
+  }
+}
+
+/* ---------- 响应式：平板 / 手机 / 小屏 ---------- */
+
+/* 平板：宽度 768px ~ 1024px */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .tiles > a.tile.tile-strip-new,
+  .tiles > .tile.tile-strip-new {
+    gap: 12px; /* 缩短左右间距 */
+    padding: 0.7rem 1rem;
+  }
+
+  .tiles > a.tile.tile-strip-new .tile-content h1,
+  .tiles > .tile.tile-strip-new .tile-content h1 {
+    font-size: 1.1rem;
+  }
+  .tiles > a.tile.tile-strip-new .tile-content p,
+  .tiles > .tile.tile-strip-new .tile-content p {
+    font-size: 0.95rem;
+  }
+
+  .tiles > .tile.tile-strip-new {
+    --tile-thumb-size-responsive: 60px;
+  }
+}
+
+/* 手机：宽度 400px ~ 767px */
+@media (max-width: 767px) and (min-width: 480px) {
+  .tiles > a.tile.tile-strip-new,
+  .tiles > .tile.tile-strip-new {
+    gap: 10px;
+    padding: 0.6rem 0.8rem;
+  }
+
+  .tiles > a.tile.tile-strip-new .tile-content h1,
+  .tiles > .tile.tile-strip-new .tile-content h1 {
+    font-size: 1rem;
+  }
+  .tiles > a.tile.tile-strip-new .tile-content p,
+  .tiles > .tile.tile-strip-new .tile-content p {
+    font-size: 0.9rem;
+  }
 }
