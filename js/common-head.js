@@ -11,6 +11,7 @@
     { rel: "preload", href: "/fonts/LXGWWenKai-latin.woff2", as: "font", type: "font/woff2", crossorigin: true },
     { rel: "preload", href: "/fonts/LXGWWenKai-cjk.woff2", as: "font", type: "font/woff2", crossorigin: true },
     { rel: "stylesheet", href: `/css/style.css?v=${version1}` },  // 全局样式表
+    { rel:"icon", href:"/icons/logo.png", type:"image/x-icon"}
   ];
 
   // 创建并插入 link 标签
