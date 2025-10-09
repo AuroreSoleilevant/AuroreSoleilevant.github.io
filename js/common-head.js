@@ -44,6 +44,7 @@
     "/js/fade.js", // 顶栏 / 底栏动画逻辑
     "/js/backtop.js", // 回到顶部按钮
     "/js/blink.js", // 顶栏闪烁
+    "/js/img.js", // 图像加载
   ];
 
   scripts.forEach((src) => {

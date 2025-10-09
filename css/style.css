@@ -946,21 +946,65 @@ footer {
   }
 }
 
-.smooth-img {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  background-color: #f0f0f8;
-  border-radius: 12px;
+/* 基础：图片占位、响应式、不产生行内 gap */
+.resp-img,
+.icon {
+  display: block; /* 避免 inline 元素造成行高问题 */
+  max-width: 100%;
+  height: auto;
   opacity: 0;
-  transform: scale(0.9);
-  transition: opacity 0.7s ease-out,
-    transform 0.7s cubic-bezier(0.25, 1.5, 0.5, 1);
-  filter: saturate(110%) contrast(102%);
+  transform: translateY(6px) scale(0.985);
+  transition: opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.48s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
 }
 
-/* 当图片加载完毕时 */
-.smooth-img[src] {
+/* 图片加载完成后触发弹出动画 */
+.resp-img.loaded,
+.icon.loaded {
   opacity: 1;
-  transform: scale(1);
+  transform: translateY(0) scale(1);
+}
+
+/* 背景图容器：用 CSS 变量传 aspect-ratio */
+.bg-image {
+  width: 100%;
+  aspect-ratio: var(--aspect); /* 现代浏览器 */
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transform: translateY(6px) scale(0.985);
+  transition: opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.48s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* 背景图“已加载”时的类（由 JS 添加） */
+.bg-image.loaded {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* prefers-reduced-motion：尊重用户设置，关闭动画 */
+@media (prefers-reduced-motion: reduce) {
+  .resp-img,
+  .bg-image,
+  .icon {
+    transition: none;
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* 回退（老浏览器不支持 aspect-ratio）：
+   使用比例盒 padding-top 技术，需要在服务器/模板里输出一个 style="--ratio-pct:56.25%" */
+.ratio-box {
+  position: relative;
+  width: 100%;
+  padding-top: var(--ratio-pct); /* e.g. 56.25% for 16:9 */
+  overflow: hidden;
+}
+.ratio-box > .inner {
+  position: absolute;
+  inset: 0;
 }
