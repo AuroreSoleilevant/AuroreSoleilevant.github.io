@@ -68,6 +68,7 @@
   color: #fff;
   text-decoration: none;
   line-height: 96px; /* 和 header 高度一致 */
+  transition: text-shadow 0.6s ease-in-out; /* Spica鼠标悬停发光效果 */
 }
 .site-title {
   text-decoration: none; /* 去掉下划线 */
@@ -75,11 +76,6 @@
   z-index: 2;
   display: flex;
   align-items: center; /* 垂直居中于顶栏 */
-}
-
-/* Spica鼠标悬停发光效果 */
-.site-title::before {
-  transition: text-shadow 0.6s ease-in-out; /* 用来缓慢过渡 */
 }
 
 .site-title:hover::before {
@@ -237,12 +233,9 @@ body {
   font-family: "LXGWWenKai", Georgia, serif; /* 全局字体 */
   color: #333;
   line-height: 1.6;
-  margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  margin: 0; /* 避免浏览器默认 margin 影响布局 */
 }
 
 /* Markdown 元素透明背景 */
@@ -432,16 +425,7 @@ h1.shaking-text {
   font-size: 4rem; /* 标题统一字号 */
 }
 
-/* 如果系统设置了去掉动画，则不加载淡入淡出 */
-@media (prefers-reduced-motion: reduce) {
-  main,
-  main.loaded {
-    transition: none !important;
-  }
-}
-
 /* ---------- 回到顶部按钮样式---------- */
-
 /* 按钮基础 */
 .back-to-top {
   position: fixed;
@@ -543,9 +527,62 @@ h1.shaking-text {
   opacity: 1;
 }
 
-/* === 响应式：移动端和平板 === */
+/* 基础：图片占位、响应式、不产生行内 gap */
+.resp-img,
+.icon {
+  display: block; /* 避免 inline 元素造成行高问题 */
+  max-width: 100%;
+  height: auto;
+  opacity: 0;
+  transform: translateY(6px) scale(0.985);
+  transition: opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.48s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
 
-/* 平板设备 (768px - 1024px) */
+/* 图片加载完成后触发弹出动画 */
+.resp-img.loaded,
+.icon.loaded {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* 背景图容器：用 CSS 变量传 aspect-ratio */
+.bg-image {
+  width: 100%;
+  aspect-ratio: var(--aspect); /* 现代浏览器 */
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transform: translateY(6px) scale(0.985);
+  transition: opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.48s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* 背景图“已加载”时的类（由 JS 添加） */
+.bg-image.loaded {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.ratio-box {
+  position: relative;
+  width: 100%;
+  padding-top: var(--ratio-pct); /* e.g. 56.25% for 16:9 */
+  overflow: hidden;
+}
+.ratio-box > .inner {
+  position: absolute;
+  inset: 0;
+}
+
+/* === 响应式主（文章等）内容区上边距 === */
+.main-content {
+  padding-top: 75px; /* 默认值 - 桌面端 */
+}
+
+/* 平板设备 */
 @media (max-width: 1024px) {
   /* 顶栏调整 */
   .site-header {
@@ -620,6 +657,9 @@ h1.shaking-text {
   .contact-btn {
     width: 42px;
     height: 42px;
+  }
+  .main-content {
+    padding-top: 65px;
   }
 }
 
@@ -717,6 +757,9 @@ h1.shaking-text {
     --backtop-right: 12px;
     --backtop-bottom: 80px;
   }
+  .main-content {
+    padding-top: 55px;
+  }
 }
 
 /* 小屏手机 */
@@ -773,24 +816,14 @@ h1.shaking-text {
 
   /* 底栏调整 */
   .site-footer {
-    padding: 10px 12px;
-    min-height: 50px;
     font-size: 0.8rem;
-  }
-
-  .footer-links {
-    left: 6px;
-    gap: 12px;
-    font-size: 0.8rem;
+    min-height: 80px; /* 增高底栏，给上下两行留空间 */
+    padding: 14px 16px;
   }
 
   .site-footer::after {
     right: 6px;
     font-size: 0.8rem;
-  }
-
-  .footer-contacts {
-    gap: 12px;
   }
 
   .contact-btn {
@@ -803,6 +836,33 @@ h1.shaking-text {
     --backtop-size: 44px;
     --backtop-right: 8px;
     --backtop-bottom: 70px;
+  }
+
+  .main-content {
+    padding-top: 45px;
+  }
+
+  /* 把按钮放到底部（保留水平居中） */
+  .footer-contacts {
+    position: absolute;
+    top: auto; /* 取消垂直居中 */
+    bottom: 12px; /* 距底部一定距离 */
+    left: 50%;
+    transform: translateX(-50%); /* 仅水平居中 */
+    gap: 20px;
+    z-index: 6;
+  }
+
+  /* 上下位置变量，负则高，两个得一样 */
+  .footer-links {
+    gap: 12px;
+    font-size: 0.8rem;
+    left: 12px;
+    transform: translateY(-140%);
+  }
+  .site-footer::after {
+    right: 12px;
+    transform: translateY(-140%);
   }
 }
 
@@ -865,62 +925,6 @@ h1.shaking-text {
   }
 }
 
-/* === 响应式主（文章等）内容区上边距 === */
-.main-content {
-  padding-top: 75px; /* 默认值 - 桌面端 */
-}
-
-/* 平板设备 */
-@media (max-width: 1024px) {
-  .main-content {
-    padding-top: 65px;
-  }
-}
-
-/* 手机设备 */
-@media (max-width: 768px) {
-  .main-content {
-    padding-top: 55px;
-  }
-}
-
-/* 小屏手机 */
-@media (max-width: 480px) {
-  .main-content {
-    padding-top: 45px;
-  }
-}
-
-/* 底栏响应式 */
-/* ---------- 小屏与手机 ------------- */
-@media (max-width: 480px) {
-  .site-footer {
-    min-height: 80px; /* 增高底栏，给上下两行留空间 */
-    padding: 14px 16px;
-  }
-
-  /* 把按钮放到底部（保留水平居中） */
-  .footer-contacts {
-    position: absolute;
-    top: auto; /* 取消垂直居中 */
-    bottom: 12px; /* 距底部一定距离 */
-    left: 50%;
-    transform: translateX(-50%); /* 仅水平居中 */
-    gap: 20px;
-    z-index: 6;
-  }
-
-  /* 上下位置变量，负则高，两个得一样 */
-  .footer-links {
-    left: 12px;
-    transform: translateY(-140%);
-  }
-  .site-footer::after {
-    right: 12px;
-    transform: translateY(-140%);
-  }
-}
-
 @media (max-width: 350px) {
   /* 底栏字体调整 */
   .footer-links {
@@ -934,45 +938,6 @@ h1.shaking-text {
   }
 }
 
-/* 基础：图片占位、响应式、不产生行内 gap */
-.resp-img,
-.icon {
-  display: block; /* 避免 inline 元素造成行高问题 */
-  max-width: 100%;
-  height: auto;
-  opacity: 0;
-  transform: translateY(6px) scale(0.985);
-  transition: opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
-    transform 0.48s cubic-bezier(0.2, 0.8, 0.2, 1);
-  will-change: opacity, transform;
-}
-
-/* 图片加载完成后触发弹出动画 */
-.resp-img.loaded,
-.icon.loaded {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-/* 背景图容器：用 CSS 变量传 aspect-ratio */
-.bg-image {
-  width: 100%;
-  aspect-ratio: var(--aspect); /* 现代浏览器 */
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  opacity: 0;
-  transform: translateY(6px) scale(0.985);
-  transition: opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
-    transform 0.48s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-/* 背景图“已加载”时的类（由 JS 添加） */
-.bg-image.loaded {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
 /* prefers-reduced-motion：尊重设置，关闭动画 */
 @media (prefers-reduced-motion: reduce) {
   .resp-img,
@@ -982,15 +947,9 @@ h1.shaking-text {
     transform: none;
     opacity: 1;
   }
-}
 
-.ratio-box {
-  position: relative;
-  width: 100%;
-  padding-top: var(--ratio-pct); /* e.g. 56.25% for 16:9 */
-  overflow: hidden;
-}
-.ratio-box > .inner {
-  position: absolute;
-  inset: 0;
+  main,
+  main.loaded {
+    transition: none !important;
+  }
 }
