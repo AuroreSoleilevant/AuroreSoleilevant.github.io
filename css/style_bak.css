@@ -27,21 +27,6 @@
   font-display: swap;
 }
 
-:root {
-  /* 变量集合 */
-  /* 回到顶部变量 */
-  --backtop-size: 64px;
-  --backtop-bg: rgba(217, 255, 121, 0.4);
-  --backtop-color: #ffffff;
-  --backtop-hover: rgba(255, 255, 255, 0.22);
-  --backtop-right: 16px;
-  --backtop-bottom: 96px;
-  --backtop-z: 1200;
-
-  /* 分割线厚度 */
-  --divider-thickness: 10px;
-}
-
 /* 标题块骨架 */
 .site-header {
   background: #232946;
@@ -309,12 +294,17 @@ main h1 {
   padding: 16px 32px;
   width: 100%; /* 保持占满视口宽度 */
   max-width: 100vw; /* 避免超出视口 */
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.25); /* 顶部阴影 */
   box-sizing: border-box;
-  min-height: 80px;
-  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.25);
-  transition: transform 360ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 260ms ease;
-  transform: translateY(0);
-  opacity: 1;
+  width: 100%;
+  min-height: 80px; /* 底栏高度变量 */
+}
+
+.site-footer {
+  width: 100%; /* 保持占满视口宽度 */
+  max-width: 100vw; /* 避免超出视口 */
+  padding: 16px 32px;
+  box-sizing: border-box;
 }
 
 .site-footer::after {
@@ -394,29 +384,6 @@ main h1 {
   opacity: 1; /* 悬停略微高亮 */
 }
 
-/* 跳转底栏动效 */
-/* 向下全部退出（离开页面） */
-.site-footer.slide-down {
-  transform: translateY(110%);
-  opacity: 0;
-}
-
-/* 初始在下方（用于 enter 动画的初始状态） */
-.site-footer.pre-enter {
-  transform: translateY(110%);
-  opacity: 0;
-}
-
-/* 进入到可见位置（enter 动画） */
-.site-footer.entered {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-footer {
-  transition: transform 300ms ease, opacity 300ms ease;
-}
-
 p {
   font-size: 25px; /* 正文统一字号 */
 }
@@ -441,6 +408,16 @@ h1.shaking-text {
 }
 
 /* ---------- 回到顶部按钮样式---------- */
+/* 一些可配置变量*/
+:root {
+  --backtop-size: 64px; /* 圆直径 */
+  --backtop-bg: rgba(217, 255, 121, 0.4); /* 背景色 */
+  --backtop-color: #ffffff; /* 图标颜色 */
+  --backtop-hover: rgba(255, 255, 255, 0.22);
+  --backtop-right: 16px; /* 距右边距 */
+  --backtop-bottom: 96px; /* 距离视口底部（测试下来也许会被 JS 覆盖为 footer 高度 + margin） */
+  --backtop-z: 1200;
+}
 
 /* 按钮基础 */
 .back-to-top {
@@ -513,6 +490,11 @@ h1.shaking-text {
 }
 /* 兴许消失可用淡出（由移除 visible 实现） */
 
+/* 分割线 */
+:root {
+  --divider-thickness: 10px; /* 粗度 */
+}
+
 .section-divider {
   border: none;
   height: var(--divider-thickness);
@@ -541,6 +523,36 @@ h1.shaking-text {
 .page-dates.entered {
   /* 或者 main 加 loaded 后触发 */
   opacity: 1;
+}
+
+/* 跳转底栏动效 */
+/* footer slide helpers — 确保与上面 JS 的类一致 */
+.site-footer {
+  transition: transform 360ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 260ms ease;
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* 向下全部退出（离开页面） */
+.site-footer.slide-down {
+  transform: translateY(110%);
+  opacity: 0;
+}
+
+/* 初始在下方（用于 enter 动画的初始状态） */
+.site-footer.pre-enter {
+  transform: translateY(110%);
+  opacity: 0;
+}
+
+/* 进入到可见位置（enter 动画） */
+.site-footer.entered {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+footer {
+  transition: transform 300ms ease, opacity 300ms ease;
 }
 
 /* === 响应式：移动端和平板 === */
@@ -973,7 +985,7 @@ h1.shaking-text {
   transform: translateY(0) scale(1);
 }
 
-/* prefers-reduced-motion：尊重设置，关闭动画 */
+/* prefers-reduced-motion：尊重用户设置，关闭动画 */
 @media (prefers-reduced-motion: reduce) {
   .resp-img,
   .bg-image,
@@ -984,6 +996,8 @@ h1.shaking-text {
   }
 }
 
+/* 回退（老浏览器不支持 aspect-ratio）：
+   使用比例盒 padding-top 技术，需要在服务器/模板里输出一个 style="--ratio-pct:56.25%" */
 .ratio-box {
   position: relative;
   width: 100%;
