@@ -553,6 +553,9 @@
 
 /* 小屏手机：400px 及以下 - 长条磁贴适配 */
 @media (max-width: 400px) {
+  :root {
+    --tile-thumb-size: 36px; /* 条，缩略图大小（正方形）*/
+  }
   .tiles > a.tile.tile-strip-new,
   .tiles > .tile.tile-strip-new {
     /* 重置方形磁贴的样式，恢复长条磁贴的布局 */
