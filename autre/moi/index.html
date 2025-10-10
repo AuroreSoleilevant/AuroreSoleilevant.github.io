@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Moi | Spica</title>
+  <link rel="preload" href="/js/common-head.js" as="script">
   <!-- 调用列表 -->
   <script src="/js/common-head.js"></script>
 
@@ -16,21 +17,23 @@
   }
 
   .about-title a {
-  display: inline-block;
+    display: flex;
+    width: fit-content;     /* 宽度适应内容 */
+    height: fit-content;    /* 高度适应内容 */
   }
 
   .about-img {
-  width: 15%;  /* 相对字体大小或容器 */
-  height: auto;
-  border-radius: 20px;
-  object-fit: cover;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  vertical-align: middle;  /* 与文字基线对齐中间 */
+    width: 150px;           /* 图片宽 */
+    height: 150px;          /* 图片高 */
+    border-radius: 20px;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    vertical-align: middle;  /* 与文字基线对齐中间 */
   }
 
   .about-text {
-  display: inline-block;       /* 确保 span 是单个 flex 项 */
-  transform: none !important;  /* 清除可能的 shake transform */
+  display: inline-block;
+  transform: none !important;
   white-space: nowrap;         /* 防止文字换行 */
   }
   
@@ -80,17 +83,21 @@
       margin-top: 30px;
     }
 
-/* =================== 响应式 for about page =================== */
+/* ---------- 响应式 ---------- */
 @media (max-width: 1000px) {
   .about-title {
     flex-direction: row;        /* 保持横排 */
     align-items: center;        /* 垂直居中 */
-    gap: 0.6em;                 /* 缩小间距，避免拥挤 */
+    gap: 0.6em;                 /* 缩小间距 */
+  }
+
+  .about-title a {
+    width: fit-content;         /* 保持宽度适应内容 */
   }
 
   .about-img {
-    width: clamp(60px, 15%, 100px); /* 最小60px，最大100px，按父宽15%自适应 */
-    height: auto;
+    width: 100px;               /* 移动端使用更小的固定尺寸 */
+    height: 100px;
     border-radius: 16px;
   }
 
@@ -118,7 +125,7 @@
     transform: center,
     display: flex;
     justify-content: center;  /* 水平居中 */
-    align-items: center;      /* 垂直居中，如果要靠上用 flex-start */
+    align-items: center;      /* 垂直居中 */
   }
 
   .content-image img {
@@ -128,7 +135,14 @@
     border-radius: 12px;
     display: block; 
   }
-  
+}
+
+@media (max-width: 450px) {
+  .about-img {
+    width: 60px;               /* 手机端使用更小的固定尺寸 */
+    height: 60px;
+    border-radius: 16px;
+  }
 }
 
   </style>
@@ -144,8 +158,8 @@
   <!-- 大标题 -->
   <h1 class="shaking-text about-title">
   <span class="about-text">关于本站</span>
-  <a href="/images/ASH.png" target="_blank" title="晨曦初阳">
-    <img src="/images/ASH.png" aria-label="这是晨曦初阳的头像，也就是一只青春马娘的头像。她有淡蓝色的短发和淡橙色的皮肤，并目视着你" class="about-img resp-img preload" decoding="async">
+  <a href="/images/ASH.webp" target="_blank" title="晨曦初阳">
+    <img src="/images/ASH.webp" aria-label="这是晨曦初阳的头像，也就是一只青春马娘的头像。她有淡蓝色的短发和淡橙色的皮肤，并目视着你" class="about-img resp-img preload" decoding="async">
   </a>
   </h1>
   <!-- 内容左右两栏 -->
@@ -153,18 +167,17 @@
     <!-- 左侧文字 -->
     <div class="content-text">
       <p style="margin-left:5px; margin-right:5px;">欢迎来到Spica！这里是晨曦初阳的个人小站，会用来放置一些文章、小说、资源或者奇怪的小东西。</p>
-      <p style="margin-left:5px; margin-right:5px;">站名Spica来自拉丁语，意为角宿一，是全天空（当然，地球上的天空）第十六亮的恒星，也是室女座最明亮的恒星哦~其实准确来说是两颗恒星组成的双子系统，在古时候也被称为“室女的麦穗”，是收获的象征！就让我们在过去，现在与未来，一起收获星光吧！</p>
+      <p style="margin-left:5px; margin-right:5px;">站名Spica来自拉丁语，意为角宿一，是全天空（当然，地球上的天空）第十六亮的恒星，也是室女座最明亮的恒星哦~其实准确来说是两颗恒星组成的双子系统，在古时候也被称为"室女的麦穗"，是收获的象征！就让我们在过去，现在与未来，一起收获星光吧！</p>
     </div>
 
   <div class="content-image headimg-top">
       <img
         style="margin-left:5px; margin-right:5px;"
-        src="/images/Etoile_Spica.png"
+        src="/images/Etoile_Spica.webp"
         decoding="async"
         title="角宿一"
         class="resp-img preload"
-        aria-label="这是一张星空的图片，角宿一在图片中心，它是一颗蓝色的恒星，而周围有许多各色的小星星。本站为视觉障碍者的网页屏幕阅读器进行了适配，所有图像均附带了文本描述，只有您才能发现这些语段。如果有遗漏的描述内容，请务必联系我进行更正！联系方式可以在网页末尾找到，您会听到对应的三个按钮"
-        onerror="this.onerror=null; this.src='https://via.placeholder.com/320x240.png?text=Spica';"
+        aria-label="这是一张星空的图片，角宿一在图片中心，它是一颗蓝色的恒星，而周围有许多各色的小星星。"
         loading="lazy"
       >
     </div>
@@ -182,7 +195,7 @@
 
   <!-- 左下角日期 -->
   <div class="page-dates">
-  发布：30/9/2025　修改：9/10/2025
+  发布：30/9/2025　修改：10/10/2025
   </div>
 
   <!-- 底栏，需带着 -->
