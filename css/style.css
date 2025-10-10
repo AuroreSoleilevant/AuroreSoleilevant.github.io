@@ -27,8 +27,8 @@
   font-display: swap;
 }
 
+/* ---------- 变量集合 ---------- */
 :root {
-  /* 变量集合 */
   /* 回到顶部变量 */
   --backtop-size: 64px;
   --backtop-bg: rgba(217, 255, 121, 0.4);
@@ -37,11 +37,9 @@
   --backtop-right: 16px;
   --backtop-bottom: 96px;
   --backtop-z: 1200;
-
-  /* 分割线厚度 */
-  --divider-thickness: 10px;
 }
 
+/* ---------- 顶栏：开始 ---------- */
 /* 标题块骨架 */
 .site-header {
   background: #232946;
@@ -56,11 +54,10 @@
   align-items: center;
   overflow: hidden;
   z-index: 1000; /* 确保覆盖内容 */
-  /* 阴影效果（只在下方显现） */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* 阴影效果 */
 }
 
-/* 网站名：伪元素A */
+/* 网站名伪元素 */
 .site-title::before {
   content: "Spica";
   font-size: 3.5em;
@@ -83,7 +80,7 @@
   cursor: pointer; /* 手型光标 */
 }
 
-/* 星空层容器1：伪元素A */
+/* 星空层容器1伪元素 */
 .site-header::after {
   content: "";
   position: absolute;
@@ -100,7 +97,7 @@
   animation-delay: 2.9s;
 }
 
-/* 星空层容器2：伪元素B */
+/* 星空层容器2伪元素 */
 .site-header .stars {
   position: absolute;
   inset: 0;
@@ -116,7 +113,7 @@
   animation-delay: 3.9s;
 }
 
-/* 星空层容器3：伪元素C */
+/* 星空层容器3伪元素，移动 */
 .site-header .stars2 {
   position: absolute;
   inset: 0;
@@ -152,6 +149,7 @@
   }
 }
 
+/* 顶部导航链接容器 */
 .nav-links {
   display: flex;
   gap: 65px;
@@ -169,7 +167,9 @@
   opacity: 1; /* 初始透明度 */
   transition: opacity 0.3s ease; /* 鼠标离开过渡也可用 */
 }
+/* ---------- 顶栏：结束 ---------- */
 
+/* ---------- 主体：开始 ---------- */
 /* 清除默认宽高 */
 html,
 body {
@@ -291,7 +291,24 @@ main h1 {
   text-align: center;
 }
 
-/* 底栏 */
+p {
+  font-size: 25px; /* 正文统一字号 */
+}
+
+ul {
+  /* 列表统一字号 */
+  font-size: 20px;
+  margin-left: 96px;
+  margin-right: 96px;
+}
+
+h1.shaking-text {
+  font-size: 4rem; /* 标题统一字号 */
+}
+/* ---------- 主体：结束 ---------- */
+
+/* ---------- 底栏：开始 ---------- */
+/* 底栏框架 */
 .site-footer {
   position: relative;
   background: #232946;
@@ -409,23 +426,9 @@ main h1 {
 footer {
   transition: transform 300ms ease, opacity 300ms ease;
 }
+/* ---------- 底栏：结束 ---------- */
 
-p {
-  font-size: 25px; /* 正文统一字号 */
-}
-
-ul {
-  /* 列表统一字号 */
-  font-size: 20px;
-  margin-left: 96px;
-  margin-right: 96px;
-}
-
-h1.shaking-text {
-  font-size: 4rem; /* 标题统一字号 */
-}
-
-/* ---------- 回到顶部按钮样式---------- */
+/* ---------- 回到顶部按钮：开始 ---------- */
 /* 按钮基础 */
 .back-to-top {
   position: fixed;
@@ -442,7 +445,7 @@ h1.shaking-text {
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
   text-decoration: none;
-  transform: scale(1); /* 或默认值，确保按钮不被缩放 */
+  transform: scale(1); /* 确保按钮不被缩放 */
   cursor: pointer;
   z-index: var(--backtop-z);
   opacity: 0;
@@ -456,7 +459,7 @@ h1.shaking-text {
   display: block;
   width: 80%;
   height: 80%;
-  transform: translateY(0); /* 如果需要微调可改为 translateY(2px) 等 */
+  transform: translateY(0);
   line-height: 1;
   pointer-events: none; /* 图像不拦截点击，事件由按钮处理 */
 }
@@ -495,11 +498,14 @@ h1.shaking-text {
     opacity: 1;
   }
 }
-/* 兴许消失可用淡出（由移除 visible 实现） */
+/* 消失可用淡出 */
+/* ---------- 回到顶部按钮：结束 ---------- */
 
+/* ---------- 其他：开始 ---------- */
+/* 分割线 */
 .section-divider {
   border: none;
-  height: var(--divider-thickness);
+  height: 10px;
   margin: 32px 64px;
   background: repeating-linear-gradient(
     to right,
@@ -512,6 +518,7 @@ h1.shaking-text {
   opacity: 0.6;
 }
 
+/* 文章日期 */
 .page-dates {
   margin-left: 20px;
   margin-bottom: 20px;
@@ -523,11 +530,10 @@ h1.shaking-text {
 
 .loaded + .page-dates,
 .page-dates.entered {
-  /* 或者 main 加 loaded 后触发 */
   opacity: 1;
 }
 
-/* 基础：图片占位、响应式、不产生行内 gap */
+/* 基础：图片占位 */
 .resp-img,
 .icon {
   display: block; /* 避免 inline 元素造成行高问题 */
@@ -550,7 +556,7 @@ h1.shaking-text {
 /* 背景图容器：用 CSS 变量传 aspect-ratio */
 .bg-image {
   width: 100%;
-  aspect-ratio: var(--aspect); /* 现代浏览器 */
+  aspect-ratio: var(--aspect);
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -576,6 +582,7 @@ h1.shaking-text {
   position: absolute;
   inset: 0;
 }
+/* ---------- 其他：结束 ---------- */
 
 /* === 响应式主（文章等）内容区上边距 === */
 .main-content {
@@ -721,7 +728,7 @@ h1.shaking-text {
   /* 分割线调整 */
   .section-divider {
     margin: 24px 32px;
-    --divider-thickness: 8px;
+    height: 8px;
   }
 
   /* 底栏调整 */
@@ -811,7 +818,6 @@ h1.shaking-text {
   /* 分割线调整 */
   .section-divider {
     margin: 20px 24px;
-    --divider-thickness: 6px;
   }
 
   /* 底栏调整 */
