@@ -305,6 +305,15 @@ ul {
 h1.shaking-text {
   font-size: 4rem; /* 标题统一字号 */
 }
+
+/* 主内容区上边距 */
+.main-content {
+  padding-top: 75px; /* 默认值 - 桌面端 */
+}
+
+html {
+  scroll-behavior: smooth;
+}
 /* ---------- 主体：结束 ---------- */
 
 /* ---------- 底栏：开始 ---------- */
@@ -584,11 +593,6 @@ footer {
 }
 /* ---------- 其他：结束 ---------- */
 
-/* === 响应式主（文章等）内容区上边距 === */
-.main-content {
-  padding-top: 75px; /* 默认值 - 桌面端 */
-}
-
 /* 平板设备 */
 @media (max-width: 1024px) {
   /* 顶栏调整 */
@@ -848,7 +852,7 @@ footer {
     padding-top: 45px;
   }
 
-  /* 把按钮放到底部（保留水平居中） */
+  /* 按钮放到底部 */
   .footer-contacts {
     position: absolute;
     top: auto; /* 取消垂直居中 */
@@ -859,7 +863,7 @@ footer {
     z-index: 6;
   }
 
-  /* 上下位置变量，负则高，两个得一样 */
+  /* 上下位置变量，translateY负则高，两个得一样 */
   .footer-links {
     gap: 12px;
     font-size: 0.8rem;
@@ -944,7 +948,7 @@ footer {
   }
 }
 
-/* prefers-reduced-motion：尊重设置，关闭动画 */
+/* 对于系统声明prefers-reduced-motion：关闭动画 */
 @media (prefers-reduced-motion: reduce) {
   .resp-img,
   .bg-image,
