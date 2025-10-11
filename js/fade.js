@@ -293,6 +293,11 @@
     Promise.race([imgsPromise, timeoutPromise])
       .then(() => {
         setTimeout(() => {
+          // 双保险：清理旧类、触发进入动画（使用 footerEnter 保持一致行为）
+          try {
+            footerEl.classList.remove("slide-down", "pre-enter");
+            footerEnter(footerEl);
+          } catch (e) {}
           document.dispatchEvent(
             new CustomEvent("footer:inserted", { detail: { footer: footerEl } })
           );
@@ -300,6 +305,10 @@
       })
       .catch(() => {
         setTimeout(() => {
+          try {
+            footerEl.classList.remove("slide-down", "pre-enter");
+            footerEnter(footerEl);
+          } catch (e) {}
           document.dispatchEvent(
             new CustomEvent("footer:inserted", { detail: { footer: footerEl } })
           );
