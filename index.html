@@ -8,9 +8,9 @@
   <meta name="keywords" content="博客, 生活, 编程, 写作，摄影，彩虹小马，文学">
   <meta name="author" content="Aurore Soleilevant">
   <title>Spica</title>
-  <link rel="preload" href="/js/common-head.js" as="script">
+  <link rel="modulepreload" href="/js/common-head.js" crossorigin="anonymous">
   <!-- 调用列表 -->
-  <script src="/js/common-head.js?v=111025.1"></script>
+  <script src="/js/common-head.js" fetchpriority="high"></script>
   <link rel="stylesheet" href="/css/tuile.css">
 
   <!-- 本页的CSS -->
@@ -103,7 +103,7 @@
   <div id="header-placeholder"></div>
 
   <!-- 主体内容 -->
-<main >
+<main role="main">
   <!-- 大标题 -->
   <h1 class="shaking-text" title="Ciallo = Ciao + Hello = 你好">
   欢迎<span class="mobile-break"></span> Ciallo～<span class="mobile-break320"></span>(∠・ω< )⌒☆

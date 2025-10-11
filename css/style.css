@@ -166,6 +166,7 @@
   display: inline-block;
   opacity: 1; /* 初始透明度 */
   transition: opacity 0.3s ease; /* 鼠标离开过渡也可用 */
+  -webkit-tap-highlight-color: transparent;
 }
 /* ---------- 顶栏：结束 ---------- */
 

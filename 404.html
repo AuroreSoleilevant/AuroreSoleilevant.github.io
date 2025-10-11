@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>404 Not Found | Spica</title>
-  <link rel="preload" href="/js/common-head.js" as="script">
+  <link rel="modulepreload" href="/js/common-head.js" crossorigin="anonymous">
   <!-- 调用列表 -->
-  <script src="/js/common-head.js"></script>
+  <script src="/js/common-head.js" fetchpriority="high"></script>
 
   <style>
     /* 404 页面居中样式 */
@@ -67,8 +67,8 @@
 <body>
   <div id="header-placeholder"></div>
 
-  <main class = "paddingT120">
-    <img src="/images/404.jpg" title="404 Cat" alt="这是一只猫被埋在一堆纸张下的照片，代表404 Not Found">
+  <main class = "paddingT120" role="main">
+    <img src="/images/404.jpg" title="404 Cat" alt="这是一只猫被埋在一堆纸张下的照片，代表404 Not Found" decoding="async">
     <p>也许这个页面被怪物吃掉了？只有天知道。</p>
     <p><a href="/">返回首页</a></p>
   </main>
