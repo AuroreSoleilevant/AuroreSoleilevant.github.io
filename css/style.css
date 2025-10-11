@@ -315,6 +315,14 @@ h1.shaking-text {
 html {
   scroll-behavior: smooth;
 }
+
+.mobile-break {
+  display: none;
+}
+
+.mobile-break320 {
+  display: none;
+}
 /* ---------- 主体：结束 ---------- */
 
 /* ---------- 底栏：开始 ---------- */
@@ -820,6 +828,10 @@ footer {
     font-size: 2rem;
   }
 
+  .mobile-break {
+    display: block;
+  }
+
   /* 分割线调整 */
   .section-divider {
     margin: 20px 24px;
@@ -906,6 +918,10 @@ footer {
 
   .site-footer::after {
     font-size: 0.75rem;
+  }
+
+  .mobile-break320 {
+    display: block;
   }
 }
 
