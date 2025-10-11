@@ -12,6 +12,8 @@
   --tile-thumb-size: 72px; /* 条，缩略图大小（正方形）*/
   --tile-thumb-radius: 10px; /* 条，缩略图圆角 */
   --tile-strip-gap: 16px; /* 条，缩略图与文本间距 */
+
+  --tile-thumb-size-responsive: var(--tile-thumb-size); /* 全局回退 */
 }
 
 /* ---------- 容器：一行三列 ---------- */
@@ -21,6 +23,7 @@
   align-items: stretch;
   width: 100%;
   box-sizing: border-box;
+  scroll-behavior: smooth;
 }
 
 .tile p {
@@ -144,15 +147,15 @@
 .tiles > a.tile .tile-svg,
 .tiles > .tile .tile-svg {
   position: absolute;
-  width: 80%;
-  height: 80%;
   top: 50%;
   left: 50%;
-  pointer-events: none;
-  z-index: 0; /* 在最下方 */
-  opacity: 0.16;
-  transform: translate(-50%, -50%) scale(1); /* 水平+垂直居中 */
+  transform: translate(-50%, -50%) scale(1);
   transform-origin: 50% 50%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.16;
+  width: 80%;
+  height: 80%;
   transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.35s ease;
   will-change: transform, opacity;
 }
@@ -228,6 +231,23 @@
   .tiles > a.tile::after,
   .tiles > .tile::after {
     opacity: 0;
+  }
+}
+
+@media (max-width: 800px) {
+  .tile p {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    font-size: 1.25rem;
+  }
+
+  .tiles {
+    scroll-snap-type: x proximity;
+  }
+
+  .tiles > a.tile,
+  .tiles > .tile {
+    scroll-snap-align: start;
   }
 }
 
@@ -357,7 +377,7 @@
     flex: 0 0 auto !important;
   }
 
-  /* 隐藏所有介绍性文字（彻底不占位） */
+  /* 隐藏所有介绍性文字 */
   .tiles > a.tile p,
   .tiles > .tile p {
     display: none !important;
@@ -408,14 +428,6 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.14) !important;
     transition-duration: 120ms !important;
-  }
-}
-
-@media (max-width: 800px) {
-  .tile p {
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-    font-size: 1.25rem;
   }
 }
 
@@ -588,12 +600,12 @@
   /* 长条磁贴的缩略图 - 缩小到36px */
   .tiles > a.tile.tile-strip-new .tile-thumb,
   .tiles > .tile.tile-strip-new .tile-thumb {
-    width: 2px !important;
-    height: 2px !important;
+    width: 36px !important;
+    height: 36px !important;
     flex: 0 0 36px !important;
     margin: 0 !important;
     border-radius: 6px !important;
-    --tile-thumb-size-responsive: 5px !important;
+    --tile-thumb-size-responsive: 36px !important;
   }
 
   /* 长条磁贴的内容区域 - 确保左对齐 */
