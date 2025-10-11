@@ -1,11 +1,71 @@
 (() => {
   const head = document.head;
-  const version1 = "061025.1"; //style.css版本号
+  const version1 = "111025.1"; // style.css 版本号
+
+  // ------------------------
+  // 同步注入脚本
+  // ------------------------
+  function injectSyncScript(src) {
+    // 使用同步 XHR 获取并立即以内联脚本形式注入（感觉得慎用）
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", src, false); // false = 同步，确保脚本尽早执行
+      xhr.send(null);
+      if (xhr.status === 200) {
+        const s = document.createElement("script");
+        s.textContent = xhr.responseText;
+        head.appendChild(s);
+        return true;
+      } else {
+        console.error("同步加载失败：", src, "状态码：", xhr.status);
+      }
+    } catch (err) {
+      console.error("同步加载出错：", src, err);
+    }
+    return false;
+  }
+
+  // ------------------------
+  // 辅助：非阻塞/延迟注入脚本
+  // ------------------------
+  function preloadAndDeferScripts(srcArray) {
+    srcArray.forEach((src) => {
+      try {
+        const pl = document.createElement("link");
+        pl.setAttribute("rel", "preload");
+        pl.setAttribute("as", "script");
+        pl.setAttribute("href", src);
+        head.appendChild(pl);
+      } catch (e) {
+        // 忽略预加载失败
+        console.warn("预加载提示创建失败：", src, e);
+      }
+    });
+
+    // 按顺序插入带 defer 的 script
+    srcArray.forEach((src) => {
+      try {
+        const s = document.createElement("script");
+        s.setAttribute("src", src);
+        // 减少解析时阻塞
+        s.defer = true;
+        head.appendChild(s);
+      } catch (e) {
+        // 回退到同步 XHR
+        console.warn("defer 注入失败，改回同步加载：", src, e);
+        injectSyncScript(src);
+      }
+    });
+  }
 
   // ================================
-  // 全局 CSS / 字体配置
-  // （字体）添加模板：
-  // { rel, href, as?, type?, crossorigin? }
+  // 最快加载区
+  // ================================
+  injectSyncScript("/js/fade.js");
+  injectSyncScript("/js/img.js");
+
+  // ================================
+  // 次优加载区
   // ================================
   const links = [
     {
@@ -26,43 +86,30 @@
     { rel: "icon", href: "/icons/logo.png", type: "image/x-icon" },
   ];
 
-  // 创建并插入 link 标签
   links.forEach((linkInfo) => {
     const link = document.createElement("link");
     Object.entries(linkInfo).forEach(([key, value]) => {
-      if (value === true) link.setAttribute(key, ""); // 布尔属性
+      if (value === true) link.setAttribute(key, "");
       else link.setAttribute(key, value);
     });
     head.appendChild(link);
   });
 
   // ================================
-  // 全局 JS 列表
-  // 同步顺序加载 JS
+  // 普通加载区
   // ================================
-  const scripts = [
-    "/js/fade.js", // 顶栏 / 底栏动画逻辑
-    "/js/backtop.js", // 回到顶部按钮
-    "/js/blink.js", // 顶栏闪烁
-    "/js/img.js", // 图像加载
+  const syncScripts = [
+    // 同步执行内容位置
   ];
 
-  scripts.forEach((src) => {
-    try {
-      // 使用 XMLHttpRequest 同步获取脚本内容
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", src, false); // false = 同步
-      xhr.send(null);
+  const deferredScripts = [
+    "/js/backtop.js", // 回到顶部按钮
+    "/js/blink.js", // 顶栏闪烁
+  ];
 
-      if (xhr.status === 200) {
-        const script = document.createElement("script");
-        script.textContent = xhr.responseText;
-        head.appendChild(script);
-      } else {
-        console.error("加载失败：", src, "状态码：", xhr.status);
-      }
-    } catch (err) {
-      console.error("加载失败：", src, err);
-    }
-  });
+  // 同步脚本（仅在数组中有项时才执行同步加载）
+  syncScripts.forEach((src) => injectSyncScript(src));
+
+  // deferred / non-blocking 脚本
+  preloadAndDeferScripts(deferredScripts);
 })();
