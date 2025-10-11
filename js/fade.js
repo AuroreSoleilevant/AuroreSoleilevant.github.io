@@ -1,9 +1,11 @@
 (() => {
   // ----- 配置常量 -----
   const FADE_CLASS = "loaded";
-  const FOOTER_URL = "/outil/footer.inc/index.html";
+  const FOOTER_URL = new URL("/outil/footer.inc/index.html", document.baseURI)
+    .href;
   const PLACEHOLDER_ID = "footer-placeholder";
-  const HEADER_URL = "/outil/header.inc/index.html";
+  const HEADER_URL = new URL("/outil/header.inc/index.html", document.baseURI)
+    .href;
   const PLACEHOLDER_ID_HEADER = "header-placeholder";
 
   // ----- 状态 & 配置 -----
@@ -22,6 +24,14 @@
   // ----- transition 时长短期缓存 -----
   const _transCache = new WeakMap();
   const TRANS_CACHE_TTL = 500; // ms
+
+  function ensureFooterVisible(f) {
+    if (!f) return;
+    // remove any hiding classes, force reflow, then mark entered
+    f.classList.remove("pre-enter", "slide-down");
+    void f.offsetWidth; // 强制回流
+    f.classList.add("entered");
+  }
 
   function getTransitionMs(el) {
     if (!el) return 400;
@@ -304,6 +314,7 @@
 
     const existing = placeholder.querySelector(".site-footer");
     if (existing) {
+      ensureFooterVisible(existing);
       notifyFooterInserted(existing);
       return;
     }
@@ -324,6 +335,7 @@
 
         currPlaceholder.innerHTML = html;
         const footerEl = currPlaceholder.querySelector(".site-footer");
+        ensureFooterVisible(footerEl);
         notifyFooterInserted(footerEl);
 
         const mo = new MutationObserver((mutations, obs) => {
@@ -451,6 +463,7 @@
     if (f) {
       f.classList.remove("slide-down");
       prepareFooterInitial(f);
+      ensureFooterVisible(f);
       requestAnimationFrame(() => footerEnter(f));
     } else {
       prepareFooterInitial();
