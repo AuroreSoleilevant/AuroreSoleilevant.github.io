@@ -27,10 +27,11 @@
 
   function ensureFooterVisible(f) {
     if (!f) return;
-    // remove any hiding classes, force reflow, then mark entered
     f.classList.remove("pre-enter", "slide-down");
-    void f.offsetWidth; // 强制回流
-    f.classList.add("entered");
+    requestAnimationFrame(() => {
+      void f.offsetWidth;
+      f.classList.add("entered");
+    });
   }
 
   function getTransitionMs(el) {
