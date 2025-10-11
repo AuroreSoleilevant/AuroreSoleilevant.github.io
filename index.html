@@ -23,6 +23,7 @@
       font-size: 60px;
       font-weight: 700;
       line-height: 1;
+      will-change: transform;
       animation: float 3s ease-in-out infinite;
     }
 
@@ -34,14 +35,20 @@
       100% { transform: translateY(0px); }
     }
   
+  @media (prefers-reduced-motion: reduce) {
+  .shaking-text {
+    animation: none;
+  }
+  }
+
   /* 字号标准化*/
-  .mobile-break {
+ .mobile-break {
   display: none;
-}
+ }
 
  .mobile-break320 {
   display: none;
-}
+ }
 
  .fsize2{
   font-size: 2rem;
@@ -59,7 +66,7 @@
   .fsize2 {
     font-size: 1.5rem;
   }
-}
+ }
 
  @media (max-width: 480px) {
   .mobile-break {
@@ -140,7 +147,7 @@
   <p class="text-center fsize2p5"><b>友情链接，友谊就是魔法<span class="mobile-break"></span> (・∀・)</b></p>
 
   <div class="tiles">
-  <a class="tile tile-strip-new" href="https://www.zexnocs.top/" target="_blank" style="--tile-color: rgba(40,140,134,0.12);">
+  <a class="tile tile-strip-new" href="https://www.zexnocs.top/" target="_blank" rel="noopener noreferrer" style="--tile-color: rgba(40,140,134,0.12);">
     <img src="https://www.zexnocs.top/img/avatar.jpg" alt="zExNocs" title="zExNocs" class="tile-thumb" decoding="async">
     <div class="tile-content">
       <h1>
