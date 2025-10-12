@@ -2,13 +2,60 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>占位测试 | Spica</title>
+  <link rel="modulepreload" href="/js/common-head.js" crossorigin="anonymous">
+  <!-- 调用列表 -->
+  <script src="/js/common-head.js" fetchpriority="high"></script>
+  <script src="/js/page-number.js"></script>
+  <link rel="stylesheet" href="/css/tuile.css">
+  <link rel="stylesheet" href="/css/page-number.css">
   
 </head>
 
 <body>
-<main>
-<h1>测试筹划中( ﾟ∀。)</h1>
-<p>当然，实验室总会一片白茫茫。</p>
+
+  <!-- 顶栏，需带着 -->
+  <div id="header-placeholder"></div>
+
+  <!-- 主体内容 -->
+<main class="main-content" role="main">
+  <!-- 大标题 -->
+  <h1 class="shaking-text">
+  这是一个测试
+  </h1>
+
+  <p>
+  测试右边那些小方块——当然，点不动的。
+  </p>
+
+  <div id="pg2-paginator" class="pg2-paginator" role="navigation" aria-label="页面翻页">
+
+  <button class="pg2-btn pg2-prev" aria-label="上一页" type="button">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div class="pg2-current" aria-current="page">1</div>
+  <button class="pg2-btn pg2-next" aria-label="下一页" type="button">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <div class="pg2-jump" aria-hidden="false">
+    <input class="pg2-jump-input" type="text" inputmode="numeric" pattern="\d*" placeholder="页码" aria-label="跳转页码输入" />
+    <button class="pg2-jump-go" type="button" aria-label="前往">前往</button>
+  </div>
+</div>
 </main>
+
+  <!-- 左下角日期 -->
+  <div class="page-dates">
+  发布：测试页面　修改：总是如此
+  </div>
+
+  <!-- 底栏，需带着 -->
+  <div id="footer-placeholder"></div>
+
 </body>
+</html>

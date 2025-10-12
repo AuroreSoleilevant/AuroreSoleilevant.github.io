@@ -1,0 +1,292 @@
+/* 分页模块 */
+
+:root {
+  --pg2-gap: 24px;
+  --pg2-width: 88px;
+  --pg2-radius: 14px;
+  --pg2-btn-size: 60px; /* 按钮尺寸 */
+  --pg2-current-height: 56px;
+  --pg2-jump-height: 180px;
+
+  --pg2-bg: #fcf1ba; /* 背景色 */
+  --pg2-main: #99ffc3; /* 主色 */
+  --pg2-accent: #d1fdff; /* 边框色 */
+  --pg2-disabled: #d9d9d9;
+  --pg2-text: #1b1b1b;
+
+  --pg2btn-elev-y: 8px;
+  --pg2btn-elev-blur: 22px;
+  --pg2btn-elev-color: rgba(0, 0, 0, 0.14);
+  --pg2btn-glow-color: rgba(230, 200, 120, 0.1);
+  --pg2btn-blur: 10px;
+  --pg2-hover-translate: -10px;
+  --pg2-active-translate: -3px;
+
+  --pg2-sheen-opacity: 0.08;
+  --pg2-sheen-size: 120%;
+
+  --pg2-pagination-width: 0px;
+}
+
+/* 保证主内容留白 */
+.site-content {
+  padding-right: var(--pg2-pagination-width, 0);
+  transition: padding-right 220ms ease;
+}
+
+/* 容器 */
+.pg2-paginator {
+  position: fixed;
+  right: var(--pg2-gap);
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--pg2-width);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 9999;
+  pointer-events: auto;
+  border-radius: var(--pg2-radius);
+  isolation: isolate;
+}
+
+/* 通用按钮样式（纹理 + 毛玻璃 + glow） */
+.pg2-btn,
+.pg2-current,
+.pg2-jump-input,
+.pg2-jump-go {
+  width: var(--pg2-btn-size);
+  height: var(--pg2-btn-size);
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-size: 17.5px;
+}
+
+/* 背景/纹理/边框（仅用于 btn 和 go/current；输入有不同视觉但可继承边框） */
+.pg2-btn,
+.pg2-current,
+.pg2-jump-go {
+  background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0.02)
+    ),
+    var(--pg2-main);
+  background-size: 10px 10px, auto, auto;
+  border: 1px solid var(--pg2-accent);
+  color: var(--pg2-text);
+  font-weight: 700;
+  font-family: "LXGWWenKai", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  box-shadow: 0 var(--pg2btn-elev-y) var(--pg2btn-elev-blur)
+      var(--pg2btn-elev-color),
+    0 0 15px var(--pg2btn-glow-color);
+  transition: transform 280ms cubic-bezier(0.2, 0.9, 0.3, 1),
+    box-shadow 280ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  will-change: transform, box-shadow;
+  -webkit-backdrop-filter: blur(var(--pg2btn-blur)) saturate(120%);
+  backdrop-filter: blur(var(--pg2btn-blur)) saturate(120%);
+  cursor: pointer;
+}
+
+/* svg inside */
+.pg2-btn svg {
+  width: 28px;
+  height: 28px;
+}
+
+/* 按钮高光与光泽（::before ::after） */
+.pg2-btn::before,
+.pg2-paginator::before,
+.pg2-jump-go::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 22%;
+  border-radius: inherit;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0)
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+.pg2-btn::after,
+.pg2-paginator::after,
+.pg2-jump-go::after {
+  content: "";
+  position: absolute;
+  inset: -10% -40%;
+  transform: translateX(-120%) rotate(-12deg);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, var(--pg2-sheen-opacity)) 45%,
+    rgba(255, 255, 255, 0.02) 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.8s cubic-bezier(0.2, 0.9, 0.2, 1);
+  will-change: transform, opacity;
+}
+.pg2-btn:not(.pg2-disabled):hover::after,
+.pg2-paginator:hover::after,
+.pg2-jump-go:not(.pg2-disabled):hover::after {
+  opacity: 1;
+  transform: translateX(120%) rotate(-12deg);
+}
+
+/* hover 抬起（按钮、前往、箭头） */
+.pg2-btn:not(.pg2-disabled):hover,
+.pg2-btn:not(.pg2-disabled):focus-within,
+.pg2-jump-go:not(.pg2-disabled):hover,
+.pg2-jump-go:not(.pg2-disabled):focus-within {
+  transform: translateY(var(--pg2-hover-translate));
+  box-shadow: 0 calc(var(--pg2btn-elev-y) * 2)
+      calc(var(--pg2btn-elev-blur) + 10px) rgba(0, 0, 0, 0.35),
+    0 0 20px var(--pg2btn-glow-color);
+}
+.pg2-btn:not(.pg2-disabled):active,
+.pg2-jump-go:not(.pg2-disabled):active {
+  transform: translateY(var(--pg2-active-translate));
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), 0 0 10px var(--pg2btn-glow-color);
+  transition-duration: 120ms;
+}
+
+/* 当前页数样式 */
+.pg2-current {
+  cursor: default;
+  user-select: none;
+  font-size: 20px;
+  font-family: "LXGWWenKai", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  background: linear-gradient(180deg, var(--pg2-bg), var(--pg2-main));
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+  height: var(--pg2-current-height);
+  width: var(--pg2-btn-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 禁用态 */
+.pg2-btn.pg2-disabled,
+.pg2-jump-go.pg2-disabled {
+  background: var(--pg2-disabled);
+  border-color: #bfbfbf;
+  color: #777;
+  box-shadow: none;
+  cursor: default;
+  pointer-events: none;
+  transform: none;
+}
+
+/* 跳转项容器 */
+.pg2-jump {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  /* 仅提供抖动动画容器 */
+}
+
+/* 输入框：和按钮等宽等高；淡色 placeholder（“页码”），聚焦时无抬起 transform */
+.pg2-jump-input {
+  width: var(--pg2-btn-size);
+  height: var(--pg2-btn-size);
+  padding: 0 8px;
+  border-radius: 12px;
+  border: 1px solid var(--pg2-accent);
+  background: rgba(255, 255, 255, 0.6);
+  outline: none;
+  font-size: 17.5px;
+  font-family: "LXGWWenKai", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  text-align: center;
+  box-sizing: border-box;
+  transition: box-shadow 160ms ease;
+  transform: none !important; /* 用来禁止抬起 */
+  cursor: text;
+}
+.pg2-jump-input::placeholder {
+  color: rgba(27, 27, 27, 0.35);
+}
+
+/* 聚焦时输入框仍无抬起，仅轻微阴影 */
+.pg2-jump-input:focus {
+  transform: none !important;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+}
+
+/* 前往按钮样式（与箭头同视感，但颜色偏强调，保持不同的视觉，大概吧） */
+.pg2-jump-go {
+  width: var(--pg2-btn-size);
+  height: var(--pg2-btn-size);
+  padding: 0 8px;
+  border-radius: 12px;
+  background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.02)
+    ),
+    var(--pg2-accent);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 var(--pg2btn-elev-y) var(--pg2btn-elev-blur)
+      var(--pg2btn-elev-color),
+    0 0 12px rgba(0, 0, 0, 0.06);
+  font-weight: 700;
+  font-family: "LXGWWenKai", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  color: var(--pg2-text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 抖动动画（非法输入） */
+@keyframes pg2-shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-10px);
+  }
+  40% {
+    transform: translateX(10px);
+  }
+  60% {
+    transform: translateX(-6px);
+  }
+  80% {
+    transform: translateX(6px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+.pg2-jump.pg2-shake {
+  animation: pg2-shake 320ms ease;
+}
