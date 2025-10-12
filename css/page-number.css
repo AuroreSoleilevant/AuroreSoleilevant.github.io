@@ -66,7 +66,7 @@
   font-size: 17.5px;
 }
 
-/* 背景/纹理/边框（仅用于 btn 和 go/current；输入有不同视觉但可继承边框） */
+/* 背景/纹理/边框 */
 .pg2-btn,
 .pg2-current,
 .pg2-jump-go {
@@ -104,7 +104,7 @@
   height: 28px;
 }
 
-/* 按钮高光与光泽（::before ::after） */
+/* 按钮高光与光泽 */
 .pg2-btn::before,
 .pg2-paginator::before,
 .pg2-jump-go::before {
@@ -150,7 +150,7 @@
   transform: translateX(120%) rotate(-12deg);
 }
 
-/* hover 抬起（按钮、前往、箭头） */
+/* hover 抬起 */
 .pg2-btn:not(.pg2-disabled):hover,
 .pg2-btn:not(.pg2-disabled):focus-within,
 .pg2-jump-go:not(.pg2-disabled):hover,
@@ -204,10 +204,9 @@
   gap: 8px;
   width: 100%;
   box-sizing: border-box;
-  /* 仅提供抖动动画容器 */
 }
 
-/* 输入框：和按钮等宽等高；淡色 placeholder（“页码”），聚焦时无抬起 transform */
+/* 输入框 */
 .pg2-jump-input {
   width: var(--pg2-btn-size);
   height: var(--pg2-btn-size);
@@ -222,20 +221,20 @@
   text-align: center;
   box-sizing: border-box;
   transition: box-shadow 160ms ease;
-  transform: none !important; /* 用来禁止抬起 */
+  transform: none !important;
   cursor: text;
 }
 .pg2-jump-input::placeholder {
   color: rgba(27, 27, 27, 0.35);
 }
 
-/* 聚焦时输入框仍无抬起，仅轻微阴影 */
+/* 聚焦时输入框 */
 .pg2-jump-input:focus {
   transform: none !important;
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
 }
 
-/* 前往按钮样式（与箭头同视感，但颜色偏强调，保持不同的视觉，大概吧） */
+/* 前往按钮样式 */
 .pg2-jump-go {
   width: var(--pg2-btn-size);
   height: var(--pg2-btn-size);
@@ -266,7 +265,7 @@
   justify-content: center;
 }
 
-/* 抖动动画（非法输入） */
+/* 抖动动画 */
 @keyframes pg2-shake {
   0% {
     transform: translateX(0);
@@ -289,4 +288,101 @@
 }
 .pg2-jump.pg2-shake {
   animation: pg2-shake 320ms ease;
+}
+
+/* ======================================================
+   响应式设计 - 平板和手机
+   ====================================================== */
+
+/* 平板设备 (768px - 1024px) */
+@media screen and (max-width: 1024px) {
+  .pg2-paginator {
+    --pg2-btn-size: 52px;
+    --pg2-current-height: 48px;
+    --pg2-width: 76px;
+    --pg2-gap: 20px;
+  }
+
+  .pg2-btn,
+  .pg2-current,
+  .pg2-jump-input,
+  .pg2-jump-go {
+    font-size: 16px;
+  }
+
+  .pg2-current {
+    font-size: 18px;
+  }
+
+  .pg2-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* 手机设备 (小于768px) */
+@media screen and (max-width: 768px) {
+  .pg2-paginator {
+    --pg2-btn-size: 44px;
+    --pg2-current-height: 40px;
+    --pg2-width: 64px;
+    --pg2-gap: 12px !important; /* 提高优先级覆盖其他CSS */
+    gap: 8px;
+  }
+
+  .pg2-btn,
+  .pg2-current,
+  .pg2-jump-input,
+  .pg2-jump-go {
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .pg2-current {
+    font-size: 16px;
+  }
+
+  .pg2-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* 确保主内容在手机上边距正确 */
+  .site-content {
+    padding-right: 0 !important; /* 提高优先级 */
+  }
+
+  /* 调整按钮的hover效果，在手机上稍微减弱 */
+  .pg2-btn:not(.pg2-disabled):hover,
+  .pg2-jump-go:not(.pg2-disabled):hover {
+    transform: translateY(-6px);
+  }
+}
+
+/* 超小手机设备 (小于480px) */
+@media screen and (max-width: 480px) {
+  .pg2-paginator {
+    --pg2-btn-size: 40px;
+    --pg2-current-height: 36px;
+    --pg2-width: 56px;
+    --pg2-gap: 8px !important;
+    gap: 6px;
+  }
+
+  .pg2-btn,
+  .pg2-current,
+  .pg2-jump-input,
+  .pg2-jump-go {
+    font-size: 11px;
+    border-radius: 8px;
+  }
+
+  .pg2-current {
+    font-size: 14px;
+  }
+
+  .pg2-btn svg {
+    width: 18px;
+    height: 18px;
+  }
 }

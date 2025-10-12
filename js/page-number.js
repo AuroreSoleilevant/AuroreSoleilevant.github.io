@@ -4,7 +4,7 @@
   const CONFIG = {
     maxPages: {
       histoire: 1, // 故事区最大页数
-      article: 2, // 文章区最大页数
+      article: 1, // 文章区最大页数
       // 1.在这里扩展未来可能的新区的最大页数
     },
   };
