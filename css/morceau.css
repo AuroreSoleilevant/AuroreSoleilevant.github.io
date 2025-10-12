@@ -1,6 +1,4 @@
-/* ======================================================
-   磁贴模块 CSS - 也许不会炸掉手机的测试版本
-   ====================================================== */
+/* 文章磁贴模块  */
 
 :root {
   --mt-radius: 14px;
@@ -26,26 +24,29 @@
   box-sizing: border-box;
 }
 
-/* 单个磁贴 - 固定宽度，确保一致 */
+/* 单个磁贴 - 固定宽度 */
 .mt-tile {
   flex: 0 0 calc(33.333% - 14px);
   min-width: 280px;
   max-width: calc(33.333% - 14px);
+
+  /* 使用半透明背景，透出底部圆点 */
   background: radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.02) 1px,
-      transparent 1px
+      circle at 30% 20%,
+      rgba(255, 255, 255, 0.15) 0%,
+      transparent 50%
     ),
-    linear-gradient(
-      to bottom right,
-      rgba(255, 255, 255, 0.08),
-      rgba(255, 255, 255, 0.02)
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 50%
     ),
-    var(--mt-color, rgba(25, 35, 60, 0.05));
-  background-size: 10px 10px, auto, auto;
+    var(--mt-color, rgba(255, 255, 255, 0.25));
+
   border-radius: var(--mt-radius);
   box-shadow: 0 var(--mt-elev-y) var(--mt-elev-blur) var(--mt-elev-color),
-    0 0 15px var(--mt-glow-color);
+    0 0 20px var(--mt-glow-color), inset 0 1px 0 rgba(255, 255, 255, 0.2); /* 内发光增强立体感 */
+
   isolation: isolate;
   overflow: hidden;
   transition: transform 280ms cubic-bezier(0.2, 0.9, 0.3, 1),
@@ -55,9 +56,9 @@
   color: inherit;
   display: block;
 
-  /* 只在支持且性能好的设备上使用毛玻璃效果 */
-  -webkit-backdrop-filter: blur(6px) saturate(120%);
-  backdrop-filter: blur(6px) saturate(120%);
+  /* 移除 backdrop-filter 让背景圆点可见 */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* 顶部图片 */
@@ -94,15 +95,16 @@
   line-height: 1.2;
   font-family: "LXGWWenKai", system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial;
+  color: #2c3e50; /* 深色确保在浅色背景上可读 */
 }
 
 /* 描述文本 - 左对齐 */
 .mt-description {
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   line-height: 1.5;
   margin: 0;
   text-align: left;
-  color: rgba(0, 0, 0, 0.8);
+  color: #34495e; /* 深灰色确保可读性 */
 }
 
 /* 标签容器 - 自动换行 */
@@ -115,13 +117,16 @@
 
 /* 单个标签 */
 .mt-tag {
-  background: rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   padding: 4px 10px;
   font-size: 0.8rem;
   line-height: 1.2;
   white-space: nowrap;
+  color: #2c3e50;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 /* =========== 视觉效果 =========== */
@@ -137,30 +142,11 @@
   border-radius: inherit;
   background: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.25),
     rgba(255, 255, 255, 0)
   );
   pointer-events: none;
   z-index: 1;
-}
-
-/* 光泽滑动效果 - 只在非移动设备上启用 */
-.mt-tile::after {
-  content: "";
-  position: absolute;
-  inset: -10% -40%;
-  transform: translateX(-120%) rotate(-12deg);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.08) 45%,
-    rgba(255, 255, 255, 0.02) 55%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0;
-  transition: opacity 0.35s ease, transform 0.8s cubic-bezier(0.2, 0.9, 0.2, 1);
 }
 
 /* 悬停效果 */
@@ -168,32 +154,28 @@
   transform: translateY(-8px);
   box-shadow: 0 calc(var(--mt-elev-y) * 2) calc(var(--mt-elev-blur) + 10px)
       rgba(0, 0, 0, 0.35),
-    0 0 20px var(--mt-glow-color);
-}
-
-.mt-tile:hover::after {
-  opacity: 1;
-  transform: translateX(120%) rotate(-12deg);
+    0 0 30px var(--mt-glow-color), inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 /* 点击效果 */
 .mt-tile:active {
   transform: translateY(-2px) scale(0.997);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), 0 0 10px var(--mt-glow-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), 0 0 15px var(--mt-glow-color),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
   transition-duration: 120ms;
 }
 
 /* 键盘焦点样式 */
 .mt-tile:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.12);
+  outline: 2px solid rgba(255, 255, 255, 0.3);
   outline-offset: 4px;
   transform: translateY(-6px);
   box-shadow: 0 calc(var(--mt-elev-y) * 1.5) calc(var(--mt-elev-blur) + 6px)
       rgba(0, 0, 0, 0.3),
-    0 0 18px var(--mt-glow-color);
+    0 0 25px var(--mt-glow-color);
 }
 
-/* =========== 移动端性能优化 =========== */
+/* =========== 响应式 =========== */
 
 /* 平板：两列布局 */
 @media (max-width: 1024px) {
@@ -206,40 +188,34 @@
     flex: 0 0 calc(50% - 10px);
     max-width: calc(50% - 10px);
   }
+
+  .mt-description {
+    font-size: 1rem;
+  }
 }
 
-/* 手机：单列布局 + 性能优化 */
-@media (max-width: 768px) {
+/* 手机：单列布局，性能容易爆炸，哎呀 */
+@media (max-width: 750px) {
   .mt-container {
-    width: 100%;
+    width: calc(100% - 80px); /* 减少宽度，为分页模块留出空间 */
     margin-left: 0;
-    padding: 0 20px;
+    padding: 0 20px 0 0; /* 右侧保留内边距 */
     box-sizing: border-box;
     gap: 16px;
-
-    /* 优化移动端渲染 */
-    -webkit-overflow-scrolling: touch;
-    transform: translateZ(0);
   }
 
   .mt-tile {
     flex: 0 0 100%;
     max-width: 100%;
     min-width: auto;
+    margin-left: 20px; /* 磁贴整体右移，避开左侧边缘 */
 
-    /* 移动端禁用耗性能的效果 */
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-    transform: translateZ(0);
-
-    /* 简化阴影提升性能 */
+    /* 移动端简化效果 */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
-    /* 优化过渡动画 */
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  /* 移动端禁用光泽效果 */
+  /* 移动端简化光泽效果 */
   .mt-tile::after {
     display: none;
   }
@@ -267,9 +243,13 @@
   .mt-image {
     height: 120px;
   }
+
+  .mt-description {
+    font-size: 0.9rem;
+  }
 }
 
-/* 小手机调整 + 进一步性能优化 */
+/* 小手机调整 */
 @media (max-width: 480px) {
   .mt-container {
     gap: 12px;
@@ -277,12 +257,7 @@
   }
 
   .mt-tile {
-    /* 进一步简化移动端效果 */
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
-
-    /* 禁用复杂的背景图案 */
-    background: var(--mt-color, rgba(25, 35, 60, 0.05)) !important;
-    background-size: auto !important;
   }
 
   /* 移动端完全禁用悬停抬起效果 */
@@ -319,7 +294,18 @@
   }
 }
 
-/* =========== 无障碍支持 =========== */
+/* 超小手机额外调整 */
+@media (max-width: 375px) {
+  .mt-container {
+    width: calc(100% - 60px); /* 进一步减少宽度 */
+  }
+
+  .mt-tile {
+    margin-left: 7.5px; /* 进一步降低左边距 */
+  }
+}
+
+/* =========== 无障碍 =========== */
 
 /* 减少动画偏好 */
 @media (prefers-reduced-motion: reduce) {
@@ -336,17 +322,5 @@
 
   .mt-tile:hover {
     transform: none;
-  }
-}
-
-/* 检测低性能设备 */
-@media (max-width: 768px) and (max-resolution: 1.5dppx) {
-  .mt-tile {
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-  }
-
-  .mt-tile::after {
-    display: none;
   }
 }

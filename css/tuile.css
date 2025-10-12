@@ -83,8 +83,8 @@
     0 0 15px var(--tile-glow-color);
 
   /* 毛玻璃 / mica 效果（需要半透明 tile-color 才可见） */
-  -webkit-backdrop-filter: blur(var(--tile-blur)) saturate(120%);
-  backdrop-filter: blur(var(--tile-blur)) saturate(120%);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 
   /* 创建局部堆叠上下文，用来减少外部干扰 */
   isolation: isolate;
