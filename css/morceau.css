@@ -56,7 +56,8 @@
   color: inherit;
   display: block;
 
-  /* 移除 backdrop-filter 让背景圆点可见 */
+  position: relative;
+  contain: paint;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
