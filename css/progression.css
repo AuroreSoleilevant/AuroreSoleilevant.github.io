@@ -1,0 +1,22 @@
+/* 进度条 */
+.reading-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 100%;
+  background-color: #d6ecf0;
+  transform-origin: left center;
+  transform: scaleX(0);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: transform 0.1s linear, opacity 0.3s ease;
+  -webkit-transform-origin: left center;
+}
+
+@media (max-width: 768px) {
+  .reading-progress {
+    height: 3px; /* 更细 */
+  }
+}
