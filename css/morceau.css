@@ -325,3 +325,47 @@
     transform: none;
   }
 }
+
+/* ====== 性能优化补丁（移动优先，覆盖原规则） ====== */
+
+/* 1. 保证伪元素在 tile 内定位 */
+.mt-tile {
+  position: relative;
+  /* 移除全局 will-change（若之前定义过，请确保这行覆盖） */
+  will-change: auto;
+  /* 使用 CSS contain 减少重绘范围（如有副作用请改为 contain: paint;） */
+  contain: paint;
+}
+
+/* 2. 在交互时才提升图层（保持平滑过渡） */
+.mt-tile:hover,
+.mt-tile:active,
+.mt-tile.is-lifted {
+  will-change: transform, box-shadow;
+  transform: translateZ(0);
+}
+
+/* 3. 在移动端（<= 750px）进一步简化视觉开销 */
+@media (max-width: 750px) {
+  .mt-tile::before {
+    display: none !important;
+  } /* 关闭顶部高光伪元素 */
+  .mt-tile {
+    background: var(--mt-color, rgba(255, 255, 255, 0.1)) !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1) !important;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  /* 禁用耗性能的 backdrop-filter */
+  .mt-tag {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(255, 255, 255, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  }
+
+  /* 隐藏任何额外的装饰性伪元素 */
+  .mt-tile::after {
+    display: none !important;
+  }
+}
