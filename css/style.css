@@ -738,6 +738,10 @@ footer {
     font-size: 2.5rem;
   }
 
+  h1 {
+    font-size: 1.5rem;
+  }
+
   /* 分割线调整 */
   .section-divider {
     margin: 24px 32px;
