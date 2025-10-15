@@ -297,8 +297,8 @@
 /* 平板设备 (768px - 1024px) */
 @media screen and (max-width: 1024px) {
   .pg2-paginator {
-    --pg2-btn-size: 52px;
-    --pg2-current-height: 48px;
+    --pg2-btn-size: 54px;
+    --pg2-current-height: 50px;
     --pg2-width: 76px;
     --pg2-gap: 20px;
   }
@@ -323,8 +323,8 @@
 /* 手机设备 (小于768px) */
 @media screen and (max-width: 768px) {
   .pg2-paginator {
-    --pg2-btn-size: 44px;
-    --pg2-current-height: 40px;
+    --pg2-btn-size: 50px;
+    --pg2-current-height: 48px;
     --pg2-width: 64px;
     --pg2-gap: 12px !important; /* 提高优先级覆盖其他CSS */
     gap: 8px;
@@ -334,7 +334,7 @@
   .pg2-current,
   .pg2-jump-input,
   .pg2-jump-go {
-    font-size: 14px;
+    font-size: 15px;
     border-radius: 10px;
   }
 
@@ -362,8 +362,8 @@
 /* 超小手机设备 (小于480px) */
 @media screen and (max-width: 480px) {
   .pg2-paginator {
-    --pg2-btn-size: 40px;
-    --pg2-current-height: 36px;
+    --pg2-btn-size: 48px;
+    --pg2-current-height: 46px;
     --pg2-width: 56px;
     --pg2-gap: 8px !important;
     gap: 6px;
@@ -373,7 +373,7 @@
   .pg2-current,
   .pg2-jump-input,
   .pg2-jump-go {
-    font-size: 11px;
+    font-size: 15px;
     border-radius: 8px;
   }
 
