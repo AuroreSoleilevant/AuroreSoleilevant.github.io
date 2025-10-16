@@ -103,6 +103,7 @@
   ];
 
   const deferredScripts = [
+    "/js/mots.js", // 字数统计
     "/js/backtop.js", // 回到顶部按钮
     "/js/blink.js", // 顶栏闪烁
   ];
