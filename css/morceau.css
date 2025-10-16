@@ -108,6 +108,10 @@
   color: #34495e; /* 深灰色确保可读性 */
 }
 
+.mt-info {
+  font-size: 1rem;
+}
+
 /* 标签容器 - 自动换行 */
 .mt-tags {
   display: flex;
@@ -177,7 +181,11 @@
   }
 
   .mt-description {
-    font-size: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .mt-info {
+    font-size: 0.9rem;
   }
 }
 
@@ -234,6 +242,10 @@
   .mt-description {
     font-size: 0.9rem;
   }
+
+  .mt-info {
+    font-size: 0.7rem;
+  }
 }
 
 /* 小手机调整 */
@@ -273,6 +285,10 @@
 
   .mt-description {
     font-size: 0.9rem;
+  }
+
+  .mt-info {
+    font-size: 0.7rem;
   }
 
   .mt-tag {
