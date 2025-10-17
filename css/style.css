@@ -875,13 +875,15 @@ footer {
 
   /* 底栏调整 */
   .site-footer {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     padding: 14px 16px;
+    min-height: 100px; /* 增加高度容纳三行 */
   }
 
   .site-footer::after {
     right: 6px;
     font-size: 0.8rem;
+    transform: translateY(-160%); /* 版权文本上移 */
   }
 
   .contact-btn {
@@ -898,10 +900,16 @@ footer {
 
   .main-content {
     padding-top: 45px;
+    bottom: 8px; /* 按钮行稍微上移 */
   }
 
   .footer-links {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+    display: grid; /* 使用网格布局 */
+    grid-template-columns: 1fr 1fr; /* 两列 */
+    grid-template-rows: auto auto; /* 两行 */
+    gap: 6px 12px; /* 行列间距 */
+    transform: translateY(-90%); /* 链接整体上移 */
   }
 
   .site-footer::after {
@@ -933,7 +941,7 @@ footer {
 
   .footer-links {
     gap: 8px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
 
   .site-footer::after {
@@ -969,19 +977,6 @@ footer {
   ul {
     margin-left: 72px;
     margin-right: 72px;
-  }
-}
-
-@media (max-width: 350px) {
-  /* 底栏字体调整 */
-  .footer-links {
-    font-size: 0.675rem; /* 调整链接字体 */
-    transform: translateY(-160%);
-  }
-
-  .site-footer::after {
-    font-size: 0.675rem; /* 调整版权字体 */
-    transform: translateY(-160%);
   }
 }
 

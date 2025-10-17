@@ -83,6 +83,7 @@
       crossorigin: true,
     },
     { rel: "stylesheet", href: `/css/style.css?v=${version1}` }, // 全局样式表
+    { rel: "stylesheet", href: `/css/progression.css` }, // 进度条
     { rel: "icon", href: "/icons/logo.png", type: "image/x-icon" },
   ];
 
@@ -106,6 +107,7 @@
     "/js/mots.js", // 字数统计
     "/js/backtop.js", // 回到顶部按钮
     "/js/blink.js", // 顶栏闪烁
+    "/js/progression.js", // 阅读进度条
   ];
 
   // 同步脚本（仅在数组中有项时才执行同步加载）
