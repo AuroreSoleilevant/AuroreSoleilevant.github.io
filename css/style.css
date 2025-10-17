@@ -600,6 +600,105 @@ footer {
   position: absolute;
   inset: 0;
 }
+
+/* 引用文本 */
+.sticky-quote {
+  display: inline-block;
+  position: relative;
+  /* 左右留白给引号与文字，底部留出空间给右下引号和接缝 */
+  padding: 12px 34px 12px 34px;
+  border-radius: 4px;
+  border: 1px solid #d0d07a;
+  box-shadow: 2px 2px 8px rgba(90, 62, 54, 0.12);
+  color: inherit;
+  font-family: inherit;
+  line-height: 1.45;
+  max-width: 100%;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+  background-clip: padding-box;
+
+  /* 多层背景：最下面是纯色 -> 细条纹 -> 两个污点点阵 -> 底部接缝 */
+  background:
+    /* 底部接缝：放在最上层，定位到右下，宽度 70% 高 2px，不重复 */ repeating-linear-gradient(
+        to right,
+        rgba(192, 192, 112, 0.6) 0 3px,
+        transparent 3px 6px
+      )
+      right calc(6px) / 70% 2px no-repeat,
+    /* 污点（右下/左上两处点阵），用 radial-gradients，指定尺寸并重复 */
+      radial-gradient(
+        circle at 80% 70%,
+        rgba(220, 220, 150, 0.28) 0.6px,
+        transparent 1px
+      )
+      0 0 / 15px 15px repeat,
+    radial-gradient(
+        circle at 20% 30%,
+        rgba(220, 220, 150, 0.28) 0.6px,
+        transparent 1px
+      )
+      0 0 / 15px 15px repeat,
+    /* 细条纹（壁纸风格） */
+      repeating-linear-gradient(
+        0deg,
+        rgba(232, 232, 160, 0.4) 0 2px,
+        /* 浅线条半透明 */ rgba(245, 245, 184, 0.4) 2px 4px /* 底色半透明 */
+      )
+      repeat,
+    /* 最底色 */
+      linear-gradient(rgba(245, 245, 184, 0.95), rgba(245, 245, 184, 0.95));
+}
+
+/* 左引号：用像素/正偏移，避免因 line-height 导致“飞起来！” */
+.sticky-quote::before {
+  content: "“";
+  position: absolute;
+  left: 10px;
+  top: 1px; /* 越小越往上，保证在 padding 内 */
+  font-family: inherit;
+  font-size: 2.4em; /* 较大，看起来像贴纸上的引号 */
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.12);
+  transform: rotate(-10deg);
+  pointer-events: none;
+  user-select: none;
+  z-index: 3;
+}
+
+/* 右引号：相对固定到右下角 */
+.sticky-quote::after {
+  content: "”";
+  position: absolute;
+  right: 10px;
+  bottom: -30px; /* 越小越往下，放在右下角，配合底部 padding */
+  font-family: inherit;
+  font-size: 2.4em;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.12);
+  transform: rotate(10deg);
+  pointer-events: none;
+  user-select: none;
+  z-index: 3;
+}
+
+/* data-open / data-close 覆盖引号字符 */
+.sticky-quote[data-open]::before {
+  content: attr(data-open);
+}
+.sticky-quote[data-close]::after {
+  content: attr(data-close);
+}
+
+/* 引用来源样式 */
+.sticky-quote .quote-source {
+  display: block;
+  text-align: right;
+  font-size: 0.85em; /* 比正文略小 */
+  color: rgba(0, 0, 0, 0.6); /* 更柔和的颜色 */
+  margin-top: 0.3em;
+  font-style: italic;
+}
 /* ---------- 其他：结束 ---------- */
 
 /* 平板设备 */
@@ -680,6 +779,11 @@ footer {
   }
   .main-content {
     padding-top: 65px;
+  }
+
+  .sticky-quote::after {
+    right: 8px;
+    bottom: -20px;
   }
 }
 
@@ -914,6 +1018,20 @@ footer {
 
   .site-footer::after {
     right: 12px;
+  }
+
+  .sticky-quote {
+    padding: 18px 20px 18px 20px;
+    max-width: 95%;
+  }
+
+  .sticky-quote::before {
+    top: 6px;
+    left: 8px;
+  }
+  .sticky-quote::after {
+    right: 8px;
+    bottom: -10px;
   }
 }
 
