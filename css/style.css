@@ -786,6 +786,38 @@ footer {
   }
 }
 
+/* 中小屏幕：底栏两行布局 */
+@media (max-width: 700px) {
+  .site-footer {
+    font-size: 0.9rem;
+    min-height: 80px;
+    padding: 14px 16px;
+  }
+
+  .site-footer::after {
+    right: 12px;
+    font-size: 0.9rem;
+    transform: translateY(-140%);
+  }
+
+  .footer-links {
+    gap: 12px;
+    font-size: 0.9rem;
+    left: 12px;
+    transform: translateY(-140%);
+  }
+
+  .footer-contacts {
+    position: absolute;
+    top: auto;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    gap: 20px;
+    z-index: 6;
+  }
+}
+
 /* 小屏手机 */
 @media (max-width: 480px) {
   /* 顶栏调整 */
@@ -844,7 +876,6 @@ footer {
   /* 底栏调整 */
   .site-footer {
     font-size: 0.8rem;
-    min-height: 80px; /* 增高底栏，给上下两行留空间 */
     padding: 14px 16px;
   }
 
@@ -869,27 +900,12 @@ footer {
     padding-top: 45px;
   }
 
-  /* 按钮放到底部 */
-  .footer-contacts {
-    position: absolute;
-    top: auto; /* 取消垂直居中 */
-    bottom: 12px; /* 距底部一定距离 */
-    left: 50%;
-    transform: translateX(-50%); /* 仅水平居中 */
-    gap: 20px;
-    z-index: 6;
+  .footer-links {
+    font-size: 0.8rem;
   }
 
-  /* 上下位置变量，translateY负则高，两个得一样 */
-  .footer-links {
-    gap: 12px;
-    font-size: 0.8rem;
-    left: 12px;
-    transform: translateY(-140%);
-  }
   .site-footer::after {
     right: 12px;
-    transform: translateY(-140%);
   }
 }
 
