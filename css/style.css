@@ -519,6 +519,25 @@ footer {
 /* 消失可用淡出 */
 /* ---------- 回到顶部按钮：结束 ---------- */
 
+/* ---------- 评论按钮：开始 ---------- */
+.comment-button {
+  /* 复用回到顶部的基础规则 */
+  background: var(--comment-bg, #b9a4e6); /* 颜色变量 */
+  color: var(--comment-color, #fff);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+/* 让 icon 可继承颜色 */
+.comment-button .backtop-icon {
+  filter: none;
+}
+
+/* 按钮在回到顶部按钮之上的间距变量 */
+:root {
+  --comment-gap: 12px;
+}
+/* ---------- 评论按钮：结束 ---------- */
+
 /* ---------- 其他：开始 ---------- */
 /* 分割线 */
 .section-divider {

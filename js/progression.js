@@ -1,4 +1,3 @@
-/* 进度条 */
 (() => {
   const startEl = document.querySelector("[data-progress-start]");
   const endEl = document.querySelector("[data-progress-end]");
@@ -23,11 +22,11 @@
     const sRect = startEl.getBoundingClientRect();
     const eRect = endEl.getBoundingClientRect();
 
-    // 计算方法
+    // 计算方法：start/end 基于元素相对于文档顶部的位置（viewport 顶部作为基准）
     startY = scrollY + sRect.top;
     endY = scrollY + eRect.top;
 
-    // 未来可能的动态工具栏
+    // 防止除零
     totalH = Math.max(1, endY - startY);
 
     console.log("Bounds recalculated:", {
@@ -55,20 +54,30 @@
     ticking = false;
     const scrollY = getScrollY();
 
-    if (scrollY < startY) {
-      setProgress(0);
-      bar.style.opacity = "0";
-      return;
-    }
-
-    if (scrollY >= endY - viewportHeight) {
+    // 新增：检测是否滚动到页面底部（consider small epsilon）
+    const docHeight = Math.max(
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight
+    );
+    const maxScrollY = Math.max(0, docHeight - viewportHeight);
+    const EPS = 2; // 像素容差，避免浮点或布局差异
+    if (scrollY >= maxScrollY - EPS) {
       setProgress(1);
       bar.style.opacity = "1";
       scheduleHide();
       return;
     }
 
+    // 仍然采用基于 startY/endY 的比例计算进度（不变）
     const p = (scrollY - startY) / totalH;
+
+    if (p <= 0) {
+      setProgress(0);
+      bar.style.opacity = "0";
+      return;
+    }
+
+    // 统一由 setProgress 内部 clamp 处理
     setProgress(p);
     bar.style.opacity = "1";
     scheduleHide();
