@@ -1,149 +1,161 @@
 (() => {
-  const startEl = document.querySelector("[data-progress-start]");
-  const endEl = document.querySelector("[data-progress-end]");
-  if (!startEl || !endEl) return;
+  console.log("进度条脚本开始执行"); // 调试信息，鬼知道有什么问题
 
-  const bar = document.createElement("div");
-  bar.className = "reading-progress";
-  document.body.appendChild(bar);
+  // 延迟执行，确保 DOM 完全加载
+  function initProgressBar() {
+    const startEl = document.querySelector("[data-progress-start]");
+    const endEl = document.querySelector("[data-progress-end]");
 
-  let ticking = false;
-  let startY = 0,
-    endY = 0,
-    totalH = 1;
-  let hideTimer = null;
-  const HIDE_DELAY = 600;
+    console.log("查找进度条元素:", { startEl, endEl }); // 调试信息
 
-  // 视口高度缓存
-  let viewportHeight = window.innerHeight;
+    if (!startEl || !endEl) {
+      console.warn("进度条起始或结束元素未找到");
+      return;
+    }
 
-  function recalcBounds() {
-    const scrollY = getScrollY();
-    const sRect = startEl.getBoundingClientRect();
-    const eRect = endEl.getBoundingClientRect();
+    // 检查是否已经存在进度条
+    if (document.querySelector(".reading-progress")) {
+      console.log("进度条已存在，跳过初始化");
+      return;
+    }
 
-    // 计算方法：start/end 基于元素相对于文档顶部的位置（viewport 顶部作为基准）
-    startY = scrollY + sRect.top;
-    endY = scrollY + eRect.top;
+    const bar = document.createElement("div");
+    bar.className = "reading-progress";
+    document.body.appendChild(bar);
 
-    // 防止除零
-    totalH = Math.max(1, endY - startY);
+    let ticking = false;
+    let startY = 0,
+      endY = 0,
+      totalH = 1;
+    let hideTimer = null;
+    const HIDE_DELAY = 600;
+    let viewportHeight = window.innerHeight;
 
-    console.log("Bounds recalculated:", {
-      startY,
-      endY,
-      totalH,
-      viewportHeight,
-    });
-  }
+    function recalcBounds() {
+      try {
+        const scrollY = getScrollY();
+        const sRect = startEl.getBoundingClientRect();
+        const eRect = endEl.getBoundingClientRect();
 
-  // 统一的滚动位置获取
-  function getScrollY() {
-    return (
-      window.scrollY || window.pageYOffset || document.documentElement.scrollTop
-    );
-  }
+        startY = scrollY + sRect.top;
+        endY = scrollY + eRect.top;
+        totalH = Math.max(1, endY - startY);
 
-  function setProgress(p) {
-    const progress = Math.min(Math.max(p, 0), 1);
-    bar.style.transform = `scaleX(${progress})`;
-    bar.style.webkitTransform = `scaleX(${progress})`; // 移动端兼容
-  }
+        console.log("进度条边界计算完成:", { startY, endY, totalH });
+      } catch (error) {
+        console.error("计算进度条边界时出错:", error);
+      }
+    }
 
-  function updateProgress() {
-    ticking = false;
-    const scrollY = getScrollY();
+    function getScrollY() {
+      return (
+        window.scrollY ||
+        window.pageYOffset ||
+        document.documentElement.scrollTop
+      );
+    }
 
-    // 新增：检测是否滚动到页面底部（consider small epsilon）
-    const docHeight = Math.max(
-      document.documentElement.scrollHeight,
-      document.body.scrollHeight
-    );
-    const maxScrollY = Math.max(0, docHeight - viewportHeight);
-    const EPS = 2; // 像素容差，避免浮点或布局差异
-    if (scrollY >= maxScrollY - EPS) {
-      setProgress(1);
+    function setProgress(p) {
+      const progress = Math.min(Math.max(p, 0), 1);
+      bar.style.transform = `scaleX(${progress})`;
+      bar.style.webkitTransform = `scaleX(${progress})`;
+    }
+
+    function updateProgress() {
+      ticking = false;
+      const scrollY = getScrollY();
+
+      const docHeight = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight
+      );
+      const maxScrollY = Math.max(0, docHeight - viewportHeight);
+      const EPS = 2;
+
+      if (scrollY >= maxScrollY - EPS) {
+        setProgress(1);
+        bar.style.opacity = "1";
+        scheduleHide();
+        return;
+      }
+
+      const p = (scrollY - startY) / totalH;
+
+      if (p <= 0) {
+        setProgress(0);
+        bar.style.opacity = "0";
+        return;
+      }
+
+      setProgress(p);
       bar.style.opacity = "1";
       scheduleHide();
-      return;
     }
 
-    // 仍然采用基于 startY/endY 的比例计算进度（不变）
-    const p = (scrollY - startY) / totalH;
-
-    if (p <= 0) {
-      setProgress(0);
-      bar.style.opacity = "0";
-      return;
+    function scheduleHide() {
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        bar.style.opacity = "0";
+      }, HIDE_DELAY);
     }
 
-    // 统一由 setProgress 内部 clamp 处理
-    setProgress(p);
-    bar.style.opacity = "1";
-    scheduleHide();
-  }
-
-  function scheduleHide() {
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(() => {
-      bar.style.opacity = "0";
-    }, HIDE_DELAY);
-  }
-
-  function requestTick() {
-    if (!ticking) {
-      ticking = true;
-      requestAnimationFrame(updateProgress);
+    function requestTick() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateProgress);
+      }
     }
-  }
 
-  function handleResize() {
-    viewportHeight = window.innerHeight;
-    // 延迟重新计算
-    setTimeout(() => {
-      recalcBounds();
-      requestTick();
-    }, 100);
-  }
+    function handleResize() {
+      viewportHeight = window.innerHeight;
+      setTimeout(() => {
+        recalcBounds();
+        requestTick();
+      }, 100);
+    }
 
-  function handleLoad() {
-    // 页面完全加载后重新计算
-    setTimeout(() => {
-      recalcBounds();
-      requestTick();
-    }, 500);
-  }
+    function handleLoad() {
+      setTimeout(() => {
+        recalcBounds();
+        requestTick();
+      }, 500);
+    }
 
-  // 事件监听
-  window.addEventListener("scroll", requestTick, { passive: true });
-  window.addEventListener("resize", handleResize, { passive: true });
-  window.addEventListener("orientationchange", handleResize, { passive: true });
+    // 事件监听
+    window.addEventListener("scroll", requestTick, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("orientationchange", handleResize, {
+      passive: true,
+    });
 
-  // 监听页面加载完成
-  if (document.readyState === "loading") {
-    window.addEventListener("load", handleLoad);
-  } else {
-    handleLoad();
-  }
+    // 初始化和监听
+    recalcBounds();
+    requestTick();
 
-  // 监听DOM变化
-  const observer = new MutationObserver(() => {
-    setTimeout(() => {
-      recalcBounds();
-      requestTick();
-    }, 100);
-  });
+    // DOM 变化监听
+    const observer = new MutationObserver(() => {
+      setTimeout(() => {
+        recalcBounds();
+        requestTick();
+      }, 100);
+    });
 
-  if (startEl.parentNode && endEl.parentNode) {
     observer.observe(document.body, {
       childList: true,
       subtree: true,
       attributes: false,
       characterData: false,
     });
+
+    console.log("进度条初始化完成");
   }
 
-  // 初始计算
-  recalcBounds();
-  requestTick();
+  // 多种初始化方式确保执行
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initProgressBar);
+    window.addEventListener("load", initProgressBar);
+  } else {
+    // DOM 已经就绪，但稍微延迟确保所有元素加载完成
+    setTimeout(initProgressBar, 100);
+  }
 })();
