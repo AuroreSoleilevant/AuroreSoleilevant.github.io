@@ -1036,14 +1036,14 @@ footer {
 }
 
 /* 超小屏手机 (小于360px) */
-@media (max-width: 360px) {
+@media (max-width: 380px) {
   .nav-links {
     gap: 15px;
     margin-left: 20px;
   }
 
   .nav-item {
-    font-size: 1em;
+    font-size: 0.9em;
   }
 
   main p,
