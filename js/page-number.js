@@ -5,7 +5,8 @@
     maxPages: {
       histoire: 1, // 故事区最大页数
       article: 1, // 文章区最大页数
-      musique: 1, //音乐分类区
+      // 分类页面配置 - 每个分类单独设置最大页数
+      "tag/musique": 1, // musique分类最大页数
       // 1.在这里扩展未来可能的新区的最大页数
     },
   };
@@ -20,6 +21,18 @@
   function getSectionAndPage() {
     const seg = getSegments();
     if (seg.length === 0) return { section: null, page: null };
+
+    // 检查是否是标签页面 (/tag/xxx 或 /tag/xxx/页码)
+    if (seg[0] === "tag" && seg.length >= 2) {
+      const tagSlug = seg[1];
+      const page = seg[2] && /^\d+$/.test(seg[2]) ? parseInt(seg[2], 10) : 1;
+      return {
+        section: `tag/${tagSlug}`, // 使用 "tag/标签名" 作为section标识
+        page,
+        tagSlug,
+      };
+    }
+
     const section = seg[0];
     if (
       section !== "histoire" &&
@@ -32,9 +45,16 @@
     return { section, page };
   }
 
-  function buildUrl(section, page) {
-    if (page === 1) return `/${section}`;
-    return `/${section}/${page}`;
+  function buildUrl(section, page, tagSlug) {
+    // 处理标签页面
+    if (section.startsWith("tag/")) {
+      if (page === 1) return `/tag/${tagSlug}`;
+      return `/tag/${tagSlug}/${page}`;
+    } else {
+      // 处理普通页面
+      if (page === 1) return `/${section}`;
+      return `/${section}/${page}`;
+    }
   }
 
   function createModuleDom() {
@@ -78,8 +98,10 @@
   }
 
   function init() {
-    const { section, page } = getSectionAndPage();
-    if (!section) return;
+    const result = getSectionAndPage();
+    if (!result.section) return;
+
+    const { section, page, tagSlug } = result;
 
     let module = document.getElementById("pg2-paginator");
     if (!module) module = createModuleDom();
@@ -91,7 +113,6 @@
     const jumpInput = module.querySelector(".pg2-jump-input");
     let goBtn = module.querySelector(".pg2-jump-go");
 
-    // Insert SVGs
     prevBtn.innerHTML = arrowSvg("left");
     nextBtn.innerHTML = arrowSvg("right");
 
@@ -118,11 +139,11 @@
 
     prevBtn.addEventListener("click", () => {
       if (isFirst) return;
-      location.href = buildUrl(section, page - 1);
+      location.href = buildUrl(section, page - 1, tagSlug);
     });
     nextBtn.addEventListener("click", () => {
       if (isLast) return;
-      location.href = buildUrl(section, page + 1);
+      location.href = buildUrl(section, page + 1, tagSlug);
     });
 
     if (!goBtn) {
@@ -145,7 +166,7 @@
         updateGoState();
         return;
       }
-      const target = buildUrl(section, v);
+      const target = buildUrl(section, v, tagSlug);
       location.href = target;
     }
 
