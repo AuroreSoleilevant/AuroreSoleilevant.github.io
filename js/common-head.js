@@ -1,6 +1,6 @@
 (() => {
   const head = document.head;
-  const version1 = "111025.1"; // style.css 版本号
+  const version1 = "191025.1"; // style.css 版本号
 
   // ------------------------
   // 同步注入脚本
