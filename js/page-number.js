@@ -5,6 +5,7 @@
     maxPages: {
       histoire: 1, // 故事区最大页数
       article: 1, // 文章区最大页数
+      musique: 1, //音乐分类区
       // 1.在这里扩展未来可能的新区的最大页数
     },
   };
@@ -20,7 +21,11 @@
     const seg = getSegments();
     if (seg.length === 0) return { section: null, page: null };
     const section = seg[0];
-    if (section !== "histoire" && section !== "article")
+    if (
+      section !== "histoire" &&
+      section !== "article" &&
+      section !== "musique"
+    )
       // 2.把新区的名字写进白名单
       return { section: null, page: null };
     const page = seg[1] && /^\d+$/.test(seg[1]) ? parseInt(seg[1], 10) : 1;

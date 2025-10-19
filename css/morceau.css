@@ -120,13 +120,22 @@
   margin-top: 8px;
 }
 
+.mt-tags a.mt-tag,
+.mt-tags a.mt-tag:link,
+.mt-tags a.mt-tag:visited,
+.mt-tags a.mt-tag:hover,
+.mt-tags a.mt-tag:active {
+  text-decoration: none !important;
+  color: inherit !important; /* 保持文字颜色和原来一致 */
+}
+
 /* 单个标签 */
 .mt-tag {
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 12px;
   padding: 4px 10px;
-  font-size: 0.8rem;
+  font-size: 1rem;
   line-height: 1.2;
   white-space: nowrap;
   color: #2c3e50;
