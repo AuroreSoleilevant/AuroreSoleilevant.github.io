@@ -8,10 +8,93 @@
   <!-- 调用列表 -->
   <script src="/js/common-head.js" fetchpriority="high"></script>
   <script src="/js/list.js"></script>
-  <script src="/js/page-number.js"></script>
-  <link rel="stylesheet" href="/css/page-number.css">
   <link rel="stylesheet" href="/css/morceau.css">
   
+ <style>
+        .search-container,
+        .search-box,
+        .search-input,
+        .search-button {
+            box-sizing: border-box;
+        }
+        
+        .search-container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            margin: 0 auto; /* 居中显示 */
+        }
+        
+        .search-box {
+            position: relative;
+            width: 100%;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 25px 20px;
+            font-size: 20px;
+            border: none;
+            border-radius: 50px; /* 全圆角设计万岁（不是 */
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: inherit; /* 继承原有字体 */
+        }
+        
+        .search-input:focus {
+            box-shadow: 0 4px 20px rgba(100, 149, 237, 0.4); /* 微光效果 */
+            background-color: rgba(255, 255, 255, 1);
+        }
+        
+        .search-input::placeholder {
+            color: #aaa;
+            font-weight: 300;
+        }
+        
+        .search-button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #6a8caf;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;    /* 搜索按钮大小 */
+            height: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: inherit; /* 继承原有字体 */
+        }
+        
+        .search-button:hover {
+            background-color: #5a7c9f;
+            transform: translateY(-50%) scale(1.05);
+        }
+        
+        .search-button:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+        
+        .search-icon {
+            width: 30px; /* 搜索图标大小 */
+            height: 30px;
+        }
+        
+        .instructions {
+            margin-top: 15px;
+            text-align: center;
+            color: #777;
+            font-size: 20px;
+            font-family: inherit; /* 继承原有字体 */
+        }
+    </style>
+
 </head>
 
 <body class="no-comments">
@@ -25,15 +108,98 @@
   <h1 class="shaking-text">
   搜索
   </h1>
+
+<div class="search-container">
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput">
+            <button class="search-button" id="searchButton">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </button>
+        </div>
+        <p class="instructions">输入后请点击搜索按钮或按回车键哦！</p>
+    </div>
+
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const placeholderTexts = [
+                "要找些什么呢 qaq",
+                "昵嘻嘻，让我看看你要搜什么",
+                "莫忘也用眼睛搜索窗外哦！",
+                "欸，今天也有你感兴趣的东西吗？",
+                "其实萝卜干比榨菜好吃",
+                "我觉得数学题的答案大概是搜不到的",
+                "试试搜索心中所想呢？",
+                "风与风铃夜与夜莺~草莓熊最好了",
+                "海豚是否会梦见地铁",
+                "就像泪水消逝在雨中，迎来死亡",
+                "我们总会穿越风暴，成为另一个人",
+                "不要在酒吧点炒饭",
+                "清晨的第一缕光丝，你还记得吗？"
+            ];
+
+            // 随机选择一个占位符文本
+            function setRandomPlaceholder() {
+                const randomIndex = Math.floor(Math.random() * placeholderTexts.length);
+                searchInput.placeholder = placeholderTexts[randomIndex];
+            }
+
+            // 页面加载时设置随机占位符
+            setRandomPlaceholder();
+            
+            // 处理搜索功能
+            function handleSearch() {
+                // 获取输入内容并清理
+                let searchText = searchInput.value.trim();
+                
+                // 安全处理：防止XSS攻击
+                searchText = sanitizeInput(searchText);
+                
+                // 如果输入为空，显示提示
+                if (searchText === '') {
+                    alert('笨笨，不可以为空啦！');
+                    searchInput.focus();
+                    return;
+                }
+                
+                // 接口以后放这里
+                console.log('或许是找到了？', searchText);
+                
+                // 搜索完成后清空输入框
+                searchInput.value = '';
+            }
+            
+            // 安全函数：清理输入内容，防止XSS攻击
+            function sanitizeInput(input) {
+                const div = document.createElement('div');
+                div.textContent = input;
+                return div.innerHTML;
+            }
+            
+            // 绑定搜索按钮点击事件
+            searchButton.addEventListener('click', handleSearch);
+            
+            // 绑定回车键搜索
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleSearch();
+                }
+            });
+        });
+    </script>
+
   <div id="mt-list"></div>
   <h1 class="text-center">
-  开发中
+  没做完，搜不动的
   </h1>
   </main>
 
   <!-- 左下角日期 -->
   <div class="page-dates">
-  发布：11/10/2025　修改：19/10/2025
+  发布：19/10/2025　修改：19/10/2025
   </div>
 
   <!-- 底栏，需带着 -->
