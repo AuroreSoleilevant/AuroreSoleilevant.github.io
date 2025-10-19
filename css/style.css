@@ -718,6 +718,12 @@ footer {
   margin-top: 0.3em;
   font-style: italic;
 }
+
+/* 评论区右侧修复 */
+#giscus-container {
+  transform: scale(1.01); /* 轻微放大 */
+  transform-origin: center top;
+}
 /* ---------- 其他：结束 ---------- */
 
 /* 平板设备 */
