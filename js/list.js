@@ -1,20 +1,20 @@
-/* article-list.js
-   2025 - 说明与配置在文件顶部（请直接编辑下面的配置项）
-*/
+/* 列表识别js */
 
 (function () {
-  /***** ========== 配置区（请在此手动编辑） ========== *****/
+  /***** ========== 配置区========== *****/
 
   // 路径映射：页面路径前缀 => 对应 JSON 数据文件（可以是相对路径或绝对地址）
-  // 例如：当用户访问 /article 或 /article/2 时，会匹配到 '/article' 并加载 'db/story.json'
+  // 例如：当用户访问 /article 或 /article/2 时，会匹配到 '/article' 并加载 '/json/article.json'
   // 注意：按 key 长度优先匹配（更长的 key 会优先），支持简单前缀匹配。
+  // 希望我下次还看的懂上面的东西
   const ROUTE_TO_DB = {
     "/article": "/json/article.json",
     "/histoire": "/json/histoire.json",
   };
 
   // 挂载点选择器（页面中用于注入磁贴的容器）
-  // 建议在目录页模板中添加： <div id="mt-list"></div>
+  // 在页面中添加： <div id="mt-list"></div>
+  // 没事别改
   const mountSelector = "#mt-list";
 
   // 每页条目数
@@ -23,7 +23,7 @@
   // 如果数据库中没有 display 字段，是否自动格式化 ISO 字符串用于显示（true/false）
   const autoFormatDisplay = true;
 
-  /***** ========== 配置区结束（下面无需改动，除非懂 JS） ========== *****/
+  /***** ========== 配置区结束 ========== *****/
 
   // ---- 工具函数 ----
   function debugLog(...args) {
@@ -82,6 +82,7 @@
   }
 
   // 创建单个磁贴 DOM（与现有 HTML 结构完全一致，唯一不同：tag 用 <a> 可点击）
+  // 太小了点不到什么的随他去吧
   function createTile(entry) {
     const {
       id = "",
@@ -102,7 +103,6 @@
     const createdDisp = created_display || formatDisplay(created_at);
     const updatedDisp = updated_display || formatDisplay(updated_at);
 
-    // create anchor .mt-tile (this is the tile itself)
     const a = document.createElement("a");
     a.className = "mt-tile";
     a.href = url;
