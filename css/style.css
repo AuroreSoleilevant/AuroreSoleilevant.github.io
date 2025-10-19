@@ -169,7 +169,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ---------- 搜索按钮：开始 ---------- */
+/* 搜索按钮：开始 */
 .search-btn {
   position: absolute;
   right: 32px;
@@ -190,7 +190,7 @@
 }
 
 .search-btn img {
-  width: 50px;
+  width: 50px; /* 大小变量 */
   height: 50px;
   filter: brightness(0.8);
   transition: all 0.3s ease;
@@ -204,7 +204,6 @@
 .search-btn:active img {
   transform: translateY(1px);
 }
-/* ---------- 搜索按钮：结束 ---------- */
 /* ---------- 顶栏：结束 ---------- */
 
 /* ---------- 主体：开始 ---------- */
@@ -872,6 +871,11 @@ footer {
     font-size: 1.4em;
   }
 
+  .search-btn img {
+    width: 40px;
+    height: 40px;
+  }
+
   /* 星空层微调 */
   .site-header::after,
   .site-header .stars,
@@ -1006,6 +1010,15 @@ footer {
     font-size: 1.2em;
   }
 
+  .search-btn img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .search-btn {
+    right: 10px;
+  }
+
   /* 主内容区调整 */
   main {
     padding: 80px 12px 12px 12px;
@@ -1094,6 +1107,17 @@ footer {
   .sticky-quote::after {
     right: 8px;
     bottom: -10px;
+  }
+}
+
+@media (max-width: 410px) {
+  .search-btn img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .search-btn {
+    right: 5px;
   }
 }
 
