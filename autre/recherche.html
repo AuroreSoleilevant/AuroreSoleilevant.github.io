@@ -36,7 +36,7 @@
             font-size: 20px;
             border: none;
             border-radius: 50px; /* 全圆角设计万岁（不是 */
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(242, 253, 255, 0.9);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
             outline: none;
@@ -94,6 +94,53 @@
             font-family: inherit; /* 继承原有字体 */
         }
 
+    /* 搜索结果淡入淡出效果 */
+    #mt-list {
+      position: relative;
+      min-height: 200px;
+    }
+
+    .mt-container, .text-center {
+      transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    }
+
+    /* 初始状态 - 准备淡入 */
+    .mt-container.fade-initial,
+    .text-center.fade-initial {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    /* 可见状态 */
+    .mt-container.fade-visible,
+    .text-center.fade-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 淡出状态 */
+    .mt-container.fade-out,
+    .text-center.fade-out {
+      opacity: 0;
+      transform: translateY(-20px);
+      pointer-events: none;
+    }
+
+    /* 确保容器在过渡期间保持布局 */
+    .mt-container {
+      transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    }
+
+    /* 无结果文本样式 */
+    .text-center {
+      text-align: center;
+      font-size: 2rem;
+      color: #666;
+      margin: 40px 0;
+      padding: 20px;
+      transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    }
+
     @media (max-width: 700px) {
         .search-container {
             max-width: 600px;   /* 长度 */
@@ -117,6 +164,11 @@
         .instructions {
             font-size: 18px;
         }
+
+          .text-center {
+              font-size: 1.5rem;
+        }
+    }
 
     @media (max-width: 480px) {
         .search-container {
@@ -142,6 +194,11 @@
             font-size: 14px;
         }
 
+        .text-center {
+              font-size: 18px;
+        }
+    }
+
     @media (max-width: 350px) {
         .search-input {
             font-size: 12px;
@@ -151,6 +208,9 @@
             font-size: 12px;
         }
 
+        .text-center {
+            font-size: 15px;
+        }
     }
     </style>
 
@@ -181,84 +241,338 @@
     </div>
 
 <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const searchInput = document.getElementById('searchInput');
-            const searchButton = document.getElementById('searchButton');
-            const placeholderTexts = [
-                "要找些什么呢 qaq",
-                "昵嘻嘻，让我看看你要搜什么",
-                "莫忘也用眼睛搜索窗外哦！",
-                "欸，今天也有你感兴趣的东西吗？",
-                "其实萝卜干比榨菜好吃",
-                "我觉得数学题的答案大概是搜不到的",
-                "试试搜索心中所想呢？",
-                "风与风铃夜与夜莺~草莓熊最好了",
-                "海豚是否会梦见地铁",
-                "就像泪水消逝在雨中，迎来死亡",
-                "我们总会穿越风暴，成为另一个人",
-                "不要在酒吧点炒饭",
-                "清晨的第一缕光丝，你还记得吗？"
-            ];
+(function () {
+  // ====== 配置 ======
+  // 数据库列表，加的时候记得改这里
+  const DB_PATHS = window.SEARCH_DB_PATHS || ['/json/article.json', '/json/histoire.json'];
 
-            // 随机选择一个占位符文本
-            function setRandomPlaceholder() {
-                const randomIndex = Math.floor(Math.random() * placeholderTexts.length);
-                searchInput.placeholder = placeholderTexts[randomIndex];
-            }
+  // 每次渲染批量数量（懒加载渲染用，避免一次性阻塞）
+  const RENDER_BATCH = 6;
 
-            // 页面加载时设置随机占位符
-            setRandomPlaceholder();
-            
-            // 处理搜索功能
-            function handleSearch() {
-                // 获取输入内容并清理
-                let searchText = searchInput.value.trim();
-                
-                // 安全处理：防止XSS攻击
-                searchText = sanitizeInput(searchText);
-                
-                // 如果输入为空，显示提示
-                if (searchText === '') {
-                    alert('笨笨，不可以为空啦！');
-                    searchInput.focus();
-                    return;
-                }
-                
-                // 接口以后放这里
-                console.log('或许是找到了？', searchText);
-                
-                // 搜索完成后清空输入框
-                searchInput.value = '';
-            }
-            
-            // 安全函数：清理输入内容，防止XSS攻击
-            function sanitizeInput(input) {
-                const div = document.createElement('div');
-                div.textContent = input;
-                return div.innerHTML;
-            }
-            
-            // 绑定搜索按钮点击事件
-            searchButton.addEventListener('click', handleSearch);
-            
-            // 绑定回车键搜索
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    handleSearch();
-                }
-            });
+  // 结果为空时显示文本
+  const NO_RESULT_TEXT = '什么也没有找到说 QAQ';
+
+  // ====== 工具 ======
+  function safeText(s) {
+    if (s == null) return '';
+    return String(s);
+  }
+
+  function normalizeForMatch(s) {
+    if (!s) return '';
+    return String(s).trim().toLowerCase();
+  }
+
+  function fetchJsonArray(path) {
+    return fetch(path, { cache: 'no-cache' })
+      .then(res => {
+        if (!res.ok) throw new Error(`fetch ${path} failed ${res.status}`);
+        return res.json();
+      })
+      .then(data => Array.isArray(data) ? data : [])
+      .catch(err => {
+        console.warn('Search: failed to load', path, err);
+        return [];
+      });
+  }
+
+  function loadAllDatabases(paths) {
+    const arr = Array.isArray(paths) ? paths : [paths];
+    if (window.CoreList && typeof window.CoreList._loadDatabases === 'function') {
+      try {
+        return window.CoreList._loadDatabases(arr);
+      } catch (e) {
+      }
+    }
+    return Promise.all(arr.map(p => fetchJsonArray(p))).then(parts => parts.flat());
+  }
+
+  function scoreMatch(title, query) {
+    const t = normalizeForMatch(title);
+    const q = normalizeForMatch(query).replace(/\s+/g, '');
+    if (!q) return 0;
+    let score = 0;
+    for (let i = 0; i < q.length; i++) {
+      const ch = q[i];
+      if (!ch) continue;
+      let idx = -1;
+      let cnt = 0;
+      let start = 0;
+      while ((idx = t.indexOf(ch, start)) !== -1) {
+        cnt++;
+        start = idx + 1;
+      }
+      score += cnt;
+    }
+    return score;
+  }
+
+  function createTileElement(entry) {
+    const id = safeText(entry.id || '');
+    const url = safeText(entry.url || '#');
+    const title = safeText(entry.title || '');
+    const description = safeText(entry.description || '');
+    const cover_image = entry.cover_image || null;
+    const cover_image_alt = entry.cover_image_alt || title;
+    const created_display = entry.created_display || '';
+    const updated_display = entry.updated_display || '';
+    const word_count = entry.word_count;
+    const color = entry.color || 'rgba(0,0,0,0.0)';
+    const tags = Array.isArray(entry.tags) ? entry.tags : [];
+
+    const a = document.createElement('a');
+    a.className = 'mt-tile';
+    a.href = url;
+    a.style.setProperty('--mt-color', color);
+
+    if (cover_image) {
+      const img = document.createElement('img');
+      img.className = 'mt-image';
+      img.src = cover_image;
+      img.alt = cover_image_alt || title || '';
+      img.decoding = 'async';
+      img.loading = 'lazy';
+      a.appendChild(img);
+    }
+
+    const content = document.createElement('div');
+    content.className = 'mt-content';
+
+    const h3 = document.createElement('h3');
+    h3.className = 'mt-title';
+    h3.textContent = title;
+    content.appendChild(h3);
+
+    const pDesc = document.createElement('p');
+    pDesc.className = 'mt-description';
+    pDesc.textContent = description;
+    content.appendChild(pDesc);
+
+    const pInfo = document.createElement('p');
+    pInfo.className = 'mt-description mt-info';
+    const wordPart = (typeof word_count === 'number') ? `${word_count} 字` : '';
+    const createdPart = created_display ? `${created_display} 发布` : '';
+    const updatedPart = updated_display ? `${updated_display} 修改` : '';
+    const parts = [wordPart, createdPart, updatedPart].filter(Boolean);
+    pInfo.textContent = parts.join(' | ');
+    content.appendChild(pInfo);
+
+    const tagsDiv = document.createElement('div');
+    tagsDiv.className = 'mt-tags';
+    tags.forEach(t => {
+      const tagName = (t && t.name) ? t.name : '';
+      const tagUrl = (t && t.url) ? t.url : '#';
+      const tagA = document.createElement('a');
+      tagA.className = 'mt-tag';
+      tagA.href = tagUrl;
+      tagA.textContent = tagName;
+      tagsDiv.appendChild(tagA);
+    });
+    content.appendChild(tagsDiv);
+
+    a.appendChild(content);
+    return a;
+  }
+
+  function appendInBatches(container, entries, batchSize) {
+    return new Promise(resolve => {
+      let i = 0;
+      function step() {
+        const end = Math.min(i + batchSize, entries.length);
+        for (; i < end; i++) {
+          const el = createTileElement(entries[i]);
+          container.appendChild(el);
+        }
+        if (i < entries.length) {
+          setTimeout(step, 12);
+        } else {
+          resolve();
+        }
+      }
+      step();
+    });
+  }
+
+  function doSearch(query, mountEl) {
+    return new Promise(async (resolve) => {
+      // 获取当前的结果元素
+      const currentContainer = mountEl.querySelector('.mt-container');
+      const currentNoResult = mountEl.querySelector('.text-center');
+      
+      // 淡出现有结果
+      if (currentContainer) {
+        currentContainer.classList.remove('fade-visible');
+        currentContainer.classList.add('fade-out');
+      }
+      if (currentNoResult) {
+        currentNoResult.classList.remove('fade-visible');
+        currentNoResult.classList.add('fade-out');
+      }
+
+      // 等待淡出动画完成
+      await new Promise(resolve => setTimeout(resolve, 400));
+
+      // 清除旧内容
+      mountEl.innerHTML = '';
+
+      // 创建新的容器
+      const container = document.createElement('div');
+      container.className = 'mt-container fade-initial';
+      mountEl.appendChild(container);
+
+      try {
+        // 加载数据库
+        const allData = await loadAllDatabases(DB_PATHS);
+        
+        // 计算匹配分数
+        const scored = [];
+        for (const e of (allData || [])) {
+          const sc = scoreMatch(e.title || '', query);
+          if (sc > 0) {
+            scored.push({ entry: e, score: sc });
+          }
+        }
+
+        if (!scored.length) {
+          // 移除之前创建的容器
+          mountEl.removeChild(container);
+          
+          // 创建无结果提示
+          const noResult = document.createElement('p');
+          noResult.className = 'text-center fade-initial';
+          noResult.textContent = NO_RESULT_TEXT;
+          mountEl.appendChild(noResult);
+          
+          // 淡入无结果提示
+          requestAnimationFrame(() => {
+            noResult.classList.remove('fade-initial');
+            noResult.classList.add('fade-visible');
+          });
+          
+          resolve();
+          return;
+        }
+
+        // 排序结果
+        scored.sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          const ta = new Date(a.entry.updated_at || a.entry.created_at || 0).getTime();
+          const tb = new Date(b.entry.updated_at || b.entry.created_at || 0).getTime();
+          return tb - ta;
         });
-    </script>
+
+        const results = scored.map(s => s.entry);
+
+        // 批量添加结果
+        await appendInBatches(container, results, RENDER_BATCH);
+        
+        // 淡入新结果
+        requestAnimationFrame(() => {
+          container.classList.remove('fade-initial');
+          container.classList.add('fade-visible');
+        });
+
+        resolve();
+
+      } catch (error) {
+        console.error('Search error:', error);
+        // 出错时也确保有淡入效果
+        requestAnimationFrame(() => {
+          container.classList.remove('fade-initial');
+          container.classList.add('fade-visible');
+        });
+        resolve();
+      }
+    });
+  }
+
+  // 设置随机占位符
+  function setRandomPlaceholder() {
+    const searchInput = document.getElementById('searchInput');
+    const placeholderTexts = [
+      "要找些什么呢 qaq",
+      "昵嘻嘻，让我看看你要搜什么",
+      "莫忘也用眼睛搜索窗外哦！",
+      "欸，今天也有你感兴趣的东西吗？",
+      "其实萝卜干比榨菜好吃",
+      "我觉得数学题的答案大概是搜不到的",
+      "试试搜索心中所想呢？",
+      "风与风铃夜与夜莺~草莓熊最好了",
+      "海豚是否会梦见地铁",
+      "就像泪水消逝在雨中，迎来死亡",
+      "我们总会穿越风暴，成为另一个人",
+      "不要在酒吧点炒饭",
+      "清晨的第一缕光丝，你还记得吗？"
+    ];
+
+    if (searchInput) {
+      const randomIndex = Math.floor(Math.random() * placeholderTexts.length);
+      searchInput.placeholder = placeholderTexts[randomIndex];
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // 确保初始状态
+    const mount = document.getElementById('mt-list');
+    if (mount) {
+      mount.style.minHeight = '200px'; // 为动画提供足够空间
+    }
+    const input = document.getElementById('searchInput');
+    const button = document.getElementById('searchButton');
+
+    if (!input || !button || !mount) {
+      console.warn('Search: missing UI elements (#searchInput, #searchButton, #mt-list)');
+      return;
+    }
+
+    // 设置随机占位符
+    setRandomPlaceholder();
+
+    let isSearching = false;
+
+    function submitHandler() {
+      if (isSearching) return;
+      const raw = (input.value || '').trim();
+      if (!raw) {
+        alert('笨笨，不可以为空啦！');
+        input.focus();
+        return;
+      }
+      // sanitize query for safety (we never insert it as HTML)
+      const safeQuery = safeText(raw);
+      isSearching = true;
+      button.disabled = true;
+      // run search
+      doSearch(safeQuery, mount).finally(() => {
+        // after search complete, clear input (as requested)
+        input.value = '';
+        isSearching = false;
+        button.disabled = false;
+      });
+    }
+
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      submitHandler();
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        submitHandler();
+      }
+    });
+
+  });
+})();
+</script>
 
   <div id="mt-list"></div>
-  <h1 class="text-center">
-  没做完，搜不动的
-  </h1>
   </main>
 
   <!-- 左下角日期 -->
   <div class="page-dates">
-  发布：19/10/2025　修改：19/10/2025
+  发布：19/10/2025　修改：20/10/2025
   </div>
 
   <!-- 底栏，需带着 -->
