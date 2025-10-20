@@ -760,6 +760,23 @@ footer {
   transform: scale(1.01); /* 轻微放大 */
   transform-origin: center top;
 }
+
+/* 常规前言图片定义 */
+.IntroNor {
+  max-width: 600px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.IntroNor:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+}
 /* ---------- 其他：结束 ---------- */
 
 /* 平板设备 */
@@ -845,6 +862,10 @@ footer {
   .sticky-quote::after {
     right: 8px;
     bottom: -20px;
+  }
+
+  .IntroNor {
+    max-width: 250px;
   }
 }
 
@@ -1017,6 +1038,10 @@ footer {
 
   .search-btn {
     right: 5px;
+  }
+
+  .IntroNor {
+    max-width: 200px;
   }
 
   /* 主内容区调整 */
