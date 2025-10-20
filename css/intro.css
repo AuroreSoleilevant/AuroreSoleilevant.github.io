@@ -1,0 +1,110 @@
+.tag-container {
+  position: absolute;
+  left: auto; /* 确保不同时存在 left 和 right 的冲突，啊呜呜 */
+  right: -12px; /* 把容器的右边放到 h1 右边外 12px（即 gap）*/
+  top: 50%;
+  transform: translateY(-50%); /* 仅垂直居中 */
+  display: flex;
+  flex-direction: row-reverse; /* 新标签向左排列 */
+  gap: 12px;
+  align-items: center;
+  white-space: nowrap;
+  z-index: 999;
+
+  /* 再次强制隔离书写方向影响，真是激昂的ImPoRtAnT */
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+  direction: ltr !important;
+  unicode-bidi: plaintext !important;
+}
+
+.page-tag {
+  position: relative;
+  display: inline-block;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: #ff8c006d;
+  color: #222;
+  font-size: 1.5rem;
+  line-height: 1;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+  cursor: pointer;
+}
+
+.page-tag:hover,
+.page-tag:focus {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  text-decoration: none;
+}
+
+.page-tag:active {
+  transform: translateY(-1px) scale(0.996);
+}
+
+.page-tag:focus {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14), 0 0 0 3px rgba(0, 0, 0, 0.04);
+}
+
+.date-line {
+  font-size: 1.2rem;
+  color: #5c5540;
+  background: rgba(245, 237, 210, 0.6);
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  text-align: left;
+  user-select: none; /* 防止误选中 */
+  display: block;
+  text-align: right;
+}
+
+/* 小屏幕降级 */
+@media (max-width: 1020px) {
+  .page-tag {
+    font-size: 1.1rem;
+  }
+
+  .date-line {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 650px) {
+  .page-tag {
+    font-size: 0.8rem;
+  }
+
+  .page-tag {
+    padding: 8px 10px;
+  }
+
+  .tag-container {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-tag {
+    font-size: 0.6rem;
+  }
+
+  .page-tag {
+    padding: 6px 8px;
+  }
+
+  .tag-container {
+    gap: 6px;
+  }
+
+  .date-line {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .tag-container {
+    display: none !important;
+  }
+}
