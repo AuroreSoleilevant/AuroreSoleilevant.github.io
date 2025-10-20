@@ -1003,7 +1003,7 @@ footer {
 
   .nav-links {
     gap: 20px;
-    margin-left: 30px;
+    margin-left: 15px;
   }
 
   .nav-item {
@@ -1125,7 +1125,7 @@ footer {
 @media (max-width: 380px) {
   .nav-links {
     gap: 15px;
-    margin-left: 20px;
+    margin-left: 10px;
   }
 
   .nav-item {
