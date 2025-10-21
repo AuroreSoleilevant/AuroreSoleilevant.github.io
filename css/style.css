@@ -558,7 +558,7 @@ footer {
 /* ---------- 评论按钮：开始 ---------- */
 .comment-button {
   /* 复用回到顶部的基础规则 */
-  background: var(--comment-bg, #b9a4e6); /* 颜色变量 */
+  background: var(--comment-bg, #b9a4e6b4); /* 颜色变量 */
   color: var(--comment-color, #fff);
   border-color: rgba(0, 0, 0, 0.06);
 }

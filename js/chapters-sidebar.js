@@ -1,25 +1,47 @@
-// chapters-sidebar.js，记得在同名css之后加载
+// chapters-sidebar.js — 侧边章节栏
 (function () {
   const SIDEBAR_ID = "chapter-sidebar";
   const TOGGLE_ID = "chapter-toggle";
   const OVERLAY_CLASS = "chapter-overlay";
   const VISIBLE_CLASS = "visible";
   const POP_CLASS = "pop";
-  const SHOW_THRESHOLD = 120; // 与回到顶部共享阈值一致
+  const SHOW_THRESHOLD = 120;
 
   let toggleBtn = null;
   let sidebar = null;
   let overlay = null;
+  let chaptersCache = null; // 缓存已加载的 JSON
 
-  // 创建侧栏 DOM（占位链接）
+  /* ---------- 解析当前 URL 得到作品名与当前章节 id ---------- */
+  function getWorkInfo() {
+    const parts = window.location.pathname.split("/").filter(Boolean); // 过滤空
+    // 尝试找到 'histoire' 段
+    const idx = parts.indexOf("histoire");
+    if (idx === -1) return null;
+    const workName = parts[idx + 1];
+    if (!workName) return null;
+    // current id：如果存在第三段则视为章节号，否则视为主页（id 0）
+    const maybeId = parts[idx + 2];
+    const currentId = maybeId ? Number.parseInt(maybeId, 10) : 0;
+    // 如果 maybeId 存在但无法解析为整数，则设为 null
+    const finalId = maybeId
+      ? Number.isFinite(currentId)
+        ? currentId
+        : null
+      : 0;
+    const basePath = `/histoire/${encodeURIComponent(workName)}`;
+    return { workName, currentId: finalId, basePath };
+  }
+
+  /* ---------- 创建侧栏（DOM） ---------- */
   function createSidebar() {
     if (sidebar) return sidebar;
     sidebar = document.createElement("aside");
     sidebar.id = SIDEBAR_ID;
-    // 添加 data-work 属性由后续 JS 覆写，不知道能否用上
     sidebar.setAttribute("role", "complementary");
     sidebar.setAttribute("aria-hidden", "true");
 
+    // 生成骨架
     sidebar.innerHTML = `
       <div class="cs-header">
         <div class="cs-title">章节目录</div>
@@ -28,36 +50,22 @@
         </button>
       </div>
       <ul class="chapter-list" aria-label="章节目录">
-        <!-- 占位章节，后期由 JSON 替换 -->
-        <li><a href="#" data-id="1">第 1 章 · 苹果派（占位）</a></li>
-        <li><a href="#" data-id="2">第 2 章 · 萝卜干（占位）</a></li>
-        <li><a href="#" data-id="3">第 3 章 · 榨菜（占位）</a></li>
+        <!-- 章节列表将由脚本动态替换 -->
       </ul>
+      <div class="cs-footer" style="display:none;"></div>
     `;
 
-    // 关闭按钮行为
+    // 关闭按钮
     const closeBtn = sidebar.querySelector(".cs-close");
     closeBtn.addEventListener("click", (e) => {
       e.preventDefault();
       closeSidebar();
       try {
         closeBtn.blur();
-      } catch (e) {}
+      } catch (err) {}
     });
 
-    // 点击章节项：目前占位行为（后面可能换）
-    sidebar.querySelectorAll(".chapter-list a").forEach((a) => {
-      a.addEventListener("click", (ev) => {
-        ev.preventDefault();
-        // 暂时模拟跳转
-        const id = a.getAttribute("data-id");
-        // 简单反馈：关闭并在控制台打印（实际行为由后续JS决定）
-        console.log("章节点击：", id);
-        closeSidebar();
-      });
-    });
-
-    // 创建遮罩紧跟侧栏
+    // 创建遮罩并插入到 host（main 或 body，虽然感觉main里插了好多东西了）
     overlay = document.createElement("div");
     overlay.className = OVERLAY_CLASS;
     overlay.addEventListener("click", () => closeSidebar());
@@ -66,7 +74,7 @@
     host.appendChild(sidebar);
     host.appendChild(overlay);
 
-    // 鼠标悬停标记
+    // 鼠标悬停标记（用于 wheel 处理）
     let sidebarHover = false;
     sidebar.addEventListener("mouseenter", () => {
       sidebarHover = true;
@@ -75,94 +83,240 @@
       sidebarHover = false;
     });
 
-    // 让侧栏滚动平滑化（是CSS控制）
-    sidebar.style.scrollBehavior = "smooth";
+    // 平滑控制与防止边界滚动传递
+    sidebar.style.scrollBehavior = "auto";
+    sidebar.style.overscrollBehavior = "contain";
+    sidebar.style.webkitOverflowScrolling = "touch";
 
-    // wheel 处理：鼠标在侧栏上时，页面不滚动
+    let rafId = null;
+    let targetScroll = 0;
+    let animating = false;
+    const speedMultiplier = 1; // 速度，越大越快
+    const ease = 0.04; // 越小越平滑，没弄懂这东西实际上是什么，但有用
+
+    function startAnimate() {
+      if (animating) return;
+      animating = true;
+      function step() {
+        const current = sidebar.scrollTop;
+        const diff = targetScroll - current;
+
+        // 动态减速
+        const near = Math.min(1, Math.abs(diff) / 60);
+        const dynamicEase = ease * (0.5 + 0.5 * near);
+
+        // 德芙缓动
+        sidebar.scrollTop = current + diff * dynamicEase;
+
+        // 当接近目标时，平滑停止而不是突停
+        if (Math.abs(diff) < 0.8) {
+          // 进入最后缓冲阶段，虽然感觉还是有点停快了
+          sidebar.scrollTop = current + diff * 0.2; // 轻推一小段
+          if (Math.abs(diff) < 0.2) {
+            sidebar.scrollTop = targetScroll;
+            animating = false;
+            rafId = null;
+            return;
+          }
+        }
+
+        rafId = requestAnimationFrame(step);
+      }
+
+      rafId = requestAnimationFrame(step);
+    }
+
+    // wheel 事件处理
     sidebar.addEventListener(
       "wheel",
       function (e) {
-        // 仅在侧栏展开且鼠标确实在上面时生效
-        if (!sidebar.classList.contains("open") || !sidebarHover) return;
+        // 仅在侧栏打开且鼠标在侧栏上时生效（避免全局捕获滑的到处都是）
+        if (!sidebar.classList.contains("open")) return;
+        if (!sidebar.matches(":hover")) return;
 
-        // 检查是否可滚动
-        const canScroll = sidebar.scrollHeight > sidebar.clientHeight + 1;
-        if (!canScroll) return; // 无需滚动，直接放行
-
-        // 阻止页面滚动
+        // 阻止默认以避免页面滚动
         e.preventDefault();
 
-        // 平滑滚动逻辑
-        const speed = Math.min(Math.abs(e.deltaY) / 20 + 1.5, 4); // 动态加速，最大 4 倍，大概不用改了
-        sidebar.scrollBy({
-          top: e.deltaY * speed,
-          behavior: "smooth",
-        });
+        // 累加目标位置（带倍速）
+        const delta = e.deltaY * speedMultiplier;
+        const maxScroll = sidebar.scrollHeight - sidebar.clientHeight;
+        targetScroll = Math.max(0, Math.min(maxScroll, targetScroll + delta));
+
+        // 如果尚未初始化 targetScroll（首次），设为当前位置
+        if (typeof targetScroll !== "number" || isNaN(targetScroll)) {
+          targetScroll = sidebar.scrollTop;
+        }
+
+        // 启动动画
+        startAnimate();
       },
       { passive: false }
     );
 
-    // 键盘 Esc 关闭
+    // ESC 关闭（无论 focus 在何处），总得有人用键盘
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && sidebar.classList.contains("open")) {
         closeSidebar();
       }
     });
 
+    // 当侧栏创建完毕，尝试加载对应作品的章节数据
+    loadChapters();
+
     return sidebar;
   }
 
-  // 创建切换按钮（复用回顶基础样式）
+  /* ---------- 创建切换按钮 ---------- */
   function createToggleButton() {
     if (toggleBtn) return toggleBtn;
     toggleBtn = document.createElement("button");
     toggleBtn.id = TOGGLE_ID;
-    // 与现有按钮并存，复用相同基础 class
     toggleBtn.className = "back-to-top chapter-button";
     toggleBtn.title = "章节目录";
     toggleBtn.setAttribute("aria-label", "章节目录");
-    // 按钮SVG 地址
     toggleBtn.innerHTML =
       '<img class="backtop-icon" src="/icons/icon-chapitre.svg" alt="" aria-hidden="true">';
-
     toggleBtn.addEventListener("click", (e) => {
       if (e && e.preventDefault) e.preventDefault();
-      // toggle
       if (sidebar && sidebar.classList.contains("open")) {
         closeSidebar();
       } else {
         openSidebar();
       }
-      // blur + 轻隐藏检测
       try {
         toggleBtn.blur();
-      } catch (e) {}
+      } catch (err) {}
     });
 
     const host = document.querySelector("main") || document.body;
+
     host.appendChild(toggleBtn);
     return toggleBtn;
   }
 
-  // 打开侧栏
+  /* ---------- 打开 / 关闭 ---------- */
   function openSidebar() {
     createSidebar();
     sidebar.classList.add("open");
     sidebar.setAttribute("aria-hidden", "false");
-    overlay.style.display = ""; // 由 CSS 控制 opacity/pointer-events
+    overlay.style.display = "";
     // focus 第一个链接以便可访问
     const firstLink = sidebar.querySelector(".chapter-list a");
     if (firstLink) firstLink.focus();
   }
 
-  // 关闭侧栏
   function closeSidebar() {
     if (!sidebar) return;
     sidebar.classList.remove("open");
     sidebar.setAttribute("aria-hidden", "true");
+    // 隐藏 overlay 由 CSS 控制透明度
   }
 
-  // 显示 / 隐藏 toggle 按钮
+  /* ---------- 从 JSON 加载章节并渲染 ---------- */
+  async function loadChapters() {
+    const info = getWorkInfo();
+    const ul = sidebar.querySelector(".chapter-list");
+    if (!ul) return;
+
+    // 清空占位，如果我忘了的话
+    ul.innerHTML = "";
+
+    if (!info) {
+      // 如果无作品信息，则不尝试加载；保持空列表
+      return;
+    }
+
+    const jsonPath = `/json/histoire/${encodeURIComponent(info.workName)}.json`;
+
+    // 如果已缓存，直接渲染缓存
+    if (chaptersCache && chaptersCache.workName === info.workName) {
+      renderChapters(chaptersCache.data, info);
+      return;
+    }
+
+    try {
+      const resp = await fetch(jsonPath, { cache: "no-cache" });
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      const data = await resp.json();
+      // 缓存（包括 workName）
+      chaptersCache = { workName: info.workName, data };
+      renderChapters(data, info);
+    } catch (err) {
+      console.error("无法加载章节 JSON:", jsonPath, err);
+      // 显示友好提示，但是bug可一点都不友好
+      const li = document.createElement("li");
+      li.style.opacity = "0.85";
+      li.style.padding = "10px";
+      li.style.color = "#666";
+      li.textContent = "章节目录加载失败";
+      ul.appendChild(li);
+    }
+  }
+
+  /* ---------- 渲染章节列表 ---------- */
+  function renderChapters(data, info) {
+    const ul = sidebar.querySelector(".chapter-list");
+    if (!ul) return;
+    ul.innerHTML = "";
+
+    // { chapters: [...] }
+    const list = Array.isArray(data)
+      ? data
+      : data && data.chapters
+      ? data.chapters
+      : [];
+    if (!Array.isArray(list) || list.length === 0) {
+      const li = document.createElement("li");
+      li.style.opacity = "0.85";
+      li.style.padding = "10px";
+      li.style.color = "#666";
+      li.textContent = "暂无章节";
+      ul.appendChild(li);
+      return;
+    }
+
+    // 当前页面章节 id（0 表示作品主页）
+    const currentId = info.currentId;
+
+    list.forEach((item) => {
+      const id = Number(item.id);
+      const title = item.title || "";
+
+      // 构造 href：若 id === 0 -> basePath （/histoire/name）
+      // 其余 -> /histoire/name/{id}
+      const href = id === 0 ? info.basePath : `${info.basePath}/${id}`;
+
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = href;
+      a.setAttribute("data-id", String(id));
+      // 显示格式： id + 空格 + title；但 id===0 时只显示 title（不显示 0）
+      a.textContent = id === 0 ? title : `${id} ${title}`;
+      a.setAttribute("role", "link");
+
+      // 点击默认由 anchor 导航；仍然在 click 时关闭侧栏以保持体验
+      a.addEventListener("click", (ev) => {
+        // let normal navigation happen; but close sidebar to give instant feedback
+        try {
+          closeSidebar();
+        } catch (err) {}
+      });
+
+      // 高亮当前章节
+      if (
+        currentId !== null &&
+        Number.isFinite(currentId) &&
+        id === currentId
+      ) {
+        a.classList.add("active");
+      }
+
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+  }
+
+  /* ---------- 其余函数，也许没用上，但是先留着，以后的事情只有天知道 ---------- */
   function showToggleButton() {
     createToggleButton();
     if (toggleBtn.classList.contains(VISIBLE_CLASS)) return;
@@ -177,7 +331,7 @@
     toggleBtn.classList.remove(POP_CLASS);
   }
 
-  // 读取 CSS 变量的辅助
+  /* 这两个别动 */
   function readCSSVarInt(name, fallback = 0) {
     const val = getComputedStyle(document.documentElement).getPropertyValue(
       name
@@ -186,58 +340,29 @@
     return Number.isFinite(n) ? n : fallback;
   }
 
-  // 计算并设置 toggle 按钮的 bottom（放在评论按钮之上防止跳来跳去）
   function updateToggleOffset() {
     createToggleButton();
-    // 与其他脚本一致读取这些变量
     const base = readCSSVarInt("--backtop-bottom", 96);
     const btnSize = readCSSVarInt("--backtop-size", 48);
     const gap = readCSSVarInt("--comment-gap", 12);
-    // 计算：把 toggle 放在评论按钮上方
-    const toggleBottom = base + btnSize * 2 + gap * 2;
-    toggleBtn.style.bottom = toggleBottom + "px";
   }
 
-  // 判断页面是否可滚动
   function pageIsScrollable() {
     return document.documentElement.scrollHeight > window.innerHeight + 2;
   }
 
-  // 简单的显示判断（与回到顶部共享阈值）
-  function checkToggleVisibility() {
-    createToggleButton();
-    if (!pageIsScrollable()) {
-      hideToggleButton();
-      return;
-    }
-    if (window.scrollY > SHOW_THRESHOLD) {
-      showToggleButton();
-    } else {
-      hideToggleButton();
-    }
-  }
-
-  // 安装滚动节流（rAF）
-  function installScrollHandler() {
-    let ticking = false;
-    function onScroll() {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(() => {
-          checkToggleVisibility();
-          ticking = false;
-        });
-      }
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-  }
-
-  // 初始化
+  // init
   function init() {
     createSidebar();
     createToggleButton();
-    //一律显示
+
+    // 立刻更新按钮位置，防止初始跳动
+    updateToggleOffset();
+
+    // 恢复可见并显示（避免初始跳动）
+    toggleBtn.style.visibility = "";
     toggleBtn.classList.add("visible");
+
     window.addEventListener(
       "resize",
       () => {
@@ -245,9 +370,11 @@
       },
       { passive: true }
     );
+
     window.addEventListener("pageshow", () => {
       updateToggleOffset();
     });
+
     // 触摸动画
     toggleBtn.addEventListener(
       "touchstart",
@@ -257,6 +384,7 @@
       },
       { passive: true }
     );
+
     toggleBtn.addEventListener(
       "touchend",
       () => {
@@ -267,6 +395,7 @@
       { passive: true }
     );
   }
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
