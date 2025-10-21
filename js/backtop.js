@@ -23,8 +23,9 @@
     btn.setAttribute("aria-label", "回到顶部");
     btn.innerHTML =
       '<img class="backtop-icon" src="/icons/icon-top.svg" alt="" aria-hidden="true">';
-    // 插入 body 末尾
-    document.body.appendChild(btn);
+    // 插入 main
+    const main = document.querySelector("main") || document.body;
+    main.appendChild(btn);
 
     // 绑定点击
     btn.addEventListener("click", (e) => {
@@ -296,7 +297,8 @@
     commentBtn.setAttribute("aria-label", "跳转到评论");
     commentBtn.innerHTML =
       '<img class="backtop-icon" src="/icons/icon-Chat.svg" alt="" aria-hidden="true">';
-    document.body.appendChild(commentBtn);
+    const main = document.querySelector("main") || document.body;
+    main.appendChild(commentBtn);
 
     // 点击事件：滚动到 #giscus-container
     commentBtn.addEventListener("click", (e) => {

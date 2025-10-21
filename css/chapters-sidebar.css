@@ -1,0 +1,164 @@
+/*  章节侧栏样式  */
+
+/* 颜色变量 */
+:root {
+  --chapter-bg: #94ff629d; /* 按钮背景色 */
+  --chapter-color: #fff; /* 按钮文字/图标颜色 */
+  --chapter-width: 380px; /* 侧栏宽度（最大） */
+  --chapter-gap: 12px; /* 与评论/回到顶部间隙，大概是不用动的 */
+}
+
+/* 按钮基础，大部分用的回到顶部的那些，所以需要用那边的css和js加载为前置 */
+.chapter-button {
+  /* 复用 back-to-top 的基础规则 */
+  bottom: calc(
+    var(--backtop-bottom) + var(--backtop-size) * 2 + var(--comment-gap) * 2
+  );
+  background: var(--chapter-bg);
+  color: var(--chapter-color);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+/* 让 icon 可继承颜色 */
+.chapter-button .backtop-icon {
+  filter: none;
+}
+
+/* 侧栏容器（固定在右侧，初始隐藏在视口右侧之外） */
+#chapter-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: min(var(--chapter-width), 90vw);
+  max-width: var(--chapter-width);
+  transform: translateX(110%); /* 隐藏效果：移动到右侧之外 */
+  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    box-shadow 200ms ease;
+  z-index: calc(var(--backtop-z, 9999) + 20);
+  background: #d4f2e7a7; /* 轻微半透明的颜色变量，便于叠层 */
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: -18px 6px 50px rgba(10, 20, 30, 0.12);
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  box-sizing: border-box;
+  -webkit-backdrop-filter: blur(8px) saturate(120%); /* 毛玻璃 */
+  backdrop-filter: blur(8px) saturate(120%);
+  /* 允许触摸滚动子区域 */
+  overflow-y: auto;
+  scrollbar-gutter: stable; /* 保证滚动条占位 */
+  overscroll-behavior: contain; /* 禁止边界滚动传递到页面 */
+  -webkit-overflow-scrolling: touch; /* 移动端平滑滚动 */
+}
+
+/* 打开时把侧栏拉出来到视口中（平滑滑出） */
+#chapter-sidebar.open {
+  transform: translateX(0);
+}
+
+/* 侧栏头部：标题和关闭按钮 */
+#chapter-sidebar .cs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+#chapter-sidebar .cs-title {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 小的关闭按钮 */
+#chapter-sidebar .cs-close {
+  appearance: none;
+  border: none;
+  background: transparent;
+  width: 50px;
+  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 160ms ease, transform 160ms ease;
+}
+#chapter-sidebar .cs-close:hover {
+  background: rgba(0, 0, 0, 0.06);
+  transform: scale(1.03);
+}
+
+/* 章节列表样式 */
+#chapter-sidebar .chapter-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 每个章节项 */
+#chapter-sidebar .chapter-list a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #222;
+  background: transparent;
+  transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+  font-size: 1.2rem; /* 章节名称字号 */
+  line-height: 1.2;
+}
+
+/* hover 效果（轻微上升 + 背景小框，大概是拨玻璃那样吧） */
+#chapter-sidebar .chapter-list a:hover {
+  background: rgba(0, 0, 0, 0.03);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
+}
+
+/* 当前章节高亮，给后面用的接口 .active */
+#chapter-sidebar .chapter-list a.active {
+  background: linear-gradient(
+    90deg,
+    rgba(127, 179, 255, 0.14),
+    rgba(127, 179, 255, 0.08)
+  );
+  border-left: 3px solid var(--chapter-bg);
+  padding-left: 10px; /* 留出视觉空间 */
+  color: #0b3a66;
+}
+
+/* 点击遮罩 */
+#chapter-sidebar + .chapter-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.22);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+  z-index: calc(var(--backtop-z, 9999) + 10);
+}
+#chapter-sidebar.open + .chapter-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* 侧栏为深色主题时的变体 */
+#chapter-sidebar.dark {
+  background: rgba(18, 18, 20, 0.95);
+  color: #ddd;
+}
+#chapter-sidebar.dark .chapter-list a {
+  color: #ddd;
+}
+#chapter-sidebar.dark .chapter-list a.active {
+  color: #fff;
+  border-left-color: #66a7ff;
+}

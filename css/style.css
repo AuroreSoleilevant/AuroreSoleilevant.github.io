@@ -777,6 +777,19 @@ footer {
   transform: translateY(-3px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
 }
+
+/* 顶部日期 */
+.date-line {
+  font-size: 1.2rem;
+  color: #5c5540;
+  background: rgba(245, 237, 210, 0.6);
+  border-radius: 8px;
+  letter-spacing: 0.5px;
+  text-align: left;
+  user-select: none; /* 防止误选中 */
+  display: block;
+  text-align: right;
+}
 /* ---------- 其他：结束 ---------- */
 
 /* 平板设备 */
@@ -866,6 +879,10 @@ footer {
 
   .IntroNor {
     max-width: 250px;
+  }
+
+  .date-line {
+    font-size: 1rem;
   }
 }
 
@@ -1132,6 +1149,10 @@ footer {
   .sticky-quote::after {
     right: 8px;
     bottom: -10px;
+  }
+
+  .date-line {
+    font-size: 0.8rem;
   }
 }
 
