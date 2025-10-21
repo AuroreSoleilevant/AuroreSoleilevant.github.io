@@ -162,3 +162,31 @@
   color: #fff;
   border-left-color: #66a7ff;
 }
+
+@media (max-width: 768px) {
+  :root {
+    --chapter-width: 290px; /* 侧栏宽度（最大） */
+  }
+
+  #chapter-sidebar .chapter-list a {
+    font-size: 1rem; /* 章节名称字号 */
+  }
+
+  #chapter-sidebar .cs-title {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --chapter-width: 250px; /* 侧栏宽度（最大） */
+  }
+
+  #chapter-sidebar .chapter-list a {
+    font-size: 0.8rem; /* 章节名称字号 */
+  }
+
+  #chapter-sidebar .cs-title {
+    font-size: 1rem;
+  }
+}
