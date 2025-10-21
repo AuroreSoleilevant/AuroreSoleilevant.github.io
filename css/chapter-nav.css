@@ -1,0 +1,130 @@
+:root {
+  /* 尺寸与视觉参数 */
+  --chapnav-size: 60px;
+  --chapnav-radius: 12px;
+  --chapnav-gap: 40px;
+  --chapnav-hover-lift: -3px;
+
+  /* 米黄色主题纯色方案 */
+  --chapnav-bg: #f8e7c3;
+  --chapnav-border: #f0d7a0;
+  --chapnav-color: #3b2b12;
+  --chapnav-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* 容器：单独占一行，居中 */
+.chapter-nav {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--chapnav-gap);
+  width: 100%;
+  padding: 18px 0;
+  box-sizing: border-box;
+  pointer-events: auto;
+  user-select: none;
+  z-index: 999;
+}
+
+/* 按钮基础样式 */
+.chapter-nav .nav-btn {
+  height: var(--chapnav-size);
+  min-width: 90px;
+  padding: 0 30px; /* 宽度 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--chapnav-radius);
+  background: var(--chapnav-bg);
+  color: var(--chapnav-color);
+  text-decoration: none;
+  border: 1px solid var(--chapnav-border);
+  box-shadow: var(--chapnav-shadow);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 180ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    box-shadow 180ms ease, background 160ms ease;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 中间按钮略宽 */
+.chapter-nav .nav-btn.toc {
+  min-width: 110px;
+  font-weight: 700;
+}
+
+/* hover */
+.chapter-nav .nav-btn:hover {
+  transform: translateY(var(--chapnav-hover-lift));
+  background: #f5dca6;
+  box-shadow: 0 12px 30px rgba(20, 20, 20, 0.18);
+}
+
+/* 按下：轻微下陷 */
+.chapter-nav .nav-btn:active {
+  transform: translateY(1px) scale(0.98);
+  background: #f2d695;
+  box-shadow: 0 4px 12px rgba(20, 20, 20, 0.12);
+  transition: transform 60ms ease, box-shadow 60ms ease;
+}
+
+/* 取消聚焦阴影 */
+.chapter-nav .nav-btn:focus {
+  outline: none;
+}
+.chapter-nav .nav-btn:focus:not(:hover) {
+  transform: none;
+  box-shadow: var(--chapnav-shadow);
+}
+
+/* 小屏优化 */
+
+@media (max-width: 1020px) {
+  :root {
+    --chapnav-size: 40px;
+    --chapnav-gap: 14px;
+  }
+  .chapter-nav {
+    padding: 12px 0;
+  }
+  .chapter-nav .nav-btn {
+    font-size: 15px;
+    padding: 0 15px; /* 宽度 */
+  }
+}
+
+@media (max-width: 520px) {
+  :root {
+    --chapnav-size: 35px;
+    --chapnav-gap: 12px;
+  }
+  .chapter-nav {
+    padding: 12px 0;
+  }
+  .chapter-nav .nav-btn {
+    font-size: 13px;
+    padding: 0 1px; /* 宽度 */
+    min-width: 70px;
+  }
+
+  /* 中间按钮 */
+  .chapter-nav .nav-btn.toc {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 375px) {
+  .chapter-nav .nav-btn {
+    font-size: 12px;
+    min-width: 50px;
+  }
+
+  /* 中间按钮 */
+  .chapter-nav .nav-btn.toc {
+    min-width: 70px;
+  }
+}
