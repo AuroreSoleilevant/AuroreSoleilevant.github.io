@@ -1,79 +1,108 @@
-// chapter-nav.js
+// chapter-nav.js — 自动根据 URL + JSON 生成 上一章 / 目录 / 下一章 按钮
 (function () {
   const ROOT_ID = "chapter-nav-root";
-  const CONTAINER_CLASS = "chapter-nav";
-  const BTN_CLASS = "nav-btn";
-  const VISIBLE_CLASS = "visible";
+  const JSON_BASE = "/json/histoire/"; // JSON 存放目录
+  let chaptersCache = {}; // 缓存 per workName
 
-  // 占位链接（先用占位，之后再由你接入实际逻辑）
-  const PLACEHOLDER_PREV = "#prev"; // 占位链接
-  const PLACEHOLDER_NEXT = "#next"; // 占位链接
+  // 解析 URL 得到 workName 与 currentId（若无 /n 则视为首页 = 0）
+  function getWorkInfoFromURL() {
+    const parts = window.location.pathname.split("/").filter(Boolean);
+    const idx = parts.indexOf("histoire");
+    if (idx === -1) return null;
+    const workName = parts[idx + 1];
+    if (!workName) return null;
+    const maybeId = parts[idx + 2];
+    const currentId = maybeId ? Number.parseInt(maybeId, 10) : 0;
+    const finalId = maybeId
+      ? Number.isFinite(currentId)
+        ? currentId
+        : null
+      : 0;
+    const basePath = `/histoire/${encodeURIComponent(workName)}`;
+    return { workName, currentId: finalId, basePath };
+  }
 
-  // 创建 DOM 并挂载
-  // 替换或覆盖 chapter-nav.js 中的 createNav() 实现（最小改动）
-  function createNav() {
-    const ROOT_ID = "chapter-nav-root";
-    const root = document.getElementById(ROOT_ID);
-    if (!root) {
-      console.warn(
-        "[chapter-nav] root not found — creating at document.body (fallback)"
-      );
-    }
-
-    // 避免重复
-    const host = root || document.body;
-    if (host._chapterNavCreated) return host._chapterNav;
-
-    // 确保 host 能做为定位上下文（若 position: static，则改为 relative）
+  // 读取 json（缓存）
+  async function fetchChapters(workName) {
+    if (!workName) return null;
+    if (chaptersCache[workName]) return chaptersCache[workName];
+    const path = JSON_BASE + encodeURIComponent(workName) + ".json";
     try {
-      const cs = getComputedStyle(host);
-      if (cs.position === "static") host.style.position = "relative";
-    } catch (e) {
-      // ignore
+      const resp = await fetch(path, { cache: "no-cache" });
+      if (!resp.ok) throw new Error("HTTP " + resp.status);
+      const data = await resp.json();
+      const list = Array.isArray(data)
+        ? data
+        : data && data.chapters
+        ? data.chapters
+        : [];
+      const normalized = list.map((it) => ({
+        id: Number(it.id),
+        title: it.title || "",
+      }));
+      const idSet = new Set(normalized.map((it) => it.id));
+      chaptersCache[workName] = { list: normalized, idSet };
+      return chaptersCache[workName];
+    } catch (err) {
+      console.warn("chapter-nav: failed to load JSON", path, err);
+      chaptersCache[workName] = { list: [], idSet: new Set() };
+      return chaptersCache[workName];
+    }
+  }
+
+  // 在 root上渲染按钮（会先清空已有容器）
+  async function renderNav() {
+    const info = getWorkInfoFromURL();
+    const root = document.getElementById(ROOT_ID) || document.body;
+    if (root._chapterNav && root._chapterNav.container) {
+      try {
+        root._chapterNav.container.remove();
+      } catch (e) {}
+      root._chapterNav = null;
     }
 
-    // 容器（绝对定位，相对于 host）
     const container = document.createElement("div");
     container.className = "chapter-nav";
     container.setAttribute("role", "navigation");
     container.setAttribute("aria-label", "章节导航");
 
-    // 上一章（文本）
-    const prev = document.createElement("a");
-    prev.className = "nav-btn prev";
-    prev.href = "#prev"; // 占位，可后续改
-    prev.setAttribute("aria-label", "上一章");
-    prev.title = "上一章";
-    prev.textContent = "上一章";
+    function makeLinkBtn(text, href, cls = "") {
+      const a = document.createElement("a");
+      a.className = "nav-btn " + cls;
+      a.href = href;
+      a.textContent = text;
+      a.setAttribute("aria-label", text);
+      return a;
+    }
+    function makeButton(text, cls = "") {
+      const b = document.createElement("button");
+      b.className = "nav-btn " + cls;
+      b.type = "button";
+      b.textContent = text;
+      b.setAttribute("aria-label", text);
+      return b;
+    }
 
-    // 目录（打开侧栏）
-    const toc = document.createElement("button");
-    toc.className = "nav-btn toc";
-    toc.type = "button";
-    toc.setAttribute("aria-label", "章节目录");
-    toc.title = "章节目录";
-    toc.textContent = "章节目录";
+    if (!info) {
+      root.appendChild(container);
+      root._chapterNav = { container };
+      return;
+    }
 
-    // 下一章（文本）
-    const next = document.createElement("a");
-    next.className = "nav-btn next";
-    next.href = "#next"; // 占位
-    next.setAttribute("aria-label", "下一章");
-    next.title = "下一章";
-    next.textContent = "下一章";
+    const ch = await fetchChapters(info.workName);
+    const idSet = ch.idSet;
+    const cur = info.currentId;
 
-    // 点击占位行为（可替换）
-    prev.addEventListener("click", (e) => {
-      e.preventDefault();
-      console.log("prev (placeholder)");
-    });
-    next.addEventListener("click", (e) => {
-      e.preventDefault();
-      console.log("next (placeholder)");
-    });
+    if (cur !== null && cur !== 0) {
+      const prevId = cur - 1;
+      const prevHref =
+        prevId === 0 ? info.basePath : `${info.basePath}/${prevId}`;
+      const prevBtn = makeLinkBtn("上一章", prevHref, "prev");
+      container.appendChild(prevBtn);
+    }
 
-    // 目录按钮复用已有侧栏开关
-    toc.addEventListener("click", (e) => {
+    const tocBtn = makeButton("章节目录", "toc");
+    tocBtn.addEventListener("click", (e) => {
       e.preventDefault();
       try {
         if (typeof openSidebar === "function") openSidebar();
@@ -85,24 +114,35 @@
         console.warn("chapter-nav: open sidebar failed", err);
       }
     });
+    tocBtn.classList.add("toc");
+    container.appendChild(tocBtn);
 
-    // 组装并插入 host（优先插入 root）
-    container.appendChild(prev);
-    container.appendChild(toc);
-    container.appendChild(next);
+    let nextId = null;
+    if (cur === 0) {
+      if (ch.list && ch.list.length > 0) {
+        const positives = ch.list
+          .map((i) => i.id)
+          .filter((id) => id > 0)
+          .sort((a, b) => a - b);
+        if (positives.length > 0) nextId = positives[0];
+      }
+    } else if (cur !== null) {
+      if (idSet.has(cur + 1)) nextId = cur + 1;
+    }
 
-    host.appendChild(container);
+    if (nextId !== null && nextId !== undefined) {
+      const nextHref = `${info.basePath}/${nextId}`;
+      const nextBtn = makeLinkBtn("下一章", nextHref, "next");
+      container.appendChild(nextBtn);
+    }
 
-    // 暴露引用
-    host._chapterNavCreated = true;
-    host._chapterNav = { container, prev, toc, next };
-
-    return host._chapterNav;
+    root.appendChild(container);
+    root._chapterNav = { container };
   }
 
-  // 简单初始化：DOM ready 时创建（defer 脚本也可以）
   function init() {
-    createNav();
+    renderNav();
+    window.addEventListener("popstate", () => renderNav());
   }
 
   if (document.readyState === "loading") {
