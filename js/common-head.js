@@ -108,6 +108,7 @@
     "/js/backtop.js", // 回到顶部按钮
     "/js/blink.js", // 顶栏闪烁
     "/js/progression.js", // 阅读进度条
+    "/js/headtran.js", // 渐变顶栏玻璃
   ];
 
   // 同步脚本（仅在数组中有项时才执行同步加载）

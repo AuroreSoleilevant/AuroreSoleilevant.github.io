@@ -42,7 +42,7 @@
 /* ---------- 顶栏：开始 ---------- */
 /* 标题块骨架 */
 .site-header {
-  background: #232946;
+  background: #232946; /* 回退 */
   position: fixed; /* 固定在视口 */
   top: 0;
   left: 0;
@@ -55,6 +55,56 @@
   overflow: hidden;
   z-index: 1000; /* 确保覆盖内容 */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* 阴影效果 */
+  transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+  isolation: isolate;
+}
+
+.site-header.scrolled::before {
+  background-color: rgba(35, 41, 70, 0.55);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  backdrop-filter: blur(8px) saturate(120%);
+}
+
+@supports (
+  (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))
+) {
+  .site-header {
+    /* 半透明保留原色基调 */
+    background-color: rgba(35, 41, 70, 0.5);
+
+    /* 毛玻璃：模糊 + 稍微提升饱和度 */
+    -webkit-backdrop-filter: blur(8px) saturate(120%);
+    backdrop-filter: blur(8px) saturate(120%);
+
+    /* 让边框/阴影与半透明背景更协调 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+    /* 确保背景只在内边距区域绘制（防止边框被滤镜裁切奇怪） */
+    background-clip: padding-box;
+  }
+}
+
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0; /* 放在所有内容后面 */
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  backdrop-filter: blur(8px) saturate(120%);
+  border-radius: 0 0 12px 12px;
+  background-clip: padding-box;
+  background-color: #232946;
+  transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+}
+
+/* 确保星星层与文字在毛玻璃上面显示 */
+.site-header::after,
+.site-header .stars,
+.site-header .stars2,
+.site-header .site-title,
+.site-header .nav-links {
+  position: relative;
+  z-index: 1;
 }
 
 /* 网站名伪元素 */
@@ -62,7 +112,7 @@
   content: "Spica";
   font-size: 3.5em;
   font-weight: bold;
-  color: #fff;
+  color: #e0d7ff;
   text-decoration: none;
   line-height: 96px; /* 和 header 高度一致 */
   transition: text-shadow 0.6s ease-in-out; /* Spica鼠标悬停发光效果 */
@@ -76,7 +126,7 @@
 }
 
 .site-title:hover::before {
-  text-shadow: 0 0 3px #fff, 0 0 6px #aee9f7, 0 0 9px #ffd6e0;
+  text-shadow: 0 0 4px #f0e9ff, 0 0 8px #cfc3ff, 0 0 14px #b6a5ff;
   cursor: pointer; /* 手型光标 */
 }
 
@@ -87,9 +137,9 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background-image: radial-gradient(circle, #fffbe6 3px, transparent 3px),
-    radial-gradient(circle, #aee9f7 3px, transparent 3px),
-    radial-gradient(circle, #ffd6e0 3px, transparent 3px);
+  background-image: radial-gradient(circle, #fcf0b5 3px, transparent 3px),
+    radial-gradient(circle, #87e7ff 3px, transparent 3px),
+    radial-gradient(circle, #ff9bb4 3px, transparent 3px);
   transform: rotate(1deg);
   background-size: 250px 250px;
   background-position: 10% 20%, 55% 50%, 80% 65%;
@@ -103,9 +153,9 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background-image: radial-gradient(circle, #ffe4b5 3px, transparent 3px),
-    radial-gradient(circle, #baffc9 3px, transparent 3px),
-    radial-gradient(circle, #aee9f7 3px, transparent 3px);
+  background-image: radial-gradient(circle, #ffd488 3px, transparent 3px),
+    radial-gradient(circle, #87fda1 3px, transparent 3px),
+    radial-gradient(circle, #74e3ff 3px, transparent 3px);
   transform: rotate(1.5deg);
   background-size: 300px 300px;
   background-position: 30% 35%, 65% 60%, 90% 75%;
@@ -119,9 +169,9 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background-image: radial-gradient(circle, #dc22f976 3px, transparent 3px),
-    radial-gradient(circle, #83f7ff9b 3px, transparent 3px),
-    radial-gradient(circle, #d0ff004a 3px, transparent 3px);
+  background-image: radial-gradient(circle, #dc22f9a3 3px, transparent 3px),
+    radial-gradient(circle, #83f7ffc6 3px, transparent 3px),
+    radial-gradient(circle, #d0ff0082 3px, transparent 3px);
   transform: rotate(3deg);
   background-size: 280px 280px;
   background-position: 25% 40%, 70% 55%, 85% 70%;
@@ -158,7 +208,7 @@
 }
 
 .nav-item {
-  color: #ffffffcc;
+  color: #e0d7ff;
   font-size: 1.75em;
   text-decoration: none;
   font-weight: 500;
@@ -180,7 +230,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffffcc;
+  color: #ffffff;
   text-decoration: none;
   z-index: 2;
   transition: all 0.3s ease;
