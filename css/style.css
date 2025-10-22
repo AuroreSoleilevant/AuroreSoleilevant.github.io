@@ -712,7 +712,7 @@ footer {
   position: relative;
   /* 左右留白给引号与文字，底部留出空间给右下引号和接缝 */
   padding: 12px 34px 12px 34px;
-  border-radius: 4px;
+  border-radius: 10px;
   border: 1px solid #d0d07a;
   box-shadow: 2px 2px 8px rgba(90, 62, 54, 0.12);
   color: inherit;
@@ -1323,6 +1323,7 @@ footer {
   }
 }
 
+/* 移动端按钮按下后不高亮容器（透明) */
 button,
 a,
 [role="button"],
