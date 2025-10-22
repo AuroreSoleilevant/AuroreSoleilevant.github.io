@@ -29,7 +29,7 @@
       s.src = src;
       s.defer = true;
       s.onload = () => resolve();
-      s.onerror = () => reject(new Error(`Failed to load ${src}`));
+      s.onerror = () => reject(new Error(`加载失败 ${src}`));
       document.head.appendChild(s);
     });
   }
@@ -44,9 +44,8 @@
           await loadJS(mod.src);
         }
       }
-      console.log("[Histoire Loader] All modules loaded.");
     } catch (err) {
-      console.error("[Histoire Loader] Error loading modules:", err);
+      console.error("[Histoire Loader] 加载错误:", err);
     }
   })();
 })();

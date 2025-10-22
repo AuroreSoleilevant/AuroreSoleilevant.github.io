@@ -1,21 +1,15 @@
 (() => {
-  console.log("进度条脚本开始执行"); // 调试信息，鬼知道有什么问题
-
   // 延迟执行，确保 DOM 完全加载
   function initProgressBar() {
     const startEl = document.querySelector("[data-progress-start]");
     const endEl = document.querySelector("[data-progress-end]");
 
-    console.log("查找进度条元素:", { startEl, endEl }); // 调试信息
-
     if (!startEl || !endEl) {
-      console.warn("进度条起始或结束元素未找到");
       return;
     }
 
     // 检查是否已经存在进度条
     if (document.querySelector(".reading-progress")) {
-      console.log("进度条已存在，跳过初始化");
       return;
     }
 
@@ -40,8 +34,6 @@
         startY = scrollY + sRect.top;
         endY = scrollY + eRect.top;
         totalH = Math.max(1, endY - startY);
-
-        console.log("进度条边界计算完成:", { startY, endY, totalH });
       } catch (error) {
         console.error("计算进度条边界时出错:", error);
       }
@@ -146,8 +138,6 @@
       attributes: false,
       characterData: false,
     });
-
-    console.log("进度条初始化完成");
   }
 
   // 多种初始化方式确保执行
