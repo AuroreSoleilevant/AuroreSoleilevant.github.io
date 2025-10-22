@@ -60,7 +60,7 @@
 }
 
 .site-header.scrolled::before {
-  background-color: rgba(35, 41, 70, 0.55);
+  background-color: rgba(35, 41, 70, 0.35);
   -webkit-backdrop-filter: blur(8px) saturate(120%);
   backdrop-filter: blur(8px) saturate(120%);
 }
@@ -70,7 +70,7 @@
 ) {
   .site-header {
     /* 半透明保留原色基调 */
-    background-color: rgba(35, 41, 70, 0.5);
+    background-color: rgba(35, 41, 70, 0.35);
 
     /* 毛玻璃：模糊 + 稍微提升饱和度 */
     -webkit-backdrop-filter: blur(8px) saturate(120%);
