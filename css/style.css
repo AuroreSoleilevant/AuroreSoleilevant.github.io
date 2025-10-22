@@ -1322,3 +1322,12 @@ footer {
     transition: none !important;
   }
 }
+
+button,
+a,
+[role="button"],
+.clickable {
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  touch-action: manipulation;
+}
