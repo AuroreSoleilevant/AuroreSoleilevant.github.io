@@ -3,11 +3,11 @@
 
 (function () {
   const modules = [
+    { type: "css", href: "/css/intro.css" },
     { type: "css", href: "/css/chapters-sidebar.css" },
     { type: "js", src: "/js/chapters-sidebar.js" },
     { type: "css", href: "/css/chapter-nav.css" },
     { type: "js", src: "/js/chapter-nav.js" },
-    { type: "css", href: "/css/intro.css" },
   ];
 
   // 加载 CSS（带防重复）
