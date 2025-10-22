@@ -840,6 +840,33 @@ footer {
   display: block;
   text-align: right;
 }
+
+/* 引用导向：指向注释 */
+.note-ref {
+  font-size: 0.6em;
+  vertical-align: super;
+  color: #5ebca2;
+  text-decoration: none;
+  padding-left: 10px;
+}
+
+[id] {
+  scroll-margin-top: 300px; /* 根据顶栏高度调整 */
+}
+
+.note-ref:hover {
+  text-decoration: underline;
+}
+
+/* 引用导向：指向文本 */
+.note-refres {
+  color: #5ebca2;
+  text-decoration: none;
+}
+
+.note-refres:hover {
+  text-decoration: underline;
+}
 /* ---------- 其他：结束 ---------- */
 
 /* 平板设备 */
