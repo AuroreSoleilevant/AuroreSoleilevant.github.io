@@ -1,17 +1,23 @@
+/* 基础样式 */
+.shaking-text {
+  position: relative;
+  display: block;
+}
+
 .tag-container {
   position: absolute;
-  left: auto; /* 确保不同时存在 left 和 right 的冲突，啊呜呜 */
-  right: -12px; /* 把容器的右边放到 h1 右边外 12px（即 gap）*/
+  left: auto;
+  right: -12px;
   top: 50%;
-  transform: translateY(-50%); /* 仅垂直居中 */
+  transform: translateY(-50%);
   display: flex;
-  flex-direction: row-reverse; /* 新标签向左排列 */
+  flex-direction: row-reverse;
   gap: 12px;
   align-items: center;
   white-space: nowrap;
-  z-index: 999;
+  z-index: 99;
 
-  /* 再次强制隔离书写方向影响，真是激昂的ImPoRtAnT */
+  /* 强制隔离书写方向影响 */
   writing-mode: horizontal-tb !important;
   text-orientation: mixed !important;
   direction: ltr !important;
@@ -31,6 +37,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   transition: transform 0.16s ease, box-shadow 0.16s ease;
   cursor: pointer;
+  flex-shrink: 0; /* 防止标签被压缩 */
 }
 
 .page-tag:hover,
@@ -48,18 +55,28 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14), 0 0 0 3px rgba(0, 0, 0, 0.04);
 }
 
-/* 响应式 */
+/* 响应式设计 */
 @media (max-width: 1020px) {
+  /* 移动端布局 - 标签单独成行 */
+  .tag-container {
+    position: static;
+    transform: none;
+    flex-direction: row-reverse; /* 保持与PC端相同的排列顺序 */
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-top: 15px;
+    white-space: normal;
+    width: 100%;
+    right: auto; /* 移除右侧定位 */
+  }
+
   .page-tag {
+    margin-bottom: 8px;
     font-size: 1.1rem;
   }
 }
 
 @media (max-width: 650px) {
-  .page-tag {
-    font-size: 0.8rem;
-  }
-
   .page-tag {
     padding: 8px 10px;
   }
@@ -71,10 +88,7 @@
 
 @media (max-width: 480px) {
   .page-tag {
-    font-size: 0.6rem;
-  }
-
-  .page-tag {
+    font-size: 0.85rem;
     padding: 6px 8px;
   }
 
@@ -85,6 +99,6 @@
 
 @media (max-width: 400px) {
   .tag-container {
-    display: none !important;
+    display: flex !important;
   }
 }
