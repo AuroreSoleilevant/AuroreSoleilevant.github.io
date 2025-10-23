@@ -12,6 +12,7 @@
       "tag/MLP": 1,
       "tag/apaisant": 1,
       "tag/amour": 1,
+      "tag/moyenne": 1,
       // 1.在这里扩展未来可能的新区的最大页数
     },
   };
@@ -47,7 +48,8 @@
       section !== "fini" &&
       section !== "MLP" &&
       section !== "apaisant" &&
-      section !== "amour"
+      section !== "amour" &&
+      section !== "moyenne"
     )
       // 2.把新区的名字写进白名单
       return { section: null, page: null };
