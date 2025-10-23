@@ -15,6 +15,8 @@
       "tag/moyenne": 1,
       "tag/court": 1,
       "tag/comedie": 1,
+      "tag/suspense": 1,
+      "tag/epouvante": 1,
       // 1.在这里扩展未来可能的新区的最大页数
     },
   };
@@ -53,7 +55,9 @@
       section !== "amour" &&
       section !== "moyenne" &&
       section !== "court" &&
-      section !== "comedie"
+      section !== "comedie" &&
+      section !== "suspense" &&
+      section !== "epouvante"
     )
       // 2.把新区的名字写进白名单
       return { section: null, page: null };
