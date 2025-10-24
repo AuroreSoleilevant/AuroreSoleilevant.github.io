@@ -8,16 +8,17 @@
       // 分类页面配置 - 每个分类单独设置最大页数
       "tag/musique": 1, //1
       "tag/long": 1, //1
-      "tag/fini": 2, //7
-      "tag/MLP": 1, //4
+      "tag/fini": 2, //8
+      "tag/MLP": 1, //6
       "tag/apaisant": 1, //3
       "tag/amour": 1, //5
-      "tag/moyenne": 1, //2
+      "tag/moyenne": 1, //3
       "tag/court": 1, //4
-      "tag/comedie": 1, //1
+      "tag/comedie": 1, //2
       "tag/suspense": 1, //1
       "tag/epouvante": 1, //1
       "tag/futuriste": 1, //1
+      "tag/traduction": 1, //1
       // 1.在这里扩展未来可能的新区的最大页数
     },
   };
@@ -59,7 +60,8 @@
       section !== "comedie" &&
       section !== "suspense" &&
       section !== "epouvante" &&
-      section !== "futuriste"
+      section !== "futuriste" &&
+      section !== "traduction"
     )
       // 2.把新区的名字写进白名单
       return { section: null, page: null };
