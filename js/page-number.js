@@ -3,8 +3,8 @@
 (function () {
   const CONFIG = {
     maxPages: {
-      histoire: 2, // 故事区最大页数
-      article: 1, // 文章区最大页数
+      histoire: 2, // 故事区最大页数，目前故事6
+      article: 1, // 文章区最大页数，目前文章1
       // 分类页面配置 - 每个分类单独设置最大页数
       "tag/musique": 1, //1
       "tag/long": 1, //1
@@ -159,11 +159,24 @@
 
     prevBtn.addEventListener("click", () => {
       if (isFirst) return;
-      location.href = buildUrl(section, page - 1, tagSlug);
+      const url = buildUrl(section, page - 1, tagSlug);
+      // 模拟链接点击来触发淡入淡出
+      const link = document.createElement("a");
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     });
+
     nextBtn.addEventListener("click", () => {
       if (isLast) return;
-      location.href = buildUrl(section, page + 1, tagSlug);
+      const url = buildUrl(section, page + 1, tagSlug);
+      // 模拟链接点击来触发淡入淡出
+      const link = document.createElement("a");
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     });
 
     if (!goBtn) {
@@ -187,7 +200,12 @@
         return;
       }
       const target = buildUrl(section, v, tagSlug);
-      location.href = target;
+      // 模拟链接点击来触发淡入淡出
+      const link = document.createElement("a");
+      link.href = target;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     jumpInput.addEventListener("keydown", (ev) => {
