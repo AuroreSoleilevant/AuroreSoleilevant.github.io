@@ -3,20 +3,20 @@
 (function () {
   const CONFIG = {
     maxPages: {
-      histoire: 1, // 故事区最大页数
+      histoire: 2, // 故事区最大页数
       article: 1, // 文章区最大页数
       // 分类页面配置 - 每个分类单独设置最大页数
-      "tag/musique": 1, // musique分类最大页数
-      "tag/long": 1,
-      "tag/fini": 1,
-      "tag/MLP": 1,
-      "tag/apaisant": 1,
-      "tag/amour": 1,
-      "tag/moyenne": 1,
-      "tag/court": 1,
-      "tag/comedie": 1,
-      "tag/suspense": 1,
-      "tag/epouvante": 1,
+      "tag/musique": 1, //1
+      "tag/long": 1, //1
+      "tag/fini": 2, //6
+      "tag/MLP": 1, //4
+      "tag/apaisant": 1, //3
+      "tag/amour": 1, //4
+      "tag/moyenne": 1, //2
+      "tag/court": 1, //3
+      "tag/comedie": 1, //1
+      "tag/suspense": 1, //1
+      "tag/epouvante": 1, //1
       // 1.在这里扩展未来可能的新区的最大页数
     },
   };
