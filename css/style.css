@@ -373,6 +373,12 @@ main h1 {
   margin-right: 96px;
 }
 
+main h2 {
+  margin-left: 96px;
+  margin-right: 96px;
+  font-size: 2.5rem;
+}
+
 /* 居中文本定义 */
 .text-center {
   text-align: center;
@@ -915,6 +921,12 @@ footer {
     font-size: 3.2rem;
   }
 
+  main h2 {
+    margin-left: 48px;
+    margin-right: 48px;
+    font-size: 2rem;
+  }
+
   /* 分割线调整 */
   .section-divider {
     margin: 28px 48px;
@@ -1021,6 +1033,12 @@ footer {
 
   h1.shaking-text {
     font-size: 2.5rem;
+  }
+
+  main h2 {
+    margin-left: 24px;
+    margin-right: 24px;
+    font-size: 1.5rem;
   }
 
   h1 {
@@ -1162,6 +1180,11 @@ footer {
     font-size: 2rem;
   }
 
+  main h2 {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
   .mobile-break {
     display: block;
   }
@@ -1264,6 +1287,11 @@ footer {
 
   p {
     font-size: 16px;
+  }
+
+  main h2 {
+    margin-left: 12px;
+    margin-right: 12px;
   }
 
   .footer-links {
