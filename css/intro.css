@@ -55,6 +55,18 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14), 0 0 0 3px rgba(0, 0, 0, 0.04);
 }
 
+/* 手动启用桌面端换行模式，在body写force-wrap-tags */
+body.force-wrap-tags .tag-container {
+  position: static !important;
+  transform: none !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  margin-top: 15px !important;
+  white-space: normal !important;
+  width: 100% !important;
+  right: auto !important;
+}
+
 /* 响应式设计 */
 @media (max-width: 1020px) {
   /* 移动端布局 - 标签单独成行 */
