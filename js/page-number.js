@@ -3,22 +3,23 @@
 (function () {
   const CONFIG = {
     maxPages: {
-      histoire: 3, // 故事区最大页数，目前故事16
+      histoire: 3, // 故事区最大页数，目前故事18
       article: 1, // 文章区最大页数，目前文章1
       // 分类页面配置 - 每个分类单独设置最大页数
       "tag/musique": 1, //1
       "tag/long": 1, //2
-      "tag/fini": 3, //16
-      "tag/MLP": 2, //12
-      "tag/apaisant": 1, //4
+      "tag/fini": 3, //18
+      "tag/MLP": 3, //14
+      "tag/apaisant": 1, //5
       "tag/amour": 2, //7
       "tag/moyenne": 1, //5
-      "tag/court": 2, //9
+      "tag/court": 2, //10
       "tag/comedie": 1, //3
       "tag/suspense": 1, //2
-      "tag/epouvante": 1, //1
+      "tag/epouvante": 1, //2
       "tag/futuriste": 1, //1
       "tag/traduction": 1, //1
+      "tag/interactif": 1, //1
       // 1.在这里扩展未来可能的新区的最大页数
     },
   };
@@ -61,7 +62,8 @@
       section !== "suspense" &&
       section !== "epouvante" &&
       section !== "futuriste" &&
-      section !== "traduction"
+      section !== "traduction" &&
+      section !== "interactif"
     )
       // 2.把新区的名字写进白名单
       return { section: null, page: null };
