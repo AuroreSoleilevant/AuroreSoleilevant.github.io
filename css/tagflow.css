@@ -1,0 +1,185 @@
+.category-flow-wrapper {
+  width: 100%;
+  max-width: 1000px; /* 长度 */
+  margin: 3em auto;
+  padding: 30px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+.flow-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.flow-track {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0;
+  width: max-content;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.category-flow-wrapper:hover .flow-track {
+  animation-play-state: paused;
+  transition: all 0.5s ease;
+}
+
+.flow-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: white;
+  color: #4a5568;
+  text-decoration: none;
+  border-radius: 15px;
+  font-weight: 600;
+  font-size: 1.5rem;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.flow-tag:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: none;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.category-flow-wrapper::before,
+.category-flow-wrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+.category-flow-wrapper::before {
+  left: 0;
+  background: linear-gradient(
+    to right,
+    rgba(245, 247, 250, 1) 0%,
+    rgba(245, 247, 250, 0) 100%
+  );
+}
+
+.category-flow-wrapper::after {
+  right: 0;
+  background: linear-gradient(
+    to left,
+    rgba(245, 247, 250, 1) 0%,
+    rgba(245, 247, 250, 0) 100%
+  );
+}
+
+.category-flow-wrapper:hover::before,
+.category-flow-wrapper:hover::after {
+  opacity: 0.6;
+}
+
+/* 平板设备响应式 */
+@media (max-width: 1024px) {
+  .category-flow-wrapper {
+    max-width: 90%; /* 平板宽度调整为90% */
+    padding: 25px;
+    margin: 2.5em auto;
+  }
+
+  .flow-tag {
+    font-size: 1.3rem; /* 平板字号 */
+    padding: 9px 18px;
+  }
+
+  .flow-container {
+    gap: 12px;
+  }
+
+  .flow-track {
+    gap: 10px;
+  }
+}
+
+/* 小平板/大手机响应式 */
+@media (max-width: 768px) {
+  .category-flow-wrapper {
+    max-width: 95%; /* 进一步增加宽度占比 */
+    padding: 20px;
+    margin: 2em auto;
+    border-radius: 15px;
+  }
+
+  .flow-tag {
+    font-size: 1.1rem; /* 手机字号 */
+    padding: 8px 16px;
+    border-radius: 12px;
+  }
+
+  .flow-container {
+    gap: 10px;
+  }
+
+  .flow-track {
+    gap: 8px;
+    padding: 6px 0;
+  }
+
+  /* 调整动画速度适应小屏幕 */
+  #flowTrack1 {
+    animation-duration: 35s;
+  }
+
+  #flowTrack2 {
+    animation-duration: 40s;
+  }
+}
+
+/* 小手机响应式 */
+@media (max-width: 480px) {
+  .category-flow-wrapper {
+    max-width: 100%; /* 小手机占满宽度 */
+    padding: 15px;
+    margin: 1.5em auto;
+    border-radius: 12px;
+  }
+
+  .flow-tag {
+    font-size: 1rem; /* 最小字号 */
+    padding: 7px 14px;
+    border-radius: 10px;
+  }
+
+  .flow-container {
+    gap: 8px;
+  }
+
+  .flow-track {
+    gap: 6px;
+    padding: 5px 0;
+  }
+
+  /* 减小遮罩宽度 */
+  .category-flow-wrapper::before,
+  .category-flow-wrapper::after {
+    width: 40px;
+  }
+}
+
+/* 超小屏幕特殊处理 */
+@media (max-width: 360px) {
+  .flow-tag {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+  }
+}

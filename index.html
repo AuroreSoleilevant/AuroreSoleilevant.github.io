@@ -15,6 +15,8 @@
   <script src="/js/list.js"></script>
   <script src="/js/catalogue.js"></script>
   <link rel="stylesheet" href="/css/morceau.css">
+  <link rel="stylesheet" href="/css/tagflow.css">
+  <script src="/js/tagflow.js"></script>
 
   <!-- 本页的CSS -->
   <style>
@@ -177,7 +179,6 @@
 
 <div class="random-btn-wrapper">
   <a id="randomLink" class="random-btn" role="button" href="#" aria-live="polite">随机看看</a>
-  <a class="random-btn" role="button" href="/tag">找找分类</a>
 </div>
 
 <script>
@@ -283,6 +284,47 @@ link.addEventListener('keydown', (e) => {
   if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); link.click(); }
 });
 </script>
+
+<div class="category-flow-wrapper">
+  <div class="flow-container">
+    <div class="flow-track" id="flowTrack1">
+      <a href="/tag/long" class="flow-tag">长篇</a>
+      <a href="/tag/moyenne" class="flow-tag">中篇</a>
+      <a href="/tag/court" class="flow-tag">短篇</a>
+      <a href="/tag/fini" class="flow-tag">已完结</a>
+      <a href="/tag/serie" class="flow-tag">连载中</a>
+      <a href="/tag/traduction" class="flow-tag">翻译</a>
+      <a href="/tag/interactif" class="flow-tag">互动</a>
+      <!-- 重复一份以实现无缝循环 -->
+      <a href="/tag/long" class="flow-tag">长篇</a>
+      <a href="/tag/moyenne" class="flow-tag">中篇</a>
+      <a href="/tag/court" class="flow-tag">短篇</a>
+      <a href="/tag/fini" class="flow-tag">已完结</a>
+      <a href="/tag/serie" class="flow-tag">连载中</a>
+      <a href="/tag/traduction" class="flow-tag">翻译</a>
+      <a href="/tag/interactif" class="flow-tag">互动</a>
+    </div>
+    <div class="flow-track" id="flowTrack2">
+      <a href="/tag/apaisant" class="flow-tag">治愈</a>
+      <a href="/tag/comedie" class="flow-tag">喜剧</a>
+      <a href="/tag/MLP" class="flow-tag">彩虹小马</a>
+      <a href="/tag/suspense" class="flow-tag">悬疑</a>
+      <a href="/tag/epouvante" class="flow-tag">恐怖</a>
+      <a href="/tag/amour" class="flow-tag">爱情</a>
+      <a href="/tag/futuriste" class="flow-tag">科幻</a>
+      <a href="/tag/musique" class="flow-tag">音乐</a>
+      <!-- 重复一份以实现无缝循环 -->
+      <a href="/tag/apaisant" class="flow-tag">治愈</a>
+      <a href="/tag/comedie" class="flow-tag">喜剧</a>
+      <a href="/tag/MLP" class="flow-tag">彩虹小马</a>
+      <a href="/tag/suspense" class="flow-tag">悬疑</a>
+      <a href="/tag/epouvante" class="flow-tag">恐怖</a>
+      <a href="/tag/amour" class="flow-tag">爱情</a>
+      <a href="/tag/futuriste" class="flow-tag">科幻</a>
+      <a href="/tag/musique" class="flow-tag">音乐</a>
+    </div>
+  </div>
+</div>
 
   <div class="dishaut"></div>
   <p class="text-center fsize2p5"><b>友情链接，友谊就是魔法<span class="mobile-break"></span> (・∀・)</b></p>
