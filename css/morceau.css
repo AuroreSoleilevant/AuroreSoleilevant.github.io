@@ -143,6 +143,21 @@
   -webkit-backdrop-filter: blur(4px);
 }
 
+/* 主页磁贴居中样式 */
+.home-center .mt-container {
+  width: 100% !important;
+  margin: 0 auto !important;
+  justify-content: center;
+  padding: 0;
+}
+
+/* 确保主页的磁贴完全居中 */
+.home-center .mt-tile {
+  flex: 0 0 calc(33.333% - 20px);
+  max-width: calc(33.333% - 20px);
+  margin-left: 0 !important;
+}
+
 /* =========== 视觉效果 =========== */
 /* 悬停效果 */
 .mt-tile:hover {
@@ -195,6 +210,16 @@
 
   .mt-info {
     font-size: 0.9rem;
+  }
+
+  .home-center .mt-container {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .home-center .mt-tile {
+    flex: 0 0 calc(50% - 15px);
+    max-width: calc(50% - 15px);
   }
 }
 
@@ -254,6 +279,17 @@
 
   .mt-info {
     font-size: 0.7rem;
+  }
+
+  .home-center .mt-container {
+    width: 100% !important;
+    padding: 0 20px !important;
+  }
+
+  .home-center .mt-tile {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-left: 0 !important;
   }
 }
 

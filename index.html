@@ -12,6 +12,8 @@
   <!-- 调用列表 -->
   <script src="/js/common-head.js" fetchpriority="high"></script>
   <link rel="stylesheet" href="/css/tuile.css">
+  <script src="/js/list.js"></script>
+  <script src="/js/catalogue.js"></script>
   <link rel="stylesheet" href="/css/morceau.css">
 
   <!-- 本页的CSS -->
@@ -35,6 +37,48 @@
       75%  { transform: translateY(10px); }
       100% { transform: translateY(0px); }
     }
+
+  .random-btn-wrapper {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center;
+  width: 100%;
+  margin: 2em 0;
+}
+
+/* 按钮（a 元素） */
+.random-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 20px;
+  font-size: 2rem !important;     /* 字号 */
+  font-weight: 900;
+  font: inherit;          /* 继承字体 */
+  color: #fff;
+  text-decoration: none;  /* 去掉下划线 */
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  box-shadow: 0 8px 18px rgba(255,146,178,0.28);
+  background-image: linear-gradient(90deg,#FF92B2,#FFD36B);
+  transition: transform .18s ease, box-shadow .18s ease, opacity .12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 悬停与按下效果（不会影响页面全局） */
+.random-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(255,146,178,0.36); }
+.random-btn:active { transform: translateY(0) scale(0.98); }
+
+/* 禁用态（防止重复点击） */
+.random-btn[aria-disabled="true"]{
+  opacity: 0.65;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
+}
   
   @media (prefers-reduced-motion: reduce) {
   .shaking-text {
@@ -73,6 +117,11 @@
    .dishaut{    /* 通用顶部空格 */
   height: 0rem;
  }
+
+ .random-btn {
+  padding: 13px 13px;
+  font-size: 1.2rem !important;     /* 字号 */
+}
  
 }
   </style>
@@ -123,8 +172,116 @@
 
   <div class="dishaut"></div>
   <p class="text-center fsize2p5"><b>推荐！寻找好看的<span class="mobile-break"></span> ᕕ( ᐛ )ᕗ</b></p>
-  <p class="text-center">-开发中-</p>
-  
+  <div id="mt-list" class="home-center"></div>
+
+<div class="random-btn-wrapper">
+  <a id="randomLink" class="random-btn" role="button" href="#" aria-live="polite">随机看看</a>
+</div>
+
+<script>
+/* ---------- 随机按钮：配置 ---------- */
+const jsonFiles = [
+  '/json/article.json',
+  '/json/histoire.json'
+];
+const link = document.getElementById('randomLink');
+
+/* ---------- 内部状态 ---------- */
+let cachedUrls = [];      // 预缓存的所有 url
+let prefetchDone = false; // 标记预取是否完成
+let inFlight = false;     // 防止重复点击并防止重复导航
+
+/* ---------- 帮助函数 ---------- */
+function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+async function fetchJsonAndExtract(url){
+  try{
+    const res = await fetch(url, {cache: 'no-store'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const j = await res.json();
+    if(Array.isArray(j)) return j.map(i=>i && i.url).filter(Boolean);
+    const tryKeys = ['items','data','articles','list'];
+    for(const k of tryKeys){ if(Array.isArray(j[k])) return j[k].map(i=>i && i.url).filter(Boolean); }
+    return [];
+  }catch(e){
+    console.warn('[随机按钮] 读取 JSON 失败: ', url, e);
+    return [];
+  }
+}
+
+/* ---------- 预取（减少点击卡顿） ---------- */
+async function prefetchAll(){
+  try{
+    const promises = jsonFiles.map(p => fetchJsonAndExtract(p));
+    const results = await Promise.all(promises);
+    cachedUrls = [...new Set(results.flat())];
+  }catch(e){
+    console.warn('[随机按钮] 预取发生错误', e);
+  }finally{
+    prefetchDone = true;
+    // 如果没有取到任何链接，保留按钮但提示
+    if(!cachedUrls.length){
+      link.title = '未找到链接（请检查 JSON 路径或 CORS）';
+    }
+  }
+}
+// 在低优先级启动预取，不阻塞页面渲染
+if('requestIdleCallback' in window){
+  requestIdleCallback(prefetchAll, {timeout:2000});
+} else {
+  // 在可用时尽快执行
+  setTimeout(prefetchAll, 400);
+}
+
+/* ---------- 点击处理 ---------- */
+async function handleRandomClick(e){
+  e.preventDefault();
+  if(inFlight) return; // 防抖：忽略重复点击
+  inFlight = true;
+  link.setAttribute('aria-disabled', 'true');
+  const originalText = link.textContent;
+  link.textContent = '加载中…';
+
+  // 如果缓存里没有数据（可能预取失败或未完成或者乱七八糟的情况啊啊），立即尝试加载
+  if(!cachedUrls.length){
+    // 尝试即时加载（并行），但不再添加人为最小 loading 延时
+    const results = await Promise.all(jsonFiles.map(p => fetchJsonAndExtract(p)));
+    cachedUrls = [...new Set(results.flat())];
+  }
+
+  if(!cachedUrls.length){
+    link.textContent = '未找到链接';
+    setTimeout(()=>{ link.removeAttribute('aria-disabled'); link.textContent = originalText; inFlight = false; }, 1200);
+    return;
+  }
+
+  const chosen = pickRandom(cachedUrls);
+  link.href = chosen; // 设 href，便于 SPA 监听或右键复制
+
+  // 模拟一次真实的用户点击（大多数站内路由/动画会捕获）
+  // 只触发一次导航（不再执行后备 location.href），以避免重复历史项的奇怪问题
+  const evt = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+  link.dispatchEvent(evt);
+
+  link.textContent = '走咯~';
+
+  // 作为安全：如果 1800ms 后页面仍未导航（极少见），恢复按钮
+  setTimeout(()=>{
+    if(document.location.href === window.location.href){ // 仍在当前页
+      link.removeAttribute('aria-disabled');
+      link.textContent = originalText;
+      inFlight = false;
+    }
+  }, 1800);
+}
+
+/* 键盘可访问性 */
+link.addEventListener('click', handleRandomClick);
+link.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); link.click(); }
+});
+</script>
+
   <div class="dishaut"></div>
   <p class="text-center fsize2p5"><b>友情链接，友谊就是魔法<span class="mobile-break"></span> (・∀・)</b></p>
 
@@ -144,7 +301,7 @@
 
   <!-- 左下角日期 -->
   <div class="page-dates">
-  发布：28/9/2025　修改：10/10/2025
+  发布：28/9/2025　修改：28/10/2025
   </div>
 
   <!-- 底栏，需带着 -->

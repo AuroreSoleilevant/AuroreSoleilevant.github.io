@@ -8,6 +8,7 @@
   const ROUTE_TO_DB = {
     "/article": "/json/article.json",
     "/histoire": "/json/histoire.json",
+    "/": "/json/index.json",
   };
 
   const mountSelector = "#mt-list";
