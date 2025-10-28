@@ -86,14 +86,28 @@ class TagFlowManager {
     if (!container) return baseDuration;
 
     const containerWidth = container.offsetWidth;
-    const trackWidth = element.scrollWidth / 2; // 只计算原始内容的宽度
+    const trackWidth = element.scrollWidth / 2;
 
     // 根据内容长度调整速度
     const speedFactor = Math.max(
       0.8,
       Math.min(1.5, trackWidth / containerWidth)
     );
-    return baseDuration * speedFactor;
+
+    // 根据屏幕宽度调整速度（移动端更快）
+    let deviceSpeedMultiplier = 1;
+    const screenWidth = window.innerWidth;
+
+    if (screenWidth <= 480) {
+      deviceSpeedMultiplier = 2.5; // 小手机加速60%
+    } else if (screenWidth <= 768) {
+      deviceSpeedMultiplier = 1.9; // 平板/大手机加速40%
+    } else if (screenWidth <= 1024) {
+      deviceSpeedMultiplier = 1.4; // 小桌面加速20%
+    }
+    // PC端保持原速 (1.0)
+
+    return (baseDuration * speedFactor) / deviceSpeedMultiplier;
   }
 
   addTagInteractions(track) {

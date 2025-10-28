@@ -1,7 +1,7 @@
 /* 分页模块 */
 
 :root {
-  --pg2-gap: 24px;
+  --pg2-gap: 4px;
   --pg2-width: 88px;
   --pg2-radius: 14px;
   --pg2-btn-size: 60px; /* 按钮尺寸 */
@@ -300,7 +300,7 @@
     --pg2-btn-size: 54px;
     --pg2-current-height: 50px;
     --pg2-width: 76px;
-    --pg2-gap: 20px;
+    --pg2-gap: 10px;
   }
 
   .pg2-btn,
@@ -326,7 +326,7 @@
     --pg2-btn-size: 50px;
     --pg2-current-height: 48px;
     --pg2-width: 64px;
-    --pg2-gap: 12px !important; /* 提高优先级覆盖其他CSS */
+    --pg2-gap: 7px !important; /* 提高优先级覆盖其他CSS */
     gap: 8px;
   }
 
@@ -365,7 +365,7 @@
     --pg2-btn-size: 48px;
     --pg2-current-height: 46px;
     --pg2-width: 56px;
-    --pg2-gap: 8px !important;
+    --pg2-gap: 3px !important;
     gap: 6px;
   }
 
