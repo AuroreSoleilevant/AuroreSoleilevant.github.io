@@ -350,39 +350,7 @@ const MASCOT_CONFIG = {
     return root;
   }
 
-  // ---------------- 布局（考虑 footer） ----------------
-  function computeBottom(root) {
-    if (window._mw_position_timeout) {
-      clearTimeout(window._mw_position_timeout);
-    }
-
-    window._mw_position_timeout = setTimeout(() => {
-      const footer = document.querySelector(
-        "footer, .site-footer, #footer, .footer"
-      );
-      let extra = 120;
-
-      if (footer) {
-        try {
-          const rect = footer.getBoundingClientRect();
-          if (rect.bottom >= window.innerHeight - 1) {
-            extra = Math.max(40, rect.height + 30);
-          }
-        } catch (e) {}
-      }
-
-      root.style.bottom = extra + "px";
-    }, 50);
-  }
-
   function hookUrlChange(cb) {
-    let urlChangeTimer = null;
-
-    const wrappedCb = () => {
-      if (urlChangeTimer) clearTimeout(urlChangeTimer);
-      urlChangeTimer = setTimeout(cb, 100); // 延迟执行，等待页面稳定
-    };
-
     ["pushState", "replaceState"].forEach((fnName) => {
       const orig = history[fnName];
       history[fnName] = function () {
@@ -396,7 +364,7 @@ const MASCOT_CONFIG = {
       window.dispatchEvent(new Event("mw-history-change"));
     });
 
-    window.addEventListener("mw-history-change", wrappedCb);
+    window.addEventListener("mw-history-change", cb);
   }
 
   // ---------------- 载入句子 JSON ----------------
@@ -618,6 +586,10 @@ const MASCOT_CONFIG = {
 
   // ---------------- 初始化 ----------------
   // ---------------- 初始化 ----------------
+  // ---------------- 布局（考虑 footer） ----------------
+  // 完全移除 computeBottom 函数，不需要计算位置
+
+  // ---------------- 初始化 ----------------
   async function init() {
     const root = createWidget();
 
@@ -626,17 +598,18 @@ const MASCOT_CONFIG = {
       // 动画完成后的事情（如果有需要）
     });
 
-    // 立即计算位置，不等待换装动画
-    computeBottom(root);
+    // 移除所有位置计算调用
     setupHoverLogic(root);
+
+    // URL变化时只触发对话
     hookUrlChange(() => {
       triggerAutoForUrl(root);
-      // 在URL变化时，延迟一点再计算位置，确保页面稳定
-      setTimeout(() => computeBottom(root), 100);
     });
+
     triggerAutoForUrl(root);
 
-    window.addEventListener("resize", () => computeBottom(root));
+    // 移除resize监听，因为位置固定不需要调整
+    // window.addEventListener("resize", () => computeBottom(root));
 
     // 暴露一些接口用于调试/扩展，未来用吧
     window.__MASCOT_WIDGET = Object.assign(window.__MASCOT_WIDGET || {}, {
