@@ -1,7 +1,7 @@
-/* ======= 可调变量区 ======= */
+/* ======= 变量区 ======= */
 :root {
   --mw-dialog-width: 280px; /* 对话框宽度 */
-  --mw-dialog-bottom-offset: 130px; /* 对话框距底部距离（即图片上方多高） */
+  --mw-dialog-bottom-offset: 130px; /* 对话框距底部距离 */
 }
 
 /* 固定在左下角 */
@@ -13,7 +13,7 @@
   pointer-events: auto;
 }
 
-/* 吉祥物按钮 */
+/* 按钮 */
 #mw-root .mw-mascot-btn {
   display: inline-flex;
   align-items: center;
@@ -36,7 +36,7 @@
 /* ======= 对话框 ======= */
 #mw-root .mw-dialog {
   position: absolute;
-  left: 120px; /* 对话框在吉祥物右侧 */
+  left: 120px; /* 对话框在小马右侧 */
   bottom: 30px;
   width: var(--mw-dialog-width, 280px);
   max-width: 90vw;
@@ -44,7 +44,7 @@
   /* 毛玻璃 */
   background: rgba(230, 220, 255, 0.5); /* 柔和浅紫，透明感适中 */
   border: 1px solid rgba(255, 255, 255, 0.65);
-  color: #2d2640; /* 深紫灰文字，比纯黑柔和 */
+  color: #2d2640; /* 文字色 */
   box-shadow: 0 6px 24px rgba(50, 40, 100, 0.15);
   -webkit-backdrop-filter: blur(10px) saturate(130%);
   backdrop-filter: blur(10px) saturate(130%);

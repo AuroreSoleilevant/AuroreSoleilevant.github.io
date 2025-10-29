@@ -1,21 +1,13 @@
-/* mascot.js — 完整增强版
-   功能：
-   - 从 JSON 加载语句
-   - hover 时随机显示（支持 weight）
-   - 支持链式触发 nextId 和 onlyChain
-   - 支持 timeRange / dateRange / pages 过滤
-   - SPA URL 变化支持
-   - 若屏幕宽度 < 1024px 则不注入（节省移动端流量）
-*/
+/* mascot.js — 左下角小马 */
 
-/* ========== 配置区（只需修改这里） ========== */
+/* ========== 配置区 ========== */
 const MASCOT_CONFIG = {
   image: "/images/mascot/女巫.webp",
-  sentencesUrl: "/json/mascot/女巫.json", // <- 改成你的 JSON 地址
+  sentencesUrl: "/json/mascot/女巫.json",
   autoShowDuration: 6000, // auto 显示时长（毫秒）
   minScreenWidthToShow: 1024, // 小于该宽度则不注入
 };
-/* ============================================== */
+/* ============================ */
 
 (function () {
   if (window.__MASCOT_WIDGET_INJECTED) return;
@@ -23,12 +15,11 @@ const MASCOT_CONFIG = {
 
   // 小屏幕直接不注入（避免加载图片）
   if (window.innerWidth < (MASCOT_CONFIG.minScreenWidthToShow || 1024)) {
-    // 若你想支持在 resize 后再注入，可以在此处添加监听逻辑
     return;
   }
 
   const ID = "mw-root";
-  const PLACEHOLDER_TEXT = "Ciallo～(∠・ω< )⌒☆";
+  const PLACEHOLDER_TEXT = "Ciallo～(∠・ω< )⌒☆"; //默认句子
 
   // ---------------- 小工具 ----------------
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -112,6 +103,7 @@ const MASCOT_CONFIG = {
   //  - 正则：以 / 开头并以 / 结尾（例如 "/\\/book\\/\\d+/"）
   //  - 前缀通配：以 '*' 结尾（例如 "/book/*"）
   //  - 子串包含：其他字符串 -> href.includes(pattern)
+  //  指不定明天我就看不懂了
   function matchesPagePattern(pattern, href) {
     if (!pattern) return true;
     if (pattern.startsWith("/") && pattern.endsWith("/")) {
@@ -138,8 +130,8 @@ const MASCOT_CONFIG = {
     return sentence.pages.some((p) => matchesPagePattern(p, href));
   }
 
-  // timeRange: { from: "HH:MM", to: "HH:MM" } 支持跨日（22:00-06:00）
-  // dateRange: { from: "YYYY-MM-DD", to: "YYYY-MM-DD" } (inclusive)
+  // 时间格式: { from: "HH:MM", to: "HH:MM" } 支持跨日（22:00-06:00）
+  // 日期格式: { from: "YYYY-MM-DD", to: "YYYY-MM-DD" }
   function timeToMinutes(t) {
     const parts = String(t).split(":");
     const hh = parseInt(parts[0] || "0", 10);
@@ -148,7 +140,7 @@ const MASCOT_CONFIG = {
   }
   function matchesTime(sentence) {
     const now = new Date();
-    // dateRange
+    // 日期格式
     if (
       sentence.dateRange &&
       sentence.dateRange.from &&
@@ -158,7 +150,7 @@ const MASCOT_CONFIG = {
       if (d < sentence.dateRange.from || d > sentence.dateRange.to)
         return false;
     }
-    // timeRange
+    // 时间格式
     if (
       sentence.timeRange &&
       sentence.timeRange.from &&
@@ -170,7 +162,6 @@ const MASCOT_CONFIG = {
       if (a <= b) {
         if (minsNow < a || minsNow > b) return false;
       } else {
-        // wrap around midnight
         if (minsNow < a && minsNow > b) return false;
       }
     }
@@ -183,7 +174,6 @@ const MASCOT_CONFIG = {
   }
 
   // ---------------- 权重抽取 ----------------
-  // input: array of sentence objects (must be objects)
   function weightedPickObjects(arr) {
     const total = arr.reduce((s, item) => s + (Number(item.weight) || 1), 0);
     if (total <= 0) return null;
@@ -195,39 +185,30 @@ const MASCOT_CONFIG = {
     return arr[arr.length - 1] || null;
   }
 
-  // ---------------- 链式触发逻辑 ----------------
-  let forcedNextId = null; // next forced id; cleared after used
-  let lastShownId = null; // avoid immediate repeat if possible
+  // ---------------- 链式触发 ----------------
+  let forcedNextId = null;
+  let lastShownId = null;
 
   function pickRandomLineWithChain(allLines) {
     const href = location.href;
-    // build candidates respecting page/time (for normal random)
     const candidates = allLines.filter(
       (l) => isCandidate(l, href) && !l.onlyChain
     );
 
-    // If we have a forcedNextId, try to deliver it (chain overrides normal filter).
     if (forcedNextId) {
       const target = allLines.find((l) => l.id === forcedNextId);
       forcedNextId = null;
       if (target) {
-        // If target exists but you want to still respect time/page constraints for chain,
-        // change the condition below to: if (isCandidate(target, href)) { ... } else fallback
-        // Here we allow chain to override constraints (so the continuation always appears).
         lastShownId = target.id || null;
-        // set next chain if present
         if (target.nextId) forcedNextId = target.nextId;
         return target;
       }
-      // else fallthrough to normal random
     }
 
     if (!candidates || candidates.length === 0) return null;
 
-    // pick weighted, try to avoid immediate repeat
     let pick = weightedPickObjects(candidates);
     if (pick && pick.id && pick.id === lastShownId && candidates.length > 1) {
-      // try one more time excluding lastShownId
       const alt = candidates.filter((c) => c.id !== lastShownId);
       if (alt.length) pick = weightedPickObjects(alt) || pick;
     }
@@ -257,7 +238,7 @@ const MASCOT_CONFIG = {
     $(".mw-mascot-btn", root).setAttribute("aria-expanded", "false");
   }
 
-  // ---------------- 悬停逻辑（使用链式 pick） ----------------
+  // ---------------- 悬停逻辑（链式 pick） ----------------
   function setupHoverLogic(root) {
     const btn = $(".mw-mascot-btn", root);
     const dialog = $(".mw-dialog", root);
@@ -296,7 +277,7 @@ const MASCOT_CONFIG = {
     });
   }
 
-  // ---------------- 页面进入时的 auto 触发（可选） ----------------
+  // ---------------- 页面进入时的 auto 触发（似乎没用上） ----------------
   function triggerAutoForUrl(root) {
     if (!sentences || sentences.length === 0) return;
     const href = location.href;
@@ -305,7 +286,7 @@ const MASCOT_CONFIG = {
     const pick = weightedPickObjects(candidates);
     if (!pick) return;
     const dialog = $(".mw-dialog", root);
-    if (dialog.classList.contains("mw-visible")) return; // 不覆盖用户悬停
+    if (dialog.classList.contains("mw-visible")) return; // 不覆盖悬停
     showText(root, pick);
     clearTimeout(autoTimer);
     autoTimer = setTimeout(
@@ -321,16 +302,14 @@ const MASCOT_CONFIG = {
     computeBottom(root);
     setupHoverLogic(root);
     hookUrlChange(() => {
-      // on SPA navigation: maybe trigger auto and recompute layout
       triggerAutoForUrl(root);
       computeBottom(root);
     });
-    // initial auto trigger
     triggerAutoForUrl(root);
 
     window.addEventListener("resize", () => computeBottom(root));
 
-    // 暴露一些接口用于调试/扩展
+    // 暴露一些接口用于调试/扩展，未来用吧
     window.__MASCOT_WIDGET = Object.assign(window.__MASCOT_WIDGET || {}, {
       root,
       reloadSentences: loadSentences,
