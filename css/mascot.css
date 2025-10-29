@@ -7,7 +7,7 @@
 #mw-root {
   position: fixed;
   left: 2px;
-  bottom: 40px;
+  bottom: 120px;
   z-index: 99999;
   pointer-events: auto;
 }
