@@ -3,10 +3,10 @@
   max-width: 1000px; /* 长度 */
   margin: 3em auto;
   padding: 30px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, #f8f3e9 0%, #e8dcc6 100%); /* 米黄渐变 */
   border-radius: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 2px solid rgba(245, 235, 215, 0.8); /* 米白边框 */
+  box-shadow: 0 10px 30px rgba(139, 109, 77, 0.15); /* 阴影 */
   overflow: hidden;
   position: relative;
 }
@@ -35,23 +35,23 @@
   display: inline-flex;
   align-items: center;
   padding: 10px 20px;
-  background: white;
-  color: #4a5568;
+  background: #faf5eb; /* 背景色 */
+  color: #7d6b53; /* 棕色文字 */
   text-decoration: none;
   border-radius: 15px;
   font-weight: 600;
   font-size: 1.5rem;
   white-space: nowrap;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 8px rgba(125, 107, 83, 0.1); /* 棕色阴影 */
+  border: 1px solid rgba(232, 220, 198, 0.8); /* 浅米黄边框 */
 }
 
 .flow-tag:hover {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, #d4b896 0%, #b89a73 100%); /* 棕色渐变 */
+  color: #fff8f0; /* 暖白色文字 */
   transform: none;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px rgba(180, 150, 120, 0.25); /* 色调阴影 */
 }
 
 .category-flow-wrapper::before,
@@ -70,18 +70,18 @@
   left: 0;
   background: linear-gradient(
     to right,
-    rgba(245, 247, 250, 1) 0%,
-    rgba(245, 247, 250, 0) 100%
-  );
+    rgba(248, 243, 233, 1) 0%,
+    rgba(248, 243, 233, 0) 100%
+  ); /* 背景色 */
 }
 
 .category-flow-wrapper::after {
   right: 0;
   background: linear-gradient(
     to left,
-    rgba(245, 247, 250, 1) 0%,
-    rgba(245, 247, 250, 0) 100%
-  );
+    rgba(248, 243, 233, 1) 0%,
+    rgba(248, 243, 233, 0) 100%
+  ); /* 背景色 */
 }
 
 .category-flow-wrapper:hover::before,
