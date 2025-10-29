@@ -84,6 +84,7 @@
     },
     { rel: "stylesheet", href: `/css/style.css?v=${version1}` }, // 全局样式表
     { rel: "stylesheet", href: `/css/progression.css` }, // 进度条
+    { rel: "stylesheet", href: `/css/mascot.css` }, // 左下角小马
     { rel: "icon", href: "/icons/logo.png", type: "image/x-icon" },
   ];
 
@@ -109,6 +110,7 @@
     "/js/blink.js", // 顶栏闪烁
     "/js/headtran.js", // 渐变顶栏玻璃
     "/js/progression.js", // 阅读进度条
+    "/js/mascot.js", // 左下角小马
   ];
 
   // 同步脚本（仅在数组中有项时才执行同步加载）
