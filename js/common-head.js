@@ -84,7 +84,7 @@
     },
     { rel: "stylesheet", href: `/css/style.css?v=${version1}` }, // 全局样式表
     { rel: "stylesheet", href: `/css/progression.css` }, // 进度条
-    { rel: "stylesheet", href: `/css/mascot.css` }, // 左下角小马
+    // { rel: "stylesheet", href: `/css/mascot.css` }, // 左下角小马
     { rel: "icon", href: "/icons/logo.png", type: "image/x-icon" },
   ];
 
