@@ -108,13 +108,14 @@
   pointer-events: none;
 
   /* 动画 */
-  transform: translateY(6px) scale(0.98);
+  transform: translateY(6px) scale(0.98) translateZ(0);
   transform-origin: left bottom;
   transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
     box-shadow 0.25s ease;
 
   font-size: 20px;
   line-height: 1.4;
+  will-change: opacity, transform;
 }
 
 #mw-root .mw-dialog.mw-visible {

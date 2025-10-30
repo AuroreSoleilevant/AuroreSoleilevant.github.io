@@ -171,9 +171,7 @@ const MASCOT_CONFIG = {
   async function loadSentences() {
     try {
       const currentOutfit = getCurrentOutfit();
-      const res = await fetch(currentOutfit.sentencesUrl, {
-        cache: "force-cache",
-      });
+      const res = await fetch(currentOutfit.sentencesUrl);
       if (!res.ok) throw new Error("fetch failed " + res.status);
       const j = await res.json();
       if (!Array.isArray(j)) throw new Error("sentences JSON must be an array");
@@ -324,7 +322,11 @@ const MASCOT_CONFIG = {
     const dialog = $(".mw-dialog", root);
     const text =
       sentenceObj && sentenceObj.text ? sentenceObj.text : PLACEHOLDER_TEXT;
-    dialog.innerHTML = escapeHtml(text);
+    const safeText = escapeHtml(text);
+    if (dialog.textContent !== safeText) {
+      dialog.textContent = safeText;
+    }
+
     dialog.classList.add("mw-visible");
     dialog.setAttribute("aria-hidden", "false");
     $(".mw-mascot-btn", root).setAttribute("aria-expanded", "true");
