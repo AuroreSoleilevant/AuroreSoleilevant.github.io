@@ -26,6 +26,12 @@ var MASCOT_CONFIG = window.MASCOT_CONFIG || {
   minScreenWidthToShow: 1024,
 };
 
+// 状态变量（提前声明，避免 TDZ/重复加载导致的问题）
+var sentences = [];
+var lastLoadedOutfitId = null;
+var sentencesLoading = false;
+var sentencesLoadPromise = null;
+
 // 保存到全局，避免重复声明
 window.MASCOT_CONFIG = MASCOT_CONFIG;
 
@@ -218,10 +224,6 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
   }
 
   // ---------------- 载入句子 JSON ----------------
-  let sentences = [];
-  let lastLoadedOutfitId = null;
-  let sentencesLoading = false;
-  let sentencesLoadPromise = null;
   async function loadSentences() {
     // 尽量避免重复 fetch
     const currentOutfit = getCurrentOutfit();
@@ -527,10 +529,14 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
   }
 
   // ---------------- 初始化 ----------------
-  // ---------------- 初始化 ----------------
   async function init() {
     const root = createWidget();
-    await loadSentences();
+    // 捕获 loadSentences 的异常，避免未捕获的 promise
+    try {
+      await loadSentences();
+    } catch (e) {
+      console.warn("Mascot: loadSentences failed in init:", e);
+    }
     setupHoverLogic(root);
     hookUrlChange(() => {
       triggerAutoForUrl(root);
