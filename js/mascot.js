@@ -120,7 +120,8 @@ const MASCOT_CONFIG = {
 
   // ---------------- DOM 创建 ----------------
   function createWidget() {
-    if (document.getElementById(ID)) return document.getElementById(ID);
+    let existing = document.getElementById(ID);
+    if (existing) return existing;
 
     // 初始化当前换装
     initCurrentOutfitIndex();
@@ -130,25 +131,33 @@ const MASCOT_CONFIG = {
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
     root.innerHTML = `
+    <!-- 主按钮先加载 -->
+    <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
+      <img src="${currentOutfit.image}" alt="左下角的${
+      currentOutfit.label
+    }" loading="eager">
+    </button>
+    <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
+      PLACEHOLDER_TEXT
+    )}</div>
+  `;
+
+    // 同步插入主元素
+    document.body.appendChild(root);
+    applyOutfitStyle(currentOutfit);
+
+    // 延迟添加换装按钮
+    setTimeout(() => {
+      const changerHTML = `
       <div class="mw-outfit-changer-container">
         <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-          <!-- 换装按钮图标延迟加载 -->
           <img src="/icons/icon-changer.svg" alt="换套衣服" loading="lazy">
         </button>
       </div>
-      <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-        <!-- 小马主图片同步加载 -->
-        <img src="${currentOutfit.image}" alt="左下角的${
-      currentOutfit.label
-    }" loading="eager">
-      </button>
-      <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
-        PLACEHOLDER_TEXT
-      )}</div>
     `;
-
-    // 应用当前换装样式
-    applyOutfitStyle(currentOutfit);
+      root.insertAdjacentHTML("afterbegin", changerHTML);
+      setupOutfitChangerLogic(root); // 重新绑定事件
+    }, 500); // 等页面完全稳定后再添加
 
     return root;
   }
@@ -479,29 +488,11 @@ const MASCOT_CONFIG = {
   }
 
   // ---------------- 初始化 ----------------
+  // ---------------- 初始化 ----------------
   async function init() {
-    // 等待页面完全加载
-    if (document.readyState !== "complete") {
-      await new Promise((resolve) => {
-        if (document.readyState === "complete") {
-          resolve();
-        } else {
-          window.addEventListener("load", resolve, { once: true });
-        }
-      });
-    }
-
     const root = createWidget();
-    await loadSentences(); // 确保在设置其他逻辑前加载句子
-
-    // 使用更温和的方式插入到页面，避免布局重排
-    document.body.appendChild(root);
-
-    // 强制重绘以确保布局稳定
-    root.offsetHeight;
-
+    await loadSentences();
     setupHoverLogic(root);
-    setupOutfitChangerLogic(root);
     hookUrlChange(() => {
       triggerAutoForUrl(root);
     });
@@ -524,14 +515,10 @@ const MASCOT_CONFIG = {
     });
   }
 
-  // 修改启动逻辑
+  // 恢复简单直接的启动逻辑
   if (document.readyState === "loading") {
-    // 在 DOMContentLoaded 时开始准备，但等到 load 事件才真正插入
-    document.addEventListener("DOMContentLoaded", function () {
-      // 这里只是准备好，实际的 init 会在 load 事件后执行
-      setTimeout(init, 100); // 给页面更多时间稳定
-    });
+    document.addEventListener("DOMContentLoaded", init);
   } else {
-    setTimeout(init, 100);
+    init();
   }
 })();
