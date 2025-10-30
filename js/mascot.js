@@ -450,21 +450,11 @@ const MASCOT_CONFIG = {
   }
 
   // ---------------- 页面进入时的 auto 触发 ----------------
+  // ---------------- 页面进入时的 auto 触发 (已禁用) ----------------
   function triggerAutoForUrl(root) {
-    if (!sentences || sentences.length === 0) return;
-    const href = location.href;
-    const candidates = sentences.filter((s) => s.auto && isCandidate(s, href));
-    if (!candidates || candidates.length === 0) return;
-    const pick = weightedPickObjects(candidates);
-    if (!pick) return;
-    const dialog = $(".mw-dialog", root);
-    if (dialog.classList.contains("mw-visible")) return; // 不覆盖悬停
-    showText(root, pick);
-    clearTimeout(autoTimer);
-    autoTimer = setTimeout(
-      () => hideDialog(root),
-      MASCOT_CONFIG.autoShowDuration || 6000
-    );
+    // 完全禁用自动显示
+    console.log("Mascot: auto trigger disabled (burnt to ground)");
+    // 不显示任何内容，不清除任何定时器
   }
 
   // ---------------- 初始化 ----------------
@@ -474,9 +464,9 @@ const MASCOT_CONFIG = {
     setupHoverLogic(root);
     setupOutfitChangerLogic(root);
     hookUrlChange(() => {
-      triggerAutoForUrl(root);
+      //triggerAutoForUrl(root);
     });
-    triggerAutoForUrl(root);
+    //triggerAutoForUrl(root);
 
     // 暴露一些接口用于调试/扩展
     window.__MASCOT_WIDGET = Object.assign(window.__MASCOT_WIDGET || {}, {
