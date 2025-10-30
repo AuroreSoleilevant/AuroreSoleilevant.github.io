@@ -360,38 +360,11 @@ const MASCOT_CONFIG = {
   }
 
   // ---------------- 换装按钮逻辑 ----------------
+  // ---------------- 换装按钮逻辑 (已禁用) ----------------
   function setupOutfitChangerLogic(root) {
-    const changerBtn = $(".mw-outfit-changer-btn", root);
-
-    changerBtn.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-
-      // 同步切换当前换装
-      const newOutfit = switchToNextOutfit();
-
-      // 立即更新图片与样式
-      updateMascotImage(newOutfit);
-      applyOutfitStyle(newOutfit);
-
-      // 异步在后台刷新句
-      reloadCurrentOutfitSentences()
-        .then(() => {
-          console.info(
-            "Mascot: sentences reloaded in background for",
-            newOutfit.label
-          );
-        })
-        .catch((err) => {
-          console.warn("Mascot: background reload failed:", err);
-        });
-
-      // 添加点击反馈（视觉）
-      changerBtn.classList.add("mw-outfit-changer-btn-active");
-      setTimeout(() => {
-        changerBtn.classList.remove("mw-outfit-changer-btn-active");
-      }, 200);
-    });
+    // 完全禁用换装按钮的所有交互
+    console.log("Mascot: outfit changer logic burnt to ground");
+    // 不添加任何点击事件监听
   }
 
   // ---------------- 页面进入时的 auto 触发 ----------------
