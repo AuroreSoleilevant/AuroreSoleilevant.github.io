@@ -96,34 +96,10 @@ const MASCOT_CONFIG = {
 
   // ---------------- DOM 创建 ----------------
   function createWidget() {
-    if (document.getElementById(ID)) return document.getElementById(ID);
-
-    // 初始化当前换装
-    initCurrentOutfitIndex();
-    const currentOutfit = getCurrentOutfit();
-
-    const root = document.createElement("div");
-    root.id = ID;
-    root.setAttribute("aria-hidden", "false");
-    root.innerHTML = `
-      <div class="mw-outfit-changer-container">
-        <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-          <img src="/icons/icon-changer.svg" alt="换套衣服">
-        </button>
-      </div>
-      <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-        <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
-      </button>
-      <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
-        PLACEHOLDER_TEXT
-      )}</div>
-    `;
-    document.body.appendChild(root);
-
-    // 应用当前换装样式
-    applyOutfitStyle(currentOutfit);
-
-    return root;
+    console.log("Mascot: DOM creation burnt to ground");
+    // 完全不创建任何DOM元素
+    // 返回一个虚拟对象避免报错
+    return { id: ID };
   }
 
   // ---------------- SPA URL 变化钩子 ----------------
@@ -378,20 +354,8 @@ const MASCOT_CONFIG = {
   // ---------------- 初始化 ----------------
   // ---------------- 初始化 (已禁用) ----------------
   async function init() {
-    const root = createWidget();
-
-    // 烧毁所有逻辑绑定，只保留最基本的DOM创建
-    // await loadSentences();
-    // setupHoverLogic(root);
-    // setupOutfitChangerLogic(root);
-    // hookUrlChange(() => {
-    //   triggerAutoForUrl(root);
-    // });
-    // triggerAutoForUrl(root);
-
-    console.log(
-      "Mascot: init system burnt to ground - only DOM creation remains"
-    );
+    const root = createWidget(); // 现在这个函数什么都不创建了
+    console.log("Mascot: completely disabled - no DOM, no logic");
     return root;
   }
 
