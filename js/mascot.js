@@ -143,8 +143,7 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     }
   }
 
-  // ---------------- DOM 创建（主元素立即插入，换装按钮稍后插入） ----------------
-  // ---------------- DOM 创建（图片与按钮均延迟加载以防闪烁） ----------------
+  // ---------------- DOM 创建 ----------------
   function createWidget() {
     const existing = document.getElementById(ID);
     if (existing) return existing;
@@ -155,11 +154,19 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
-    root.style.display = "none"; // 先整体隐藏
+    root.style.opacity = "0";
+    root.style.transition = "opacity 0.25s ease";
+    root.style.pointerEvents = "none";
     document.body.appendChild(root);
 
-    // 延迟插入全部内容，让页面主合成层先稳定
-    setTimeout(() => {
+    // 预加载当前皮肤图片
+    const img = new Image();
+    img.src = currentOutfit.image;
+    img.decoding = "async";
+    img.loading = "eager";
+
+    img.onload = () => {
+      // 图片加载完成后再安全挂载内部结构
       root.innerHTML = `
       <div class="mw-outfit-changer-container">
         <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
@@ -167,9 +174,7 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
         </button>
       </div>
       <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-        <img src="${currentOutfit.image}" alt="左下角的${
-        currentOutfit.label
-      }" loading="lazy" decoding="async">
+        <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
       </button>
       <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
         PLACEHOLDER_TEXT
@@ -179,18 +184,14 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
       applyOutfitStyle(currentOutfit);
       setupOutfitChangerLogic(root);
 
-      // 再稍微延迟显示，避免 layout 抖动
-      setTimeout(() => {
-        root.style.display = "";
-        root.style.opacity = "0";
-        root.style.transition = "opacity 0.25s ease";
+      // 稳定一帧后淡入
+      requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            root.style.opacity = "1";
-          });
+          root.style.opacity = "1";
+          root.style.pointerEvents = "";
         });
-      }, 100);
-    }, 300); // 延迟 300 ms 可按实际调节
+      });
+    };
 
     return root;
   }
