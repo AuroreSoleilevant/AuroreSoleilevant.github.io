@@ -57,7 +57,7 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
   const escapeHtml = (s) => {
     // 如果是颜文字，不进行转义
     if (s && /[<>]/.test(s) && !/<[a-z][\s\S]*>/i.test(s)) {
-      // 包含 < 或 > 但不像是 HTML 标签，可能是颜文字，不转义
+      // 包含 < 或 > 但不像是 HTML 标签，可能是颜文字，不转义，其实就是为了Ciallo～(∠・ω< )⌒☆写的
       return s;
     }
     // 其他情况正常转义
@@ -136,13 +136,27 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
   function updateMascotImage(outfit) {
     const img = document.querySelector("#" + ID + " .mw-mascot-btn img");
     if (img && outfit) {
-      // 只在 src 不包含目标时才写入，减少重新分配
-      try {
-        if (!img.src || img.src.indexOf(outfit.image) === -1) {
-          img.src = outfit.image;
-          img.alt = `左下角的${outfit.label}`;
-        }
-      } catch (e) {}
+      // 淡出效果
+      img.style.transition = "opacity 0.3s ease";
+      img.style.opacity = "0";
+
+      // 等待淡出完成后切换图片并淡入
+      setTimeout(() => {
+        try {
+          if (!img.src || img.src.indexOf(outfit.image) === -1) {
+            img.src = outfit.image;
+            img.alt = `左下角的${outfit.label}`;
+          }
+          // 淡入效果
+          img.style.opacity = "1";
+        } catch (e) {}
+
+        // 过渡完成后移除内联样式，让CSS接管
+        setTimeout(() => {
+          img.style.transition = "";
+          img.style.opacity = "";
+        }, 300);
+      }, 300);
     }
   }
 
@@ -463,9 +477,9 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
 
       const newOutfit = switchToNextOutfit();
 
-      // 立即更新图片与样式
-      updateMascotImage(newOutfit);
+      // 立即更新样式
       applyOutfitStyle(newOutfit);
+      updateMascotImage(newOutfit);
 
       // 后台加载句子
       reloadCurrentOutfitSentences()
