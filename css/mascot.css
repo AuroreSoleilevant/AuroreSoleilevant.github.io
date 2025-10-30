@@ -9,7 +9,7 @@
   position: fixed;
   left: 2px;
   bottom: 120px;
-  z-index: 99999;
+  z-index: 999;
   pointer-events: auto;
   transition: opacity 0.25s ease;
 }
