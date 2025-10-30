@@ -130,53 +130,70 @@ const MASCOT_CONFIG = {
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
-
-    // 先创建空的容器，保持布局稳定
     root.innerHTML = `
-    <div class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false"></div>
-    <div class="mw-dialog" role="dialog" aria-hidden="true"></div>
+    <!-- 主按钮先加载 -->
+    <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
+      <img src="${currentOutfit.image}" alt="左下角的${
+      currentOutfit.label
+    }" loading="eager">
+    </button>
+    <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
+      PLACEHOLDER_TEXT
+    )}</div>
   `;
 
-    // 同步插入空的容器
+    // 同步插入主元素
     document.body.appendChild(root);
     applyOutfitStyle(currentOutfit);
 
-    // 延迟加载所有内容
+    // 延迟添加换装按钮
     setTimeout(() => {
-      // 加载小马图片
-      const mascotBtn = root.querySelector(".mw-mascot-btn");
-      if (mascotBtn) {
-        mascotBtn.innerHTML = `
-        <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
-      `;
-        // 重新设置按钮属性
-        mascotBtn.setAttribute("type", "button");
-        mascotBtn.setAttribute("aria-haspopup", "dialog");
-        mascotBtn.setAttribute("aria-expanded", "false");
-      }
-
-      // 加载对话框内容
-      const dialog = root.querySelector(".mw-dialog");
-      if (dialog) {
-        dialog.textContent = PLACEHOLDER_TEXT;
-      }
-
-      // 加载换装按钮
       const changerHTML = `
       <div class="mw-outfit-changer-container">
         <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-          <img src="/icons/icon-changer.svg" alt="换套衣服">
+          <img src="/icons/icon-changer.svg" alt="换套衣服" loading="lazy">
         </button>
       </div>
     `;
       root.insertAdjacentHTML("afterbegin", changerHTML);
-
-      // 重新绑定事件
-      setupOutfitChangerLogic(root);
-      setupHoverLogic(root);
-    }, 500); // 等页面完全稳定后再添加所有内容
+      setupOutfitChangerLogic(root); // 重新绑定事件
+    }, 500); // 等页面完全稳定后再添加
 
     return root;
+  }
+
+  // ---------------- 初始化 ----------------
+  async function init() {
+    const root = createWidget();
+    await loadSentences();
+    setupHoverLogic(root);
+    hookUrlChange(() => {
+      triggerAutoForUrl(root);
+    });
+    triggerAutoForUrl(root);
+
+    // 暴露一些接口用于调试/扩展
+    window.__MASCOT_WIDGET = Object.assign(window.__MASCOT_WIDGET || {}, {
+      root,
+      reloadSentences: reloadCurrentOutfitSentences,
+      pickRandomLineWithChain: () => pickRandomLineWithChain(sentences),
+      forceNext: (id) => (forcedNextId = id),
+      switchOutfit: async () => {
+        const newOutfit = switchToNextOutfit();
+        updateMascotImage(newOutfit);
+        applyOutfitStyle(newOutfit);
+        await reloadCurrentOutfitSentences();
+        return newOutfit;
+      },
+      getCurrentOutfit: () => getCurrentOutfit(),
+    });
+  }
+
+  // 恢复简单直接的启动逻辑
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
   }
 
   // ---------------- SPA URL 变化钩子 ----------------

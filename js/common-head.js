@@ -113,6 +113,16 @@
     "/js/mascot.js", // 左下角小马
   ];
 
+  preloadAndDeferScripts(deferredScripts);
+
+  // 延迟加载
+  setTimeout(() => {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/css/mascot.css";
+    document.head.appendChild(link);
+  }, 100);
+
   // 同步脚本（仅在数组中有项时才执行同步加载）
   syncScripts.forEach((src) => injectSyncScript(src));
 
