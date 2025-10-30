@@ -98,11 +98,7 @@ const MASCOT_CONFIG = {
   // ---------------- DOM 创建 (修复版) ----------------
   function createWidget() {
     let existing = document.getElementById(ID);
-    if (existing) {
-      console.log("Mascot: widget already exists, reusing");
-      return existing;
-    }
-    if (document.getElementById(ID)) return document.getElementById(ID);
+    if (existing) return existing;
 
     // 初始化当前换装
     initCurrentOutfitIndex();
@@ -111,6 +107,7 @@ const MASCOT_CONFIG = {
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
+    root.style.display = "none"; // 初始隐藏
     root.innerHTML = `
     <div class="mw-outfit-changer-container">
       <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
@@ -128,6 +125,10 @@ const MASCOT_CONFIG = {
     setTimeout(() => {
       document.body.appendChild(root);
       applyOutfitStyle(currentOutfit);
+      // 延迟显示
+      setTimeout(() => {
+        root.style.display = ""; // 恢复显示
+      }, 50);
     }, 100);
 
     return root;
