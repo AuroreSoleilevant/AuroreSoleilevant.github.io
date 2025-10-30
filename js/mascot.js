@@ -458,36 +458,22 @@ const MASCOT_CONFIG = {
   }
 
   // ---------------- 初始化 ----------------
+  // ---------------- 初始化 (已禁用) ----------------
   async function init() {
     const root = createWidget();
-    await loadSentences(); // 确保在设置其他逻辑前加载句子
-    setupHoverLogic(root);
-    setupOutfitChangerLogic(root);
-    hookUrlChange(() => {
-      //triggerAutoForUrl(root);
-    });
-    //triggerAutoForUrl(root);
 
-    // 暴露一些接口用于调试/扩展
-    window.__MASCOT_WIDGET = Object.assign(window.__MASCOT_WIDGET || {}, {
-      root,
-      reloadSentences: reloadCurrentOutfitSentences,
-      pickRandomLineWithChain: () => pickRandomLineWithChain(sentences),
-      forceNext: (id) => (forcedNextId = id),
-      switchOutfit: async () => {
-        const newOutfit = switchToNextOutfit();
-        updateMascotImage(newOutfit);
-        applyOutfitStyle(newOutfit);
-        await reloadCurrentOutfitSentences();
-        return newOutfit;
-      },
-      getCurrentOutfit: () => getCurrentOutfit(),
-    });
-  }
+    // 烧毁所有逻辑绑定，只保留最基本的DOM创建
+    // await loadSentences();
+    // setupHoverLogic(root);
+    // setupOutfitChangerLogic(root);
+    // hookUrlChange(() => {
+    //   triggerAutoForUrl(root);
+    // });
+    // triggerAutoForUrl(root);
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
+    console.log(
+      "Mascot: init system burnt to ground - only DOM creation remains"
+    );
+    return root;
   }
 })();
