@@ -120,8 +120,7 @@ const MASCOT_CONFIG = {
 
   // ---------------- DOM 创建 ----------------
   function createWidget() {
-    let existing = document.getElementById(ID);
-    if (existing) return existing;
+    if (document.getElementById(ID)) return document.getElementById(ID);
 
     // 初始化当前换装
     initCurrentOutfitIndex();
@@ -131,27 +130,25 @@ const MASCOT_CONFIG = {
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
     root.innerHTML = `
-    <div class="mw-outfit-changer-container">
-      <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-        <img src="/icons/icon-changer.svg" alt="换套衣服">
+      <div class="mw-outfit-changer-container">
+        <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
+          <!-- 换装按钮图标延迟加载 -->
+          <img src="/icons/icon-changer.svg" alt="换套衣服" loading="lazy">
+        </button>
+      </div>
+      <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
+        <!-- 小马主图片同步加载 -->
+        <img src="${currentOutfit.image}" alt="左下角的${
+      currentOutfit.label
+    }" loading="eager">
       </button>
-    </div>
-    <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-      <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
-    </button>
-    <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
-      PLACEHOLDER_TEXT
-    )}</div>
-  `;
+      <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
+        PLACEHOLDER_TEXT
+      )}</div>
+    `;
 
-    // 使用双requestAnimationFrame确保在布局之后插入
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        document.body.appendChild(root);
-        applyOutfitStyle(currentOutfit);
-        console.log("Mascot: inserted via double requestAnimationFrame");
-      });
-    });
+    // 应用当前换装样式
+    applyOutfitStyle(currentOutfit);
 
     return root;
   }
@@ -497,7 +494,7 @@ const MASCOT_CONFIG = {
     const root = createWidget();
     await loadSentences(); // 确保在设置其他逻辑前加载句子
 
-    // 插入到页面，避免布局重排
+    // 使用更温和的方式插入到页面，避免布局重排
     document.body.appendChild(root);
 
     // 强制重绘以确保布局稳定
@@ -527,9 +524,11 @@ const MASCOT_CONFIG = {
     });
   }
 
+  // 修改启动逻辑
   if (document.readyState === "loading") {
     // 在 DOMContentLoaded 时开始准备，但等到 load 事件才真正插入
     document.addEventListener("DOMContentLoaded", function () {
+      // 这里只是准备好，实际的 init 会在 load 事件后执行
       setTimeout(init, 100); // 给页面更多时间稳定
     });
   } else {
