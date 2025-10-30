@@ -1,7 +1,7 @@
 /* mascot.js — 左下角小马 */
 
-/* ========== 配置区 ========== */
-const MASCOT_CONFIG = {
+// 使用 var 而不是 const，避免重复声明错误
+var MASCOT_CONFIG = window.MASCOT_CONFIG || {
   outfits: [
     {
       id: "1",
@@ -22,13 +22,18 @@ const MASCOT_CONFIG = {
       dialogTextColor: "#1e3a34",
     },
   ],
-  autoShowDuration: 6000, // auto 显示时长（毫秒）
-  minScreenWidthToShow: 1024, // 小于该宽度则不注入
+  autoShowDuration: 6000,
+  minScreenWidthToShow: 1024,
 };
-/* ============================ */
+
+// 保存到全局，避免重复声明
+window.MASCOT_CONFIG = MASCOT_CONFIG;
 
 (function () {
-  if (window.__MASCOT_WIDGET_INJECTED) return;
+  if (window.__MASCOT_WIDGET_INJECTED) {
+    console.warn("Mascot widget already injected, skipping...");
+    return;
+  }
   window.__MASCOT_WIDGET_INJECTED = true;
 
   // 小屏幕直接不注入（避免加载图片）

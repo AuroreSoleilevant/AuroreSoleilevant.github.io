@@ -44,23 +44,20 @@
 /* ---------- 顶栏：开始 ---------- */
 /* 标题块骨架 */
 .site-header {
-  background: #232946;
-  position: fixed;
+  background: #232946; /* 回退 */
+  position: fixed; /* 固定在视口 */
   top: 0;
   left: 0;
   right: 0;
   padding: 0 32px;
   min-height: 96px;
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 12px 12px; /* 只保留下边圆角 */
   display: flex;
   align-items: center;
   overflow: hidden;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 1000; /* 确保覆盖内容 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* 阴影效果 */
   transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
-  will-change: transform;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   isolation: isolate;
 }
 
