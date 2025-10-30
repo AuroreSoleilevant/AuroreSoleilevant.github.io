@@ -144,6 +144,7 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
   }
 
   // ---------------- DOM 创建（主元素立即插入，换装按钮稍后插入） ----------------
+  // ---------------- DOM 创建（图片与按钮均延迟加载以防闪烁） ----------------
   function createWidget() {
     const existing = document.getElementById(ID);
     if (existing) return existing;
@@ -154,39 +155,42 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
+    root.style.display = "none"; // 先整体隐藏
+    document.body.appendChild(root);
 
-    // 为了尽量减少初次插入时引发的合成层变动：
-    // 先插入主按钮和对话框（一次性），换装按钮延迟插入
-    root.innerHTML = `
+    // 延迟插入全部内容，让页面主合成层先稳定
+    setTimeout(() => {
+      root.innerHTML = `
+      <div class="mw-outfit-changer-container">
+        <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
+          <img src="/icons/icon-changer.svg" alt="换套衣服" loading="lazy" decoding="async">
+        </button>
+      </div>
       <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
         <img src="${currentOutfit.image}" alt="左下角的${
-      currentOutfit.label
-    }" loading="eager" decoding="async">
+        currentOutfit.label
+      }" loading="lazy" decoding="async">
       </button>
       <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
         PLACEHOLDER_TEXT
       )}</div>
     `;
 
-    document.body.appendChild(root);
-    applyOutfitStyle(currentOutfit);
+      applyOutfitStyle(currentOutfit);
+      setupOutfitChangerLogic(root);
 
-    // 延迟添加换装按钮（在页面稳定后再插入，以减少初次合成冲突）
-    setTimeout(() => {
-      // 若 root 被移除或已有换装按钮则跳过
-      const r = document.getElementById(ID);
-      if (!r || r.querySelector(".mw-outfit-changer-btn")) return;
-
-      const changerHTML = `
-        <div class="mw-outfit-changer-container">
-          <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-            <img src="/icons/icon-changer.svg" alt="换套衣服" loading="lazy" decoding="async">
-          </button>
-        </div>
-      `;
-      r.insertAdjacentHTML("afterbegin", changerHTML);
-      setupOutfitChangerLogic(r);
-    }, 420); // 约 420ms 延迟（可调）
+      // 再稍微延迟显示，避免 layout 抖动
+      setTimeout(() => {
+        root.style.display = "";
+        root.style.opacity = "0";
+        root.style.transition = "opacity 0.25s ease";
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            root.style.opacity = "1";
+          });
+        });
+      }, 100);
+    }, 300); // 延迟 300 ms 可按实际调节
 
     return root;
   }
