@@ -120,7 +120,8 @@ const MASCOT_CONFIG = {
 
   // ---------------- DOM 创建 ----------------
   function createWidget() {
-    if (document.getElementById(ID)) return document.getElementById(ID);
+    let existing = document.getElementById(ID);
+    if (existing) return existing;
 
     // 初始化当前换装
     initCurrentOutfitIndex();
@@ -132,24 +133,25 @@ const MASCOT_CONFIG = {
     root.innerHTML = `
     <div class="mw-outfit-changer-container">
       <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-        <!-- 换装按钮图标延迟加载 -->
-        <img src="/icons/icon-changer.svg" alt="换套衣服" loading="lazy">
+        <img src="/icons/icon-changer.svg" alt="换套衣服">
       </button>
     </div>
     <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-      <!-- 小马主图片同步加载 -->
-      <img src="${currentOutfit.image}" alt="左下角的${
-      currentOutfit.label
-    }" loading="eager">
+      <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
     </button>
     <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
       PLACEHOLDER_TEXT
     )}</div>
   `;
-    document.body.appendChild(root);
 
-    // 应用当前换装样式
-    applyOutfitStyle(currentOutfit);
+    // 使用双requestAnimationFrame确保在布局之后插入
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.body.appendChild(root);
+        applyOutfitStyle(currentOutfit);
+        console.log("Mascot: inserted via double requestAnimationFrame");
+      });
+    });
 
     return root;
   }
