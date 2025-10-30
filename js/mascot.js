@@ -95,35 +95,50 @@ const MASCOT_CONFIG = {
   // initCurrentOutfitIndex();  // 注释掉这行如果存在的话
 
   // ---------------- DOM 创建 ----------------
+  // ---------------- DOM 创建 (兼容占位版) ----------------
   function createWidget() {
     let existing = document.getElementById(ID);
-    if (existing) return existing;
 
-    // 初始化当前换装
-    initCurrentOutfitIndex();
-    const currentOutfit = getCurrentOutfit();
+    // 如果已有占位元素，直接使用
+    if (existing && existing.hasAttribute("data-mascot-placeholder")) {
+      console.log("Mascot: using HTML placeholder");
 
+      // 初始化当前换装
+      initCurrentOutfitIndex();
+      const currentOutfit = getCurrentOutfit();
+
+      // 填充占位元素的内容
+      existing.innerHTML = `
+      <div class="mw-outfit-changer-container">
+        <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
+          <img src="/icons/icon-changer.svg" alt="换套衣服">
+        </button>
+      </div>
+      <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
+        <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
+      </button>
+      <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
+        PLACEHOLDER_TEXT
+      )}</div>
+    `;
+
+      // 移除占位标记
+      existing.removeAttribute("data-mascot-placeholder");
+
+      // 应用样式
+      applyOutfitStyle(currentOutfit);
+
+      return existing;
+    }
+
+    // 如果没有占位元素，回退到原来的创建逻辑（但保持烧毁状态）
+    console.log("Mascot: no placeholder found, creating normally");
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
-    root.innerHTML = `
-    <div class="mw-outfit-changer-container">
-      <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-        <img src="/icons/icon-changer.svg" alt="换套衣服">
-      </button>
-    </div>
-    <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-      <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
-    </button>
-    <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
-      PLACEHOLDER_TEXT
-    )}</div>
-  `;
+    root.innerHTML = `...`; // 你的现有代码
 
-    // 同步插入
     document.body.appendChild(root);
-    applyOutfitStyle(currentOutfit);
-
     return root;
   }
 
@@ -378,9 +393,13 @@ const MASCOT_CONFIG = {
 
   // ---------------- 初始化 ----------------
   // ---------------- 初始化 (已禁用) ----------------
+  // ---------------- 初始化 (兼容占位版) ----------------
   async function init() {
-    const root = createWidget(); // 现在这个函数什么都不创建了
-    console.log("Mascot: completely disabled - no DOM, no logic");
+    const root = createWidget(); // 现在会检测并使用占位元素
+
+    // 保持所有逻辑烧毁状态
+    console.log("Mascot: initialized with placeholder support");
+
     return root;
   }
 
