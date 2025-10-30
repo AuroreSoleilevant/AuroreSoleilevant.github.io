@@ -483,8 +483,26 @@ const MASCOT_CONFIG = {
 
   // ---------------- 初始化 ----------------
   async function init() {
+    // 等待页面完全加载
+    if (document.readyState !== "complete") {
+      await new Promise((resolve) => {
+        if (document.readyState === "complete") {
+          resolve();
+        } else {
+          window.addEventListener("load", resolve, { once: true });
+        }
+      });
+    }
+
     const root = createWidget();
     await loadSentences(); // 确保在设置其他逻辑前加载句子
+
+    // 插入到页面，避免布局重排
+    document.body.appendChild(root);
+
+    // 强制重绘以确保布局稳定
+    root.offsetHeight;
+
     setupHoverLogic(root);
     setupOutfitChangerLogic(root);
     hookUrlChange(() => {
@@ -510,8 +528,11 @@ const MASCOT_CONFIG = {
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    // 在 DOMContentLoaded 时开始准备，但等到 load 事件才真正插入
+    document.addEventListener("DOMContentLoaded", function () {
+      setTimeout(init, 100); // 给页面更多时间稳定
+    });
   } else {
-    init();
+    setTimeout(init, 100);
   }
 })();
