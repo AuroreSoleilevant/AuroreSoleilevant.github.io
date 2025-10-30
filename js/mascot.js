@@ -2,29 +2,10 @@
 
 /* ========== 配置区 ========== */
 const MASCOT_CONFIG = {
-  outfits: [
-    {
-      id: "1",
-      label: "女巫",
-      image: "/images/mascot/女巫.webp",
-      sentencesUrl: "/json/mascot/女巫.json",
-      dialogBg: "rgba(230, 220, 255, 0.5)",
-      dialogBorder: "rgba(255,255,255,0.65)",
-      dialogTextColor: "#3a3228",
-    },
-    {
-      id: "2",
-      label: "汉服",
-      image: "/images/mascot/汉服.webp",
-      sentencesUrl: "/json/mascot/汉服.json",
-      dialogBg: "rgba(215, 244, 233, 0.55)",
-      dialogBorder: "rgba(170, 220, 200, 0.8)",
-      dialogTextColor: "#1e3a34",
-    },
-  ],
-  autoShowDuration: 6000,
-  minScreenWidthToShow: 1024,
-  storageKey: "mascot-outfit-index", // 添加存储键名
+  image: "/images/mascot/女巫.webp",
+  sentencesUrl: "/json/mascot/女巫.json",
+  autoShowDuration: 6000, // auto 显示时长（毫秒）
+  minScreenWidthToShow: 1024, // 小于该宽度则不注入
 };
 /* ============================ */
 
@@ -32,14 +13,15 @@ const MASCOT_CONFIG = {
   if (window.__MASCOT_WIDGET_INJECTED) return;
   window.__MASCOT_WIDGET_INJECTED = true;
 
+  // 小屏幕直接不注入（避免加载图片）
   if (window.innerWidth < (MASCOT_CONFIG.minScreenWidthToShow || 1024)) {
     return;
   }
 
   const ID = "mw-root";
-  const PLACEHOLDER_TEXT = "Ciallo～(∠・ω< )⌒☆ 数据库大概没加载出来呜呜QAQ";
+  const PLACEHOLDER_TEXT = "Ciallo～(∠・ω< )⌒☆"; //默认句子
 
-  // ---------------- 工具函数 ----------------
+  // ---------------- 小工具 ----------------
   const $ = (sel, root = document) => root.querySelector(sel);
   const escapeHtml = (s) =>
     String(s)
@@ -47,151 +29,81 @@ const MASCOT_CONFIG = {
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
-  // ---------------- 状态管理 ----------------
-  // 从存储中读取保存的换装索引，如果没有则使用0
-  let currentOutfitIndex = (() => {
-    try {
-      const saved = localStorage.getItem(MASCOT_CONFIG.storageKey);
-      return saved
-        ? Math.max(
-            0,
-            Math.min(parseInt(saved), MASCOT_CONFIG.outfits.length - 1)
-          )
-        : 0;
-    } catch (e) {
-      return 0;
-    }
-  })();
-
-  let sentences = [];
-  let forcedNextId = null;
-  let lastShownId = null;
-  let autoTimer = null;
-
-  // ---------------- 角色管理 ----------------
-  function getCurrentOutfit() {
-    return MASCOT_CONFIG.outfits[currentOutfitIndex];
-  }
-
-  async function applyOutfit(index, root) {
-    currentOutfitIndex = index;
-    const outfit = getCurrentOutfit();
-
-    // 保存到本地存储
-    try {
-      localStorage.setItem(MASCOT_CONFIG.storageKey, index.toString());
-    } catch (e) {
-      console.warn("Mascot: Failed to save outfit index to localStorage");
-    }
-
-    // 直接更新头像图片，移除淡入淡出效果
-    const img = $(".mw-mascot-btn img", root);
-    if (img) {
-      img.src = outfit.image;
-    }
-
-    // 更新对话框样式
-    const dialog = $(".mw-dialog", root);
-    if (dialog) {
-      dialog.style.background = outfit.dialogBg;
-      dialog.style.borderColor = outfit.dialogBorder;
-      dialog.style.color = outfit.dialogTextColor;
-    }
-
-    // 重新加载句子
-    await loadSentences();
-  }
-
   // ---------------- DOM 创建 ----------------
   function createWidget() {
     if (document.getElementById(ID)) return document.getElementById(ID);
-
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
-
-    const outfit = getCurrentOutfit();
     root.innerHTML = `
       <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-        <img src="${outfit.image}" alt="左下角的晨曦初阳">
+        <img src="${MASCOT_CONFIG.image}" alt="左下角的晨曦初阳">
       </button>
-      <div class="mw-dialog" role="dialog" aria-hidden="true" style="background: ${
-        outfit.dialogBg
-      }; border-color: ${outfit.dialogBorder}; color: ${
-      outfit.dialogTextColor
-    };">
-        ${escapeHtml(PLACEHOLDER_TEXT)}
-      </div>
+      <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
+        PLACEHOLDER_TEXT
+      )}</div>
     `;
-
-    // 添加换装按钮
-    const changeBtn = createChangeButton(root);
-    root.appendChild(changeBtn);
-
     document.body.appendChild(root);
     return root;
   }
 
-  function createChangeButton(root) {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "mw-outfit-btn";
-    btn.setAttribute("aria-label", "切换换装");
-    btn.title = "切换换装";
-
-    const img = document.createElement("img");
-    img.src = "/icons/icon-changer.svg";
-    img.alt = "换装";
-    btn.appendChild(img);
-
-    btn.addEventListener("click", async (ev) => {
-      ev.preventDefault();
-      const next = (currentOutfitIndex + 1) % MASCOT_CONFIG.outfits.length;
-      await applyOutfit(next, root);
-
-      const outfit = getCurrentOutfit();
-      const label = outfit && outfit.label ? outfit.label : `套装 ${next + 1}`;
-      showText(root, { text: `已切换：${label}` });
-
-      setTimeout(() => {
-        hideDialog(root);
-      }, 1200);
-
+  // ---------------- 布局（考虑 footer） ----------------
+  function computeBottom(root) {
+    const footer = document.querySelector(
+      "footer, .site-footer, #footer, .footer"
+    );
+    let extra = 120; // 默认距离
+    if (footer) {
       try {
-        btn.blur();
+        const rect = footer.getBoundingClientRect();
+        if (rect.bottom >= window.innerHeight - 1) {
+          extra = Math.max(40, rect.height + 20);
+        }
       } catch (e) {}
-    });
-
-    return btn;
+    }
+    root.style.bottom = extra + "px";
   }
 
-  // ---------------- 句子管理 ----------------
-  async function loadSentences() {
-    const outfit = getCurrentOutfit();
-    if (!outfit || !outfit.sentencesUrl) {
-      sentences = [];
-      return;
-    }
+  // ---------------- SPA URL 变化钩子 ----------------
+  function hookUrlChange(cb) {
+    ["pushState", "replaceState"].forEach((fnName) => {
+      const orig = history[fnName];
+      history[fnName] = function () {
+        const res = orig.apply(this, arguments);
+        window.dispatchEvent(new Event("mw-history-change"));
+        return res;
+      };
+    });
+    window.addEventListener("popstate", () =>
+      window.dispatchEvent(new Event("mw-history-change"))
+    );
+    window.addEventListener("mw-history-change", cb);
+  }
 
+  // ---------------- 载入句子 JSON ----------------
+  let sentences = [];
+  async function loadSentences() {
     try {
-      const res = await fetch(outfit.sentencesUrl, { cache: "no-store" });
+      const res = await fetch(MASCOT_CONFIG.sentencesUrl, {
+        cache: "no-store",
+      });
       if (!res.ok) throw new Error("fetch failed " + res.status);
       const j = await res.json();
       if (!Array.isArray(j)) throw new Error("sentences JSON must be an array");
       sentences = j;
-      console.info(
-        "Mascot: loaded",
-        sentences.length,
-        "sentences for",
-        outfit.label
-      );
+      console.info("Mascot: loaded", sentences.length, "sentences");
     } catch (e) {
       console.warn("Mascot: failed to load sentences JSON:", e);
       sentences = [];
     }
   }
 
-  // ---------------- 匹配规则（保持不变） ----------------
+  // ---------------- 匹配规则 ----------------
+  // pages 支持三种模式：
+  //  - 正则：以 / 开头并以 / 结尾（例如 "/\\/book\\/\\d+/"）
+  //  - 前缀通配：以 '*' 结尾（例如 "/book/*"）
+  //  - 子串包含：其他字符串 -> href.includes(pattern)
+  //  指不定明天我就看不懂了
   function matchesPagePattern(pattern, href) {
     if (!pattern) return true;
     if (pattern.startsWith("/") && pattern.endsWith("/")) {
@@ -208,7 +120,6 @@ const MASCOT_CONFIG = {
     }
     return href.indexOf(pattern) !== -1;
   }
-
   function matchesPage(sentence, href) {
     if (
       !sentence.pages ||
@@ -219,24 +130,27 @@ const MASCOT_CONFIG = {
     return sentence.pages.some((p) => matchesPagePattern(p, href));
   }
 
+  // 时间格式: { from: "HH:MM", to: "HH:MM" } 支持跨日（22:00-06:00）
+  // 日期格式: { from: "YYYY-MM-DD", to: "YYYY-MM-DD" }
   function timeToMinutes(t) {
     const parts = String(t).split(":");
     const hh = parseInt(parts[0] || "0", 10);
     const mm = parseInt(parts[1] || "0", 10);
     return hh * 60 + mm;
   }
-
   function matchesTime(sentence) {
     const now = new Date();
+    // 日期格式
     if (
       sentence.dateRange &&
       sentence.dateRange.from &&
       sentence.dateRange.to
     ) {
-      const d = now.toISOString().slice(0, 10);
+      const d = now.toISOString().slice(0, 10); // YYYY-MM-DD
       if (d < sentence.dateRange.from || d > sentence.dateRange.to)
         return false;
     }
+    // 时间格式
     if (
       sentence.timeRange &&
       sentence.timeRange.from &&
@@ -254,11 +168,12 @@ const MASCOT_CONFIG = {
     return true;
   }
 
+  // 一条句子是否为当前候选（尊重 pages/time）
   function isCandidate(sentence, href) {
     return matchesPage(sentence, href) && matchesTime(sentence);
   }
 
-  // ---------------- 权重抽取（保持不变） ----------------
+  // ---------------- 权重抽取 ----------------
   function weightedPickObjects(arr) {
     const total = arr.reduce((s, item) => s + (Number(item.weight) || 1), 0);
     if (total <= 0) return null;
@@ -269,6 +184,10 @@ const MASCOT_CONFIG = {
     }
     return arr[arr.length - 1] || null;
   }
+
+  // ---------------- 链式触发 ----------------
+  let forcedNextId = null;
+  let lastShownId = null;
 
   function pickRandomLineWithChain(allLines) {
     const href = location.href;
@@ -301,7 +220,8 @@ const MASCOT_CONFIG = {
     return pick;
   }
 
-  // ---------------- 显示/隐藏逻辑 ----------------
+  // ---------------- 显示 / 隐藏 ----------------
+  let autoTimer = null;
   function showText(root, sentenceObj) {
     const dialog = $(".mw-dialog", root);
     const text =
@@ -311,7 +231,6 @@ const MASCOT_CONFIG = {
     dialog.setAttribute("aria-hidden", "false");
     $(".mw-mascot-btn", root).setAttribute("aria-expanded", "true");
   }
-
   function hideDialog(root) {
     const dialog = $(".mw-dialog", root);
     dialog.classList.remove("mw-visible");
@@ -319,7 +238,7 @@ const MASCOT_CONFIG = {
     $(".mw-mascot-btn", root).setAttribute("aria-expanded", "false");
   }
 
-  // ---------------- 悬停逻辑 ----------------
+  // ---------------- 悬停逻辑（链式 pick） ----------------
   function setupHoverLogic(root) {
     const btn = $(".mw-mascot-btn", root);
     const dialog = $(".mw-dialog", root);
@@ -358,40 +277,7 @@ const MASCOT_CONFIG = {
     });
   }
 
-  // ---------------- 布局计算（保持不变） ----------------
-  function computeBottom(root) {
-    const footer = document.querySelector(
-      "footer, .site-footer, #footer, .footer"
-    );
-    let extra = 120;
-    if (footer) {
-      try {
-        const rect = footer.getBoundingClientRect();
-        if (rect.bottom >= window.innerHeight - 1) {
-          extra = Math.max(40, rect.height + 20);
-        }
-      } catch (e) {}
-    }
-    root.style.bottom = extra + "px";
-  }
-
-  // ---------------- SPA 支持（保持不变） ----------------
-  function hookUrlChange(cb) {
-    ["pushState", "replaceState"].forEach((fnName) => {
-      const orig = history[fnName];
-      history[fnName] = function () {
-        const res = orig.apply(this, arguments);
-        window.dispatchEvent(new Event("mw-history-change"));
-        return res;
-      };
-    });
-    window.addEventListener("popstate", () =>
-      window.dispatchEvent(new Event("mw-history-change"))
-    );
-    window.addEventListener("mw-history-change", cb);
-  }
-
-  // ---------------- 自动触发 ----------------
+  // ---------------- 页面进入时的 auto 触发（似乎没用上） ----------------
   function triggerAutoForUrl(root) {
     if (!sentences || sentences.length === 0) return;
     const href = location.href;
@@ -400,7 +286,7 @@ const MASCOT_CONFIG = {
     const pick = weightedPickObjects(candidates);
     if (!pick) return;
     const dialog = $(".mw-dialog", root);
-    if (dialog.classList.contains("mw-visible")) return;
+    if (dialog.classList.contains("mw-visible")) return; // 不覆盖悬停
     showText(root, pick);
     clearTimeout(autoTimer);
     autoTimer = setTimeout(
@@ -411,11 +297,10 @@ const MASCOT_CONFIG = {
 
   // ---------------- 初始化 ----------------
   async function init() {
+    await loadSentences();
     const root = createWidget();
     computeBottom(root);
-    await applyOutfit(currentOutfitIndex, root); // 使用保存的索引加载角色
     setupHoverLogic(root);
-
     hookUrlChange(() => {
       triggerAutoForUrl(root);
       computeBottom(root);
@@ -424,16 +309,12 @@ const MASCOT_CONFIG = {
 
     window.addEventListener("resize", () => computeBottom(root));
 
-    // 暴露接口
+    // 暴露一些接口用于调试/扩展，未来用吧
     window.__MASCOT_WIDGET = Object.assign(window.__MASCOT_WIDGET || {}, {
       root,
       reloadSentences: loadSentences,
       pickRandomLineWithChain: () => pickRandomLineWithChain(sentences),
       forceNext: (id) => (forcedNextId = id),
-      getCurrentOutfit,
-      applyOutfit: (index) => applyOutfit(index, root),
-      getOutfitCount: () => MASCOT_CONFIG.outfits.length,
-      getSavedOutfitIndex: () => currentOutfitIndex,
     });
   }
 
