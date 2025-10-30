@@ -4,6 +4,7 @@
   --mw-dialog-bottom-offset: 130px; /* 对话框距底部距离 */
 }
 
+/* 固定在左下角 */
 #mw-root {
   position: fixed;
   left: 2px;
@@ -12,7 +13,60 @@
   pointer-events: auto;
 }
 
-/* ======= 小马按钮 ======= */
+/* 换装按钮容器 */
+#mw-root .mw-outfit-changer-container {
+  position: absolute;
+  left: 30%;
+  top: -70px;
+  transform: translateX(-50%);
+  z-index: 100000;
+  pointer-events: auto;
+}
+
+/* 换装按钮 */
+#mw-root .mw-outfit-changer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border: none;
+  background: rgba(245, 240, 230, 0.85); /* 米黄色背景 */
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+#mw-root .mw-outfit-changer-btn:hover {
+  background: rgba(235, 225, 210, 0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#mw-root .mw-outfit-changer-btn:active,
+#mw-root .mw-outfit-changer-btn.mw-outfit-changer-btn-active {
+  background: rgba(225, 215, 195, 0.95);
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+#mw-root .mw-outfit-changer-btn img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(0.85);
+  transition: filter 0.2s ease;
+}
+
+#mw-root .mw-outfit-changer-btn:hover img {
+  filter: brightness(0.7);
+}
+
+/* 按钮 */
 #mw-root .mw-mascot-btn {
   display: inline-flex;
   align-items: center;
@@ -40,10 +94,10 @@
   width: var(--mw-dialog-width, 280px);
   max-width: 90vw;
 
-  /* 毛玻璃质感 */
+  /* 毛玻璃 - 默认态 */
   background: rgba(230, 220, 255, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.65);
-  color: #2d2640;
+  color: #2d2640; /* 文字色 */
   box-shadow: 0 6px 24px rgba(50, 40, 100, 0.15);
   -webkit-backdrop-filter: blur(10px) saturate(130%);
   backdrop-filter: blur(10px) saturate(130%);
@@ -52,15 +106,15 @@
   padding: 12px 16px;
   opacity: 0;
   pointer-events: none;
+
+  /* 动画 */
   transform: translateY(6px) scale(0.98);
   transform-origin: left bottom;
+  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
+    box-shadow 0.25s ease;
 
   font-size: 20px;
   line-height: 1.4;
-
-  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
-    box-shadow 0.25s ease, background 240ms ease, border 240ms ease,
-    color 240ms ease;
 }
 
 #mw-root .mw-dialog.mw-visible {
@@ -70,57 +124,7 @@
   box-shadow: 0 10px 34px rgba(20, 20, 30, 0.18);
 }
 
-/* ======= 换装按钮 ======= */
-#mw-root .mw-outfit-btn {
-  position: absolute;
-  left: 8px; /* 横向距离 */
-  top: -60px; /* 纵向提升*/
-  width: 45px;
-  height: 45px;
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 4px 12px rgba(20, 20, 30, 0.08);
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1;
-  padding: 0;
-  z-index: 100000;
-  transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
-}
-
-#mw-root .mw-outfit-btn img {
-  width: 80%;
-  height: 80%;
-  display: block;
-  object-fit: contain;
-}
-
-#mw-root .mw-outfit-btn:hover,
-#mw-root .mw-outfit-btn:focus {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(20, 20, 30, 0.12);
-  outline: none;
-}
-
-/* 点击时的微动效 */
-#mw-root .mw-outfit-btn:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 3px 10px rgba(20, 20, 30, 0.08);
-}
-
-/* 禁用态 */
-#mw-root .mw-outfit-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* 移动端隐藏小马 */
+/* 移动端（宽度小于 1024px，至于方块显示器只有天知道）时隐藏左下角小马 */
 @media (max-width: 1024px) {
   #mw-root {
     display: none !important;
