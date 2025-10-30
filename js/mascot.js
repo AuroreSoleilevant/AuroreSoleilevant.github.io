@@ -49,74 +49,50 @@ const MASCOT_CONFIG = {
       .replace(/>/g, "&gt;");
 
   // ---------------- 换装系统 ----------------
+  // ---------------- 换装系统 (已禁用) ----------------
   let currentOutfitIndex = 0;
 
   // 获取保存的换装ID
   function getSavedOutfitId() {
-    try {
-      return localStorage.getItem(STORAGE_KEY);
-    } catch (e) {
-      return null;
-    }
+    return null;
   }
 
   // 保存换装ID
   function saveOutfitId(id) {
-    try {
-      localStorage.setItem(STORAGE_KEY, id);
-    } catch (e) {
-      console.warn("Mascot: failed to save outfit id:", e);
-    }
+    // 什么都不做
   }
 
   // 初始化当前换装索引
   function initCurrentOutfitIndex() {
-    const savedId = getSavedOutfitId();
-    if (savedId) {
-      const index = MASCOT_CONFIG.outfits.findIndex(
-        (outfit) => outfit.id === savedId
-      );
-      if (index !== -1) {
-        currentOutfitIndex = index;
-        return;
-      }
-    }
-    // 默认使用第一个换装
     currentOutfitIndex = 0;
   }
 
   // 获取当前换装
   function getCurrentOutfit() {
-    return MASCOT_CONFIG.outfits[currentOutfitIndex];
+    // 返回默认值或空对象，避免报错
+    return (
+      MASCOT_CONFIG?.outfits?.[0] || { id: "default", image: "", label: "默认" }
+    );
   }
 
   // 切换到下一个换装
   function switchToNextOutfit() {
-    currentOutfitIndex =
-      (currentOutfitIndex + 1) % MASCOT_CONFIG.outfits.length;
-    const newOutfit = getCurrentOutfit();
-    saveOutfitId(newOutfit.id);
-    return newOutfit;
+    // 返回默认换装，不执行任何实际切换
+    return getCurrentOutfit();
   }
 
   // 应用换装样式
   function applyOutfitStyle(outfit) {
-    const dialog = $(".mw-dialog");
-    if (dialog && outfit) {
-      dialog.style.background = outfit.dialogBg;
-      dialog.style.borderColor = outfit.dialogBorder;
-      dialog.style.color = outfit.dialogTextColor;
-    }
+    // 不应用任何样式
   }
 
   // 更新小马图片
   function updateMascotImage(outfit) {
-    const img = $(".mw-mascot-btn img");
-    if (img && outfit) {
-      img.src = outfit.image;
-      img.alt = `左下角的${outfit.label}`;
-    }
+    // 不更新图片
   }
+
+  // 初始化调用也禁用
+  // initCurrentOutfitIndex();  // 注释掉这行如果存在的话
 
   // ---------------- DOM 创建 ----------------
   function createWidget() {
