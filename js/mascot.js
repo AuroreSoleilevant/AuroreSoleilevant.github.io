@@ -1,4 +1,4 @@
-/* mascot.js — 左下角小马（no localStorage 版本） */
+/* mascot.js — 左下角小马 */
 
 /* ========== 配置区 ========== */
 const MASCOT_CONFIG = {
@@ -38,6 +38,7 @@ const MASCOT_CONFIG = {
 
   const ID = "mw-root";
   const PLACEHOLDER_TEXT = "Ciallo～(∠・ω< )⌒☆"; //默认句子
+  const STORAGE_KEY = "mascot-outfit-id";
 
   // ---------------- 小工具 ----------------
   const $ = (sel, root = document) => root.querySelector(sel);
@@ -47,42 +48,12 @@ const MASCOT_CONFIG = {
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
-  // ---------------- 换装系统（不使用 localStorage） ----------------
-  let currentOutfitIndex = 0; // 永远从 0 开始（不读取已保存的 id）
-
-  function getCurrentOutfit() {
-    return MASCOT_CONFIG.outfits[currentOutfitIndex];
-  }
-
-  function switchToNextOutfit() {
-    currentOutfitIndex =
-      (currentOutfitIndex + 1) % MASCOT_CONFIG.outfits.length;
-    return getCurrentOutfit();
-  }
-
-  function applyOutfitStyle(outfit) {
-    const dialog = $(".mw-dialog");
-    if (dialog && outfit) {
-      dialog.style.background = outfit.dialogBg;
-      dialog.style.borderColor = outfit.dialogBorder;
-      dialog.style.color = outfit.dialogTextColor;
-    }
-  }
-
-  function updateMascotImage(outfit) {
-    const img = $(".mw-mascot-btn img");
-    if (img && outfit) {
-      // 只更新 src 当确实变化时，减少重绘
-      if (img.src && img.src.indexOf(outfit.image) !== -1) return;
-      img.src = outfit.image;
-      img.alt = `左下角的${outfit.label}`;
-    }
-  }
-
   // ---------------- DOM 创建 ----------------
   function createWidget() {
     if (document.getElementById(ID)) return document.getElementById(ID);
 
+    // 初始化当前换装
+    initCurrentOutfitIndex();
     const currentOutfit = getCurrentOutfit();
 
     const root = document.createElement("div");
@@ -125,52 +96,78 @@ const MASCOT_CONFIG = {
     window.addEventListener("mw-history-change", cb);
   }
 
-  // ---------------- 载入句子 JSON（带简单去重） ----------------
+  // ---------------- 载入句子 JSON ----------------
   let sentences = [];
+  let lastLoadedOutfitId = null;
   let sentencesLoading = false;
   let sentencesLoadPromise = null;
   async function loadSentences() {
-    const outfit = getCurrentOutfit();
-    if (!outfit) {
+    // 尽量避免重复 fetch
+    const currentOutfit = getCurrentOutfit();
+    if (!currentOutfit) {
       sentences = [];
+      lastLoadedOutfitId = null;
       return sentences;
     }
 
-    // 已有加载中的 promise，复用
+    if (
+      lastLoadedOutfitId === currentOutfit.id &&
+      Array.isArray(sentences) &&
+      sentences.length > 0
+    ) {
+      // 已有缓存，直接返回
+      return sentences;
+    }
+
+    // 如果已有正在进行的加载，重用该 promise（去重）
     if (sentencesLoading && sentencesLoadPromise) {
       return sentencesLoadPromise;
     }
 
     sentencesLoading = true;
+
     sentencesLoadPromise = (async () => {
       try {
-        // 使用默认缓存策略，避免频繁强制拉取
-        const res = await fetch(outfit.sentencesUrl);
+        // 取消强制 no-store
+        const res = await fetch(currentOutfit.sentencesUrl);
         if (!res.ok) throw new Error("fetch failed " + res.status);
         const j = await res.json();
         if (!Array.isArray(j))
           throw new Error("sentences JSON must be an array");
         sentences = j;
+        lastLoadedOutfitId = currentOutfit.id;
         console.info(
           "Mascot: loaded",
           sentences.length,
           "sentences for",
-          outfit.label
+          currentOutfit.label
         );
+        return sentences;
       } catch (e) {
         console.warn("Mascot: failed to load sentences JSON:", e);
         sentences = [];
+        lastLoadedOutfitId = null;
+        return sentences;
       } finally {
         sentencesLoading = false;
         sentencesLoadPromise = null;
       }
-      return sentences;
     })();
 
     return sentencesLoadPromise;
   }
 
-  // ---------------- 匹配/权重/链式逻辑（和你原本一致） ----------------
+  // ---------------- 重新加载当前换装的句子 ----------------
+  function reloadCurrentOutfitSentences() {
+    return loadSentences();
+  }
+
+  // ---------------- 匹配规则 ----------------
+  // pages 支持三种模式：
+  //  - 正则：以 / 开头并以 / 结尾（例如 "/\\/book\\/\\d+/"）
+  //  - 前缀通配：以 '*' 结尾（例如 "/book/*"）
+  //  - 子串包含：其他字符串 -> href.includes(pattern)
+  //  指不定明天我就看不懂了
   function matchesPagePattern(pattern, href) {
     if (!pattern) return true;
     if (pattern.startsWith("/") && pattern.endsWith("/")) {
@@ -196,6 +193,9 @@ const MASCOT_CONFIG = {
       return true;
     return sentence.pages.some((p) => matchesPagePattern(p, href));
   }
+
+  // 时间格式: { from: "HH:MM", to: "HH:MM" } 支持跨日（22:00-06:00）
+  // 日期格式: { from: "YYYY-MM-DD", to: "YYYY-MM-DD" }
   function timeToMinutes(t) {
     const parts = String(t).split(":");
     const hh = parseInt(parts[0] || "0", 10);
@@ -204,15 +204,17 @@ const MASCOT_CONFIG = {
   }
   function matchesTime(sentence) {
     const now = new Date();
+    // 日期格式
     if (
       sentence.dateRange &&
       sentence.dateRange.from &&
       sentence.dateRange.to
     ) {
-      const d = now.toISOString().slice(0, 10);
+      const d = now.toISOString().slice(0, 10); // YYYY-MM-DD
       if (d < sentence.dateRange.from || d > sentence.dateRange.to)
         return false;
     }
+    // 时间格式
     if (
       sentence.timeRange &&
       sentence.timeRange.from &&
@@ -229,9 +231,13 @@ const MASCOT_CONFIG = {
     }
     return true;
   }
+
+  // 一条句子是否为当前候选（尊重 pages/time）
   function isCandidate(sentence, href) {
     return matchesPage(sentence, href) && matchesTime(sentence);
   }
+
+  // ---------------- 权重抽取 ----------------
   function weightedPickObjects(arr) {
     const total = arr.reduce((s, item) => s + (Number(item.weight) || 1), 0);
     if (total <= 0) return null;
@@ -242,13 +248,17 @@ const MASCOT_CONFIG = {
     }
     return arr[arr.length - 1] || null;
   }
+
+  // ---------------- 链式触发 ----------------
   let forcedNextId = null;
   let lastShownId = null;
+
   function pickRandomLineWithChain(allLines) {
     const href = location.href;
     const candidates = allLines.filter(
       (l) => isCandidate(l, href) && !l.onlyChain
     );
+
     if (forcedNextId) {
       const target = allLines.find((l) => l.id === forcedNextId);
       forcedNextId = null;
@@ -258,34 +268,42 @@ const MASCOT_CONFIG = {
         return target;
       }
     }
+
     if (!candidates || candidates.length === 0) return null;
+
     let pick = weightedPickObjects(candidates);
     if (pick && pick.id && pick.id === lastShownId && candidates.length > 1) {
       const alt = candidates.filter((c) => c.id !== lastShownId);
       if (alt.length) pick = weightedPickObjects(alt) || pick;
     }
+
     if (!pick) return null;
+
     lastShownId = pick.id || null;
     if (pick.nextId) forcedNextId = pick.nextId;
     return pick;
   }
 
-  // ---------------- 显示 / 隐藏（优化：只在变更时写入） ----------------
+  // ---------------- 显示 / 隐藏 ----------------
   let autoTimer = null;
   function showText(root, sentenceObj) {
     const dialog = $(".mw-dialog", root);
     const text =
       sentenceObj && sentenceObj.text ? sentenceObj.text : PLACEHOLDER_TEXT;
     const safeText = escapeHtml(text);
+
+    // 只有文本变化时才写入
     if (dialog.textContent !== safeText) {
       dialog.textContent = safeText;
     }
+
     if (!dialog.classList.contains("mw-visible")) {
       dialog.classList.add("mw-visible");
       dialog.setAttribute("aria-hidden", "false");
       $(".mw-mascot-btn", root).setAttribute("aria-expanded", "true");
     }
   }
+
   function hideDialog(root) {
     const dialog = $(".mw-dialog", root);
     if (dialog.classList.contains("mw-visible")) {
@@ -334,7 +352,7 @@ const MASCOT_CONFIG = {
     });
   }
 
-  // ---------------- 换装按钮逻辑（不保存到 localStorage） ----------------
+  // ---------------- 换装按钮逻辑 ----------------
   function setupOutfitChangerLogic(root) {
     const changerBtn = $(".mw-outfit-changer-btn", root);
 
@@ -342,24 +360,26 @@ const MASCOT_CONFIG = {
       ev.preventDefault();
       ev.stopPropagation();
 
-      // 切换到下一个换装（不保存）
+      // 同步切换当前换装
       const newOutfit = switchToNextOutfit();
 
-      // 更新图片与样式（立即）
+      // 立即更新图片与样式
       updateMascotImage(newOutfit);
       applyOutfitStyle(newOutfit);
 
-      // 后台加载句子（不 await）
-      loadSentences()
+      // 异步在后台刷新句
+      reloadCurrentOutfitSentences()
         .then(() => {
           console.info(
-            "Mascot: background sentences loaded for",
+            "Mascot: sentences reloaded in background for",
             newOutfit.label
           );
         })
-        .catch((e) => {});
+        .catch((err) => {
+          console.warn("Mascot: background reload failed:", err);
+        });
 
-      // 点击反馈
+      // 添加点击反馈（视觉）
       changerBtn.classList.add("mw-outfit-changer-btn-active");
       setTimeout(() => {
         changerBtn.classList.remove("mw-outfit-changer-btn-active");
@@ -388,7 +408,7 @@ const MASCOT_CONFIG = {
   // ---------------- 初始化 ----------------
   async function init() {
     const root = createWidget();
-    await loadSentences(); // 首次加载（允许异步）
+    await loadSentences(); // 确保在设置其他逻辑前加载句子
     setupHoverLogic(root);
     setupOutfitChangerLogic(root);
     hookUrlChange(() => {
@@ -399,14 +419,14 @@ const MASCOT_CONFIG = {
     // 暴露一些接口用于调试/扩展
     window.__MASCOT_WIDGET = Object.assign(window.__MASCOT_WIDGET || {}, {
       root,
-      reloadSentences: loadSentences,
+      reloadSentences: reloadCurrentOutfitSentences,
       pickRandomLineWithChain: () => pickRandomLineWithChain(sentences),
       forceNext: (id) => (forcedNextId = id),
       switchOutfit: async () => {
         const newOutfit = switchToNextOutfit();
         updateMascotImage(newOutfit);
         applyOutfitStyle(newOutfit);
-        await loadSentences();
+        await reloadCurrentOutfitSentences();
         return newOutfit;
       },
       getCurrentOutfit: () => getCurrentOutfit(),
