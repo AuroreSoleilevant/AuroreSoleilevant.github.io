@@ -376,42 +376,11 @@ const MASCOT_CONFIG = {
   }
 
   // ---------------- 悬停逻辑（链式 pick） ----------------
+  // ---------------- 悬停逻辑 (已禁用) ----------------
   function setupHoverLogic(root) {
-    const btn = $(".mw-mascot-btn", root);
-    const dialog = $(".mw-dialog", root);
-    let hideTimer = null;
-
-    function showCandidateOnHover() {
-      if (!sentences || sentences.length === 0) {
-        showText(root, null);
-        return;
-      }
-      const picked = pickRandomLineWithChain(sentences);
-      showText(root, picked);
-    }
-
-    function delayedHide(ms = 250) {
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(() => hideDialog(root), ms);
-    }
-
-    btn.addEventListener("mouseenter", showCandidateOnHover);
-    btn.addEventListener("mouseleave", delayedHide);
-    dialog.addEventListener("mouseenter", () => clearTimeout(hideTimer));
-    dialog.addEventListener("mouseleave", delayedHide);
-
-    btn.addEventListener("focus", showCandidateOnHover);
-    btn.addEventListener("blur", delayedHide);
-
-    btn.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      if (dialog.classList.contains("mw-visible")) hideDialog(root);
-      else showCandidateOnHover();
-    });
-
-    document.addEventListener("keydown", (ev) => {
-      if (ev.key === "Escape") hideDialog(root);
-    });
+    // 完全禁用所有鼠标和键盘交互
+    console.log("Mascot: hover logic burnt to ground");
+    // 不添加任何事件监听器
   }
 
   // ---------------- 换装按钮逻辑 ----------------
