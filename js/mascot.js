@@ -119,7 +119,6 @@ const MASCOT_CONFIG = {
   }
 
   // ---------------- DOM 创建 ----------------
-  // ---------------- DOM 创建 ----------------
   function createWidget() {
     let existing = document.getElementById(ID);
     if (existing) return existing;
@@ -131,33 +130,51 @@ const MASCOT_CONFIG = {
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
+
+    // 先创建空的容器，保持布局稳定
     root.innerHTML = `
-    <!-- 换装按钮先加载 -->
-    <div class="mw-outfit-changer-container">
-      <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-        <img src="/icons/icon-changer.svg" alt="换套衣服">
-      </button>
-    </div>
-    <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
-      PLACEHOLDER_TEXT
-    )}</div>
-    <!-- 小马按钮占位符 -->
-    <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-      <div class="mw-mascot-placeholder"></div>
-    </button>
+    <div class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false"></div>
+    <div class="mw-dialog" role="dialog" aria-hidden="true"></div>
   `;
 
-    // 同步插入主元素
+    // 同步插入空的容器
     document.body.appendChild(root);
     applyOutfitStyle(currentOutfit);
 
-    // 延迟添加小马图片
+    // 延迟加载所有内容
     setTimeout(() => {
+      // 加载小马图片
       const mascotBtn = root.querySelector(".mw-mascot-btn");
       if (mascotBtn) {
-        mascotBtn.innerHTML = `<img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">`;
+        mascotBtn.innerHTML = `
+        <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
+      `;
+        // 重新设置按钮属性
+        mascotBtn.setAttribute("type", "button");
+        mascotBtn.setAttribute("aria-haspopup", "dialog");
+        mascotBtn.setAttribute("aria-expanded", "false");
       }
-    }, 500); // 等页面完全稳定后再添加图片
+
+      // 加载对话框内容
+      const dialog = root.querySelector(".mw-dialog");
+      if (dialog) {
+        dialog.textContent = PLACEHOLDER_TEXT;
+      }
+
+      // 加载换装按钮
+      const changerHTML = `
+      <div class="mw-outfit-changer-container">
+        <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
+          <img src="/icons/icon-changer.svg" alt="换套衣服">
+        </button>
+      </div>
+    `;
+      root.insertAdjacentHTML("afterbegin", changerHTML);
+
+      // 重新绑定事件
+      setupOutfitChangerLogic(root);
+      setupHoverLogic(root);
+    }, 500); // 等页面完全稳定后再添加所有内容
 
     return root;
   }
