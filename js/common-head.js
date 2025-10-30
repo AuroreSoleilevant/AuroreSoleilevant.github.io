@@ -108,7 +108,7 @@
     "/js/mots.js", // 字数统计
     "/js/backtop.js", // 回到顶部按钮
     "/js/blink.js", // 顶栏闪烁
-    "/js/headtran.js", // 渐变顶栏玻璃
+    //"/js/headtran.js", // 渐变顶栏玻璃
     "/js/progression.js", // 阅读进度条
     "/js/mascot.js", // 左下角小马
   ];
