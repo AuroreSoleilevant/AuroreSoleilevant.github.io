@@ -168,30 +168,68 @@ const MASCOT_CONFIG = {
 
   // ---------------- 载入句子 JSON ----------------
   let sentences = [];
+  let lastLoadedOutfitId = null;
+  let sentencesLoading = false;
+  let sentencesLoadPromise = null;
   async function loadSentences() {
-    try {
-      const currentOutfit = getCurrentOutfit();
-      const res = await fetch(currentOutfit.sentencesUrl);
-      if (!res.ok) throw new Error("fetch failed " + res.status);
-      const j = await res.json();
-      if (!Array.isArray(j)) throw new Error("sentences JSON must be an array");
-      sentences = j;
-      console.info(
-        "Mascot: loaded",
-        sentences.length,
-        "sentences for",
-        currentOutfit.label
-      );
-    } catch (e) {
-      console.warn("Mascot: failed to load sentences JSON:", e);
+    // 尽量避免重复 fetch
+    const currentOutfit = getCurrentOutfit();
+    if (!currentOutfit) {
       sentences = [];
+      lastLoadedOutfitId = null;
+      return sentences;
     }
+
+    if (
+      lastLoadedOutfitId === currentOutfit.id &&
+      Array.isArray(sentences) &&
+      sentences.length > 0
+    ) {
+      // 已有缓存，直接返回
+      return sentences;
+    }
+
+    // 如果已有正在进行的加载，重用该 promise（去重）
+    if (sentencesLoading && sentencesLoadPromise) {
+      return sentencesLoadPromise;
+    }
+
+    sentencesLoading = true;
+
+    sentencesLoadPromise = (async () => {
+      try {
+        // 取消强制 no-store
+        const res = await fetch(currentOutfit.sentencesUrl);
+        if (!res.ok) throw new Error("fetch failed " + res.status);
+        const j = await res.json();
+        if (!Array.isArray(j))
+          throw new Error("sentences JSON must be an array");
+        sentences = j;
+        lastLoadedOutfitId = currentOutfit.id;
+        console.info(
+          "Mascot: loaded",
+          sentences.length,
+          "sentences for",
+          currentOutfit.label
+        );
+        return sentences;
+      } catch (e) {
+        console.warn("Mascot: failed to load sentences JSON:", e);
+        sentences = [];
+        lastLoadedOutfitId = null;
+        return sentences;
+      } finally {
+        sentencesLoading = false;
+        sentencesLoadPromise = null;
+      }
+    })();
+
+    return sentencesLoadPromise;
   }
 
   // ---------------- 重新加载当前换装的句子 ----------------
-  async function reloadCurrentOutfitSentences() {
-    await loadSentences();
-    console.info("Mascot: reloaded sentences for", getCurrentOutfit().label);
+  function reloadCurrentOutfitSentences() {
+    return loadSentences();
   }
 
   // ---------------- 匹配规则 ----------------
@@ -323,19 +361,26 @@ const MASCOT_CONFIG = {
     const text =
       sentenceObj && sentenceObj.text ? sentenceObj.text : PLACEHOLDER_TEXT;
     const safeText = escapeHtml(text);
+
+    // 只有文本变化时才写入
     if (dialog.textContent !== safeText) {
       dialog.textContent = safeText;
     }
 
-    dialog.classList.add("mw-visible");
-    dialog.setAttribute("aria-hidden", "false");
-    $(".mw-mascot-btn", root).setAttribute("aria-expanded", "true");
+    if (!dialog.classList.contains("mw-visible")) {
+      dialog.classList.add("mw-visible");
+      dialog.setAttribute("aria-hidden", "false");
+      $(".mw-mascot-btn", root).setAttribute("aria-expanded", "true");
+    }
   }
+
   function hideDialog(root) {
     const dialog = $(".mw-dialog", root);
-    dialog.classList.remove("mw-visible");
-    dialog.setAttribute("aria-hidden", "true");
-    $(".mw-mascot-btn", root).setAttribute("aria-expanded", "false");
+    if (dialog.classList.contains("mw-visible")) {
+      dialog.classList.remove("mw-visible");
+      dialog.setAttribute("aria-hidden", "true");
+      $(".mw-mascot-btn", root).setAttribute("aria-expanded", "false");
+    }
   }
 
   // ---------------- 悬停逻辑（链式 pick） ----------------
@@ -381,25 +426,30 @@ const MASCOT_CONFIG = {
   function setupOutfitChangerLogic(root) {
     const changerBtn = $(".mw-outfit-changer-btn", root);
 
-    changerBtn.addEventListener("click", async (ev) => {
+    changerBtn.addEventListener("click", (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
 
-      // 切换到下一个换装
+      // 同步切换当前换装
       const newOutfit = switchToNextOutfit();
 
-      // 更新图片
+      // 立即更新图片与样式
       updateMascotImage(newOutfit);
-
-      // 更新样式
       applyOutfitStyle(newOutfit);
 
-      // 重新加载句子 - 使用await确保加载完成
-      await reloadCurrentOutfitSentences();
+      // 异步在后台刷新句
+      reloadCurrentOutfitSentences()
+        .then(() => {
+          console.info(
+            "Mascot: sentences reloaded in background for",
+            newOutfit.label
+          );
+        })
+        .catch((err) => {
+          console.warn("Mascot: background reload failed:", err);
+        });
 
-      console.info("Mascot: switched to outfit:", newOutfit.label);
-
-      // 添加点击反馈
+      // 添加点击反馈（视觉）
       changerBtn.classList.add("mw-outfit-changer-btn-active");
       setTimeout(() => {
         changerBtn.classList.remove("mw-outfit-changer-btn-active");
