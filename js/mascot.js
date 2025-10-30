@@ -49,76 +49,53 @@ const MASCOT_CONFIG = {
       .replace(/>/g, "&gt;");
 
   // ---------------- 换装系统 ----------------
+  // ---------------- 换装系统 (已禁用) ----------------
   let currentOutfitIndex = 0;
 
   // 获取保存的换装ID
   function getSavedOutfitId() {
-    try {
-      return localStorage.getItem(STORAGE_KEY);
-    } catch (e) {
-      return null;
-    }
+    return null;
   }
 
   // 保存换装ID
   function saveOutfitId(id) {
-    try {
-      localStorage.setItem(STORAGE_KEY, id);
-    } catch (e) {
-      console.warn("Mascot: failed to save outfit id:", e);
-    }
+    // 什么都不做
   }
 
   // 初始化当前换装索引
   function initCurrentOutfitIndex() {
-    const savedId = getSavedOutfitId();
-    if (savedId) {
-      const index = MASCOT_CONFIG.outfits.findIndex(
-        (outfit) => outfit.id === savedId
-      );
-      if (index !== -1) {
-        currentOutfitIndex = index;
-        return;
-      }
-    }
-    // 默认使用第一个换装
     currentOutfitIndex = 0;
   }
 
   // 获取当前换装
   function getCurrentOutfit() {
-    return MASCOT_CONFIG.outfits[currentOutfitIndex];
+    // 返回默认值或空对象，避免报错
+    return (
+      MASCOT_CONFIG?.outfits?.[0] || { id: "default", image: "", label: "默认" }
+    );
   }
 
   // 切换到下一个换装
   function switchToNextOutfit() {
-    currentOutfitIndex =
-      (currentOutfitIndex + 1) % MASCOT_CONFIG.outfits.length;
-    const newOutfit = getCurrentOutfit();
-    saveOutfitId(newOutfit.id);
-    return newOutfit;
+    // 返回默认换装，不执行任何实际切换
+    return getCurrentOutfit();
   }
 
   // 应用换装样式
   function applyOutfitStyle(outfit) {
-    const dialog = $(".mw-dialog");
-    if (dialog && outfit) {
-      dialog.style.background = outfit.dialogBg;
-      dialog.style.borderColor = outfit.dialogBorder;
-      dialog.style.color = outfit.dialogTextColor;
-    }
+    // 不应用任何样式
   }
 
   // 更新小马图片
   function updateMascotImage(outfit) {
-    const img = $(".mw-mascot-btn img");
-    if (img && outfit) {
-      img.src = outfit.image;
-      img.alt = `左下角的${outfit.label}`;
-    }
+    // 不更新图片
   }
 
+  // 初始化调用也禁用
+  // initCurrentOutfitIndex();  // 注释掉这行如果存在的话
+
   // ---------------- DOM 创建 ----------------
+  // ---------------- DOM 创建 (修复版) ----------------
   function createWidget() {
     if (document.getElementById(ID)) return document.getElementById(ID);
 
@@ -130,40 +107,35 @@ const MASCOT_CONFIG = {
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
     root.innerHTML = `
-      <div class="mw-outfit-changer-container">
-        <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-          <img src="/icons/icon-changer.svg" alt="换套衣服">
-        </button>
-      </div>
-      <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-        <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
+    <div class="mw-outfit-changer-container">
+      <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
+        <img src="/icons/icon-changer.svg" alt="换套衣服">
       </button>
-      <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
-        PLACEHOLDER_TEXT
-      )}</div>
-    `;
-    document.body.appendChild(root);
+    </div>
+    <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
+      <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
+    </button>
+    <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
+      PLACEHOLDER_TEXT
+    )}</div>
+  `;
 
-    // 应用当前换装样式
-    applyOutfitStyle(currentOutfit);
+    // 延迟插入DOM - 修复闪烁的关键！
+    setTimeout(() => {
+      document.body.appendChild(root);
+      // 应用当前换装样式
+      applyOutfitStyle(currentOutfit);
+    }, 100);
 
     return root;
   }
 
   // ---------------- SPA URL 变化钩子 ----------------
+  // ---------------- SPA URL 变化钩子 (已禁用) ----------------
   function hookUrlChange(cb) {
-    ["pushState", "replaceState"].forEach((fnName) => {
-      const orig = history[fnName];
-      history[fnName] = function () {
-        const res = orig.apply(this, arguments);
-        window.dispatchEvent(new Event("mw-history-change"));
-        return res;
-      };
-    });
-    window.addEventListener("popstate", () =>
-      window.dispatchEvent(new Event("mw-history-change"))
-    );
-    window.addEventListener("mw-history-change", cb);
+    // 完全禁用历史记录监听
+    // 不修改 history 方法，不添加任何事件监听器
+    console.log("Mascot: URL change hook disabled (burnt to ground)");
   }
 
   // ---------------- 载入句子 JSON ----------------
@@ -384,123 +356,35 @@ const MASCOT_CONFIG = {
   }
 
   // ---------------- 悬停逻辑（链式 pick） ----------------
+  // ---------------- 悬停逻辑 (已禁用) ----------------
   function setupHoverLogic(root) {
-    const btn = $(".mw-mascot-btn", root);
-    const dialog = $(".mw-dialog", root);
-    let hideTimer = null;
-
-    function showCandidateOnHover() {
-      if (!sentences || sentences.length === 0) {
-        showText(root, null);
-        return;
-      }
-      const picked = pickRandomLineWithChain(sentences);
-      showText(root, picked);
-    }
-
-    function delayedHide(ms = 250) {
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(() => hideDialog(root), ms);
-    }
-
-    btn.addEventListener("mouseenter", showCandidateOnHover);
-    btn.addEventListener("mouseleave", delayedHide);
-    dialog.addEventListener("mouseenter", () => clearTimeout(hideTimer));
-    dialog.addEventListener("mouseleave", delayedHide);
-
-    btn.addEventListener("focus", showCandidateOnHover);
-    btn.addEventListener("blur", delayedHide);
-
-    btn.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      if (dialog.classList.contains("mw-visible")) hideDialog(root);
-      else showCandidateOnHover();
-    });
-
-    document.addEventListener("keydown", (ev) => {
-      if (ev.key === "Escape") hideDialog(root);
-    });
+    // 完全禁用所有鼠标和键盘交互
+    console.log("Mascot: hover logic burnt to ground");
+    // 不添加任何事件监听器
   }
 
   // ---------------- 换装按钮逻辑 ----------------
+  // ---------------- 换装按钮逻辑 (已禁用) ----------------
   function setupOutfitChangerLogic(root) {
-    const changerBtn = $(".mw-outfit-changer-btn", root);
-
-    changerBtn.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-
-      // 同步切换当前换装
-      const newOutfit = switchToNextOutfit();
-
-      // 立即更新图片与样式
-      updateMascotImage(newOutfit);
-      applyOutfitStyle(newOutfit);
-
-      // 异步在后台刷新句
-      reloadCurrentOutfitSentences()
-        .then(() => {
-          console.info(
-            "Mascot: sentences reloaded in background for",
-            newOutfit.label
-          );
-        })
-        .catch((err) => {
-          console.warn("Mascot: background reload failed:", err);
-        });
-
-      // 添加点击反馈（视觉）
-      changerBtn.classList.add("mw-outfit-changer-btn-active");
-      setTimeout(() => {
-        changerBtn.classList.remove("mw-outfit-changer-btn-active");
-      }, 200);
-    });
+    // 完全禁用换装按钮的所有交互
+    console.log("Mascot: outfit changer logic burnt to ground");
+    // 不添加任何点击事件监听
   }
 
   // ---------------- 页面进入时的 auto 触发 ----------------
+  // ---------------- 页面进入时的 auto 触发 (已禁用) ----------------
   function triggerAutoForUrl(root) {
-    if (!sentences || sentences.length === 0) return;
-    const href = location.href;
-    const candidates = sentences.filter((s) => s.auto && isCandidate(s, href));
-    if (!candidates || candidates.length === 0) return;
-    const pick = weightedPickObjects(candidates);
-    if (!pick) return;
-    const dialog = $(".mw-dialog", root);
-    if (dialog.classList.contains("mw-visible")) return; // 不覆盖悬停
-    showText(root, pick);
-    clearTimeout(autoTimer);
-    autoTimer = setTimeout(
-      () => hideDialog(root),
-      MASCOT_CONFIG.autoShowDuration || 6000
-    );
+    // 完全禁用自动显示
+    console.log("Mascot: auto trigger disabled (burnt to ground)");
+    // 不显示任何内容，不清除任何定时器
   }
 
   // ---------------- 初始化 ----------------
+  // ---------------- 初始化 (已禁用) ----------------
   async function init() {
-    const root = createWidget();
-    await loadSentences(); // 确保在设置其他逻辑前加载句子
-    setupHoverLogic(root);
-    setupOutfitChangerLogic(root);
-    hookUrlChange(() => {
-      triggerAutoForUrl(root);
-    });
-    triggerAutoForUrl(root);
-
-    // 暴露一些接口用于调试/扩展
-    window.__MASCOT_WIDGET = Object.assign(window.__MASCOT_WIDGET || {}, {
-      root,
-      reloadSentences: reloadCurrentOutfitSentences,
-      pickRandomLineWithChain: () => pickRandomLineWithChain(sentences),
-      forceNext: (id) => (forcedNextId = id),
-      switchOutfit: async () => {
-        const newOutfit = switchToNextOutfit();
-        updateMascotImage(newOutfit);
-        applyOutfitStyle(newOutfit);
-        await reloadCurrentOutfitSentences();
-        return newOutfit;
-      },
-      getCurrentOutfit: () => getCurrentOutfit(),
-    });
+    const root = createWidget(); // 现在这个函数什么都不创建了
+    console.log("Mascot: completely disabled - no DOM, no logic");
+    return root;
   }
 
   if (document.readyState === "loading") {

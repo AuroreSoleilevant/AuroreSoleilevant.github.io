@@ -8,9 +8,62 @@
 #mw-root {
   position: fixed;
   left: 2px;
-  bottom: 40px;
+  bottom: 120px;
   z-index: 99999;
   pointer-events: auto;
+}
+
+/* 换装按钮容器 */
+#mw-root .mw-outfit-changer-container {
+  position: absolute;
+  left: 30%;
+  top: -70px;
+  transform: translateX(-50%);
+  z-index: 100000;
+  pointer-events: auto;
+}
+
+/* 换装按钮 */
+#mw-root .mw-outfit-changer-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border: none;
+  background: rgba(245, 240, 230, 0.85); /* 米黄色背景 */
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+#mw-root .mw-outfit-changer-btn:hover {
+  background: rgba(235, 225, 210, 0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#mw-root .mw-outfit-changer-btn:active,
+#mw-root .mw-outfit-changer-btn.mw-outfit-changer-btn-active {
+  background: rgba(225, 215, 195, 0.95);
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+#mw-root .mw-outfit-changer-btn img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(0.85);
+  transition: filter 0.2s ease;
+}
+
+#mw-root .mw-outfit-changer-btn:hover img {
+  filter: brightness(0.7);
 }
 
 /* 按钮 */
@@ -41,8 +94,8 @@
   width: var(--mw-dialog-width, 280px);
   max-width: 90vw;
 
-  /* 毛玻璃 */
-  background: rgba(230, 220, 255, 0.5); /* 柔和浅紫，透明感适中 */
+  /* 毛玻璃 - 默认态 */
+  background: rgba(230, 220, 255, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.65);
   color: #2d2640; /* 文字色 */
   box-shadow: 0 6px 24px rgba(50, 40, 100, 0.15);
@@ -55,14 +108,14 @@
   pointer-events: none;
 
   /* 动画 */
-  transform: translateY(6px) scale(0.98);
+  transform: translateY(6px) scale(0.98) translateZ(0);
   transform-origin: left bottom;
   transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
     box-shadow 0.25s ease;
 
   font-size: 20px;
   line-height: 1.4;
-  color: #3a3228;
+  will-change: opacity, transform;
 }
 
 #mw-root .mw-dialog.mw-visible {
