@@ -154,23 +154,23 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
-    root.style.opacity = "0";
-    root.style.transition = "opacity 0.25s ease";
-    root.style.pointerEvents = "none";
-    document.body.appendChild(root);
+    const mountPoint = document.querySelector("main") || document.body;
+    mountPoint.appendChild(root);
 
-    // 预加载当前皮肤图片
+    // 初始状态不透明度低
+    root.classList.remove("mw-ready");
+
+    // 预加载图片
     const img = new Image();
     img.src = currentOutfit.image;
     img.decoding = "async";
     img.loading = "eager";
 
     img.onload = () => {
-      // 图片加载完成后再安全挂载内部结构
       root.innerHTML = `
       <div class="mw-outfit-changer-container">
         <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-          <img src="/icons/icon-changer.svg" alt="换套衣服" loading="lazy" decoding="async">
+          <img src="/icons/icon-changer.svg" alt="换套衣服" loading="lazy">
         </button>
       </div>
       <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
@@ -184,11 +184,10 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
       applyOutfitStyle(currentOutfit);
       setupOutfitChangerLogic(root);
 
-      // 稳定一帧后淡入
+      // 在完全绘制完成后添加 mw-ready，触发淡入
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          root.style.opacity = "1";
-          root.style.pointerEvents = "";
+          root.classList.add("mw-ready");
         });
       });
     };
