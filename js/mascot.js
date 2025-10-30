@@ -97,51 +97,19 @@ const MASCOT_CONFIG = {
   // ---------------- DOM 创建 ----------------
   // ---------------- DOM 创建 (修复版) ----------------
   function createWidget() {
-    let existing = document.getElementById(ID);
-    if (existing) return existing;
-
-    // 初始化当前换装
-    initCurrentOutfitIndex();
-    const currentOutfit = getCurrentOutfit();
-
+    if (document.getElementById(ID)) return document.getElementById(ID);
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
-
-    // ❗不要用 display:none，否则层会被销毁
-    root.style.opacity = "0";
-    root.style.pointerEvents = "none";
-    root.style.transition = "opacity 0.25s ease";
-
-    // 提前插入 DOM（让浏览器先创建合成层）
-    document.body.appendChild(root);
-
-    // 立即写入内容（可提前布局）
     root.innerHTML = `
-  <div class="mw-outfit-changer-container">
-    <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-      <img src="/icons/icon-changer.svg" alt="换套衣服">
-    </button>
-  </div>
-  <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-    <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
-  </button>
-  <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
-    PLACEHOLDER_TEXT
-  )}</div>
-`;
-
-    // 应用换装样式
-    applyOutfitStyle(currentOutfit);
-
-    // 等布局稳定后再淡入（两帧延迟最稳）
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        root.style.opacity = "1";
-        root.style.pointerEvents = "";
-      });
-    });
-
+      <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
+        <img src="${MASCOT_CONFIG.image}" alt="左下角的晨曦初阳">
+      </button>
+      <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
+        PLACEHOLDER_TEXT
+      )}</div>
+    `;
+    document.body.appendChild(root);
     return root;
   }
 
