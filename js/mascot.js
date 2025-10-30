@@ -172,7 +172,7 @@ const MASCOT_CONFIG = {
     try {
       const currentOutfit = getCurrentOutfit();
       const res = await fetch(currentOutfit.sentencesUrl, {
-        cache: "no-store",
+        cache: "force-cache",
       });
       if (!res.ok) throw new Error("fetch failed " + res.status);
       const j = await res.json();
