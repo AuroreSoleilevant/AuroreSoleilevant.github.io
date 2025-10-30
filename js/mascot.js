@@ -107,29 +107,40 @@ const MASCOT_CONFIG = {
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
-    root.style.display = "none"; // 初始隐藏
-    root.innerHTML = `
-    <div class="mw-outfit-changer-container">
-      <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-        <img src="/icons/icon-changer.svg" alt="换套衣服">
-      </button>
-    </div>
-    <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-      <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
-    </button>
-    <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
-      PLACEHOLDER_TEXT
-    )}</div>
-  `;
 
-    setTimeout(() => {
-      document.body.appendChild(root);
-      applyOutfitStyle(currentOutfit);
-      // 延迟显示
-      setTimeout(() => {
-        root.style.display = ""; // 恢复显示
-      }, 50);
-    }, 100);
+    // ❗不要用 display:none，否则层会被销毁
+    root.style.opacity = "0";
+    root.style.pointerEvents = "none";
+    root.style.transition = "opacity 0.25s ease";
+
+    // 提前插入 DOM（让浏览器先创建合成层）
+    document.body.appendChild(root);
+
+    // 立即写入内容（可提前布局）
+    root.innerHTML = `
+  <div class="mw-outfit-changer-container">
+    <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
+      <img src="/icons/icon-changer.svg" alt="换套衣服">
+    </button>
+  </div>
+  <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
+    <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
+  </button>
+  <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
+    PLACEHOLDER_TEXT
+  )}</div>
+`;
+
+    // 应用换装样式
+    applyOutfitStyle(currentOutfit);
+
+    // 等布局稳定后再淡入（两帧延迟最稳）
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        root.style.opacity = "1";
+        root.style.pointerEvents = "";
+      });
+    });
 
     return root;
   }

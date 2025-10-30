@@ -11,6 +11,7 @@
   bottom: 120px;
   z-index: 99999;
   pointer-events: auto;
+  transition: opacity 0.25s ease;
 }
 
 /* 换装按钮容器 */
