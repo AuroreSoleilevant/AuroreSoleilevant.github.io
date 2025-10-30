@@ -97,6 +97,11 @@ const MASCOT_CONFIG = {
   // ---------------- DOM 创建 ----------------
   // ---------------- DOM 创建 (修复版) ----------------
   function createWidget() {
+    let existing = document.getElementById(ID);
+    if (existing) {
+      console.log("Mascot: widget already exists, reusing");
+      return existing;
+    }
     if (document.getElementById(ID)) return document.getElementById(ID);
 
     // 初始化当前换装
@@ -120,10 +125,8 @@ const MASCOT_CONFIG = {
     )}</div>
   `;
 
-    // 延迟插入DOM - 修复闪烁的关键！
     setTimeout(() => {
       document.body.appendChild(root);
-      // 应用当前换装样式
       applyOutfitStyle(currentOutfit);
     }, 100);
 
