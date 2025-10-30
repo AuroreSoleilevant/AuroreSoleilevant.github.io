@@ -1,5 +1,11 @@
 /* mascot.js — 左下角小马 */
 
+// 调试临时清理（只用于排查）——放在文件初始化早期（STORAGE_KEY 可用后）
+try {
+  localStorage.removeItem("mascot-outfit-id");
+  console.info("Mascot: debug removed saved outfit id");
+} catch (e) {}
+
 /* ========== 配置区 ========== */
 const MASCOT_CONFIG = {
   outfits: [
