@@ -48,6 +48,52 @@ const MASCOT_CONFIG = {
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
 
+  // ---------------- 换装系统 ----------------
+  // ---------------- 换装系统 (已禁用) ----------------
+  let currentOutfitIndex = 0;
+
+  // 获取保存的换装ID
+  function getSavedOutfitId() {
+    return null;
+  }
+
+  // 保存换装ID
+  function saveOutfitId(id) {
+    // 什么都不做
+  }
+
+  // 初始化当前换装索引
+  function initCurrentOutfitIndex() {
+    currentOutfitIndex = 0;
+  }
+
+  // 获取当前换装
+  function getCurrentOutfit() {
+    // 返回默认值或空对象，避免报错
+    return (
+      MASCOT_CONFIG?.outfits?.[0] || { id: "default", image: "", label: "默认" }
+    );
+  }
+
+  // 切换到下一个换装
+  function switchToNextOutfit() {
+    // 返回默认换装，不执行任何实际切换
+    return getCurrentOutfit();
+  }
+
+  // 应用换装样式
+  function applyOutfitStyle(outfit) {
+    // 不应用任何样式
+  }
+
+  // 更新小马图片
+  function updateMascotImage(outfit) {
+    // 不更新图片
+  }
+
+  // 初始化调用也禁用
+  // initCurrentOutfitIndex();  // 注释掉这行如果存在的话
+
   // ---------------- DOM 创建 ----------------
   function createWidget() {
     if (document.getElementById(ID)) return document.getElementById(ID);
