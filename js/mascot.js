@@ -1,6 +1,6 @@
-/* mascot.js — 左下角小马 (方案 B: 全局 STATE，重复加载安全) */
+/* mascot.js — 左下角小马 */
 
-/* ========== 配置区（使用 var 避免重复声明） ========== */
+/* ========== 配置区 ========== */
 var MASCOT_CONFIG = window.MASCOT_CONFIG || {
   outfits: [
     {
@@ -29,7 +29,7 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
 /* ============================ */
 
 (function () {
-  // 全局状态：如果已有则复用（跨脚本重复加载安全）
+  // 全局状态：如果已有则复用
   window.__MASCOT_STATE = window.__MASCOT_STATE || {
     sentences: [],
     lastLoadedOutfitId: null,
@@ -40,30 +40,33 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
   };
   const STATE = window.__MASCOT_STATE;
 
-  // 防止重复注入（如果另一个副本已经成功运行）
+  // 防止重复注入
   if (window.__MASCOT_WIDGET_INJECTED) {
-    console.warn("Mascot widget already injected, skipping...");
     return;
   }
   window.__MASCOT_WIDGET_INJECTED = true;
 
-  // 小屏幕直接不注入（避免加载图片）
+  // 小屏幕直接不注入
   if (window.innerWidth < (MASCOT_CONFIG.minScreenWidthToShow || 1024)) {
     return;
   }
 
   const ID = "mw-root";
   const PLACEHOLDER_TEXT = "Ciallo～(∠・ω< )⌒☆";
-
-  // ---------------- helpers ----------------
   const $ = (sel, root = document) => root.querySelector(sel);
-  const escapeHtml = (s) =>
-    String(s)
+  const escapeHtml = (s) => {
+    // 如果是颜文字，不进行转义
+    if (s && /[<>]/.test(s) && !/<[a-z][\s\S]*>/i.test(s)) {
+      // 包含 < 或 > 但不像是 HTML 标签，可能是颜文字，不转义
+      return s;
+    }
+    // 其他情况正常转义
+    return String(s)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
-
-  // ---------- outfit（换装）逻辑 ----------
+  };
+  // ---------- 换装逻辑 ----------
   let currentOutfitIndex = 0;
   const STORAGE_KEY = "mascot-outfit-id";
 
@@ -213,7 +216,7 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     window.addEventListener("mw-history-change", cb);
   }
 
-  // ---------------- 载入句子 JSON（使用 STATE，避免 TDZ/重复） ----------------
+  // ---------------- 载入句子 JSON ----------------
   async function loadSentences() {
     const currentOutfit = getCurrentOutfit();
     if (!currentOutfit || !currentOutfit.sentencesUrl) {
@@ -460,11 +463,11 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
 
       const newOutfit = switchToNextOutfit();
 
-      // 立即更新图片与样式（尽量少写）
+      // 立即更新图片与样式
       updateMascotImage(newOutfit);
       applyOutfitStyle(newOutfit);
 
-      // 后台加载句子（不 await，避免阻塞 UI）
+      // 后台加载句子
       reloadCurrentOutfitSentences()
         .then(() => {
           console.info(
