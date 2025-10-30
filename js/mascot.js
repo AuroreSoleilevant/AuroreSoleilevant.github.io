@@ -476,4 +476,10 @@ const MASCOT_CONFIG = {
     );
     return root;
   }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
 })();
