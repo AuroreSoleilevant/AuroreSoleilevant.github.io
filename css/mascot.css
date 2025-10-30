@@ -14,18 +14,11 @@
   transition: opacity 0.25s ease;
 }
 
-/* 换装按钮容器 */
-#mw-root .mw-outfit-changer-container {
-  position: absolute;
-  left: 30%;
-  top: -70px;
-  transform: translateX(-50%);
-  z-index: 100000;
-  pointer-events: auto;
-}
-
 /* 换装按钮 */
 #mw-root .mw-outfit-changer-btn {
+  position: absolute;
+  left: 10%;
+  top: -70px;
   display: inline-flex;
   align-items: center;
   justify-content: center;

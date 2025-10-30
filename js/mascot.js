@@ -95,21 +95,66 @@ const MASCOT_CONFIG = {
   // initCurrentOutfitIndex();  // 注释掉这行如果存在的话
 
   // ---------------- DOM 创建 ----------------
-  // ---------------- DOM 创建 (修复版) ----------------
+  // ---------------- DOM 创建（无闪 + 保留换装） ----------------
   function createWidget() {
-    if (document.getElementById(ID)) return document.getElementById(ID);
+    // 如果已有则返回
+    const existing = document.getElementById(ID);
+    if (existing) return existing;
+
+    // 初始化当前换装
+    initCurrentOutfitIndex();
+    const currentOutfit = getCurrentOutfit();
+
+    // 创建根节点
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
-    root.innerHTML = `
-      <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-        <img src="${MASCOT_CONFIG.image}" alt="左下角的晨曦初阳">
-      </button>
-      <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
-        PLACEHOLDER_TEXT
-      )}</div>
-    `;
+
+    // 创建主要按钮
+    const btn = document.createElement("button");
+    btn.className = "mw-mascot-btn";
+    btn.setAttribute("aria-haspopup", "dialog");
+    btn.setAttribute("aria-expanded", "false");
+    btn.type = "button";
+
+    // 创建图片节点，但不立即显示
+    const img = document.createElement("img");
+    img.alt = `左下角的${currentOutfit.label}`;
+    img.style.opacity = "0";
+    img.decoding = "async"; // 提示浏览器优化解码
+    img.src = currentOutfit.image;
+
+    // 图片加载完毕再显示，防止层级重建
+    img.addEventListener("load", () => {
+      img.style.transition = "opacity 0.25s ease";
+      img.style.opacity = "1";
+    });
+
+    btn.appendChild(img);
+
+    // 创建换装按钮（放在同级结构最后，避免额外层）
+    const changerBtn = document.createElement("button");
+    changerBtn.className = "mw-outfit-changer-btn";
+    changerBtn.type = "button";
+    changerBtn.title = "换套衣服";
+    changerBtn.innerHTML = `<img src="/icons/icon-changer.svg" alt="换套衣服">`;
+
+    // 创建对话框
+    const dialog = document.createElement("div");
+    dialog.className = "mw-dialog";
+    dialog.setAttribute("role", "dialog");
+    dialog.setAttribute("aria-hidden", "true");
+    dialog.innerHTML = escapeHtml(PLACEHOLDER_TEXT);
+
+    // 挂载顺序与旧版一致
+    root.appendChild(btn);
+    root.appendChild(changerBtn);
+    root.appendChild(dialog);
     document.body.appendChild(root);
+
+    // 应用样式（尽量不修改 transform / display）
+    applyOutfitStyle(currentOutfit);
+
     return root;
   }
 
