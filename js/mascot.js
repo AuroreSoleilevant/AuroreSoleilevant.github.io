@@ -367,6 +367,13 @@ const MASCOT_CONFIG = {
     }
   }
 
+  function preloadOutfitImages() {
+    MASCOT_CONFIG.outfits.forEach((outfit) => {
+      const img = new Image();
+      img.src = outfit.image;
+    });
+  }
+
   // ---------------- 悬停逻辑（链式 pick） ----------------
   // ---------------- 悬停逻辑 (已禁用) ----------------
   function setupHoverLogic(root) {
@@ -395,6 +402,7 @@ const MASCOT_CONFIG = {
   // ---------------- 初始化 (已禁用) ----------------
   // ---------------- 初始化 (兼容占位版) ----------------
   async function init() {
+    preloadOutfitImages();
     const root = createWidget(); // 现在会检测并使用占位元素
 
     // 保持所有逻辑烧毁状态
