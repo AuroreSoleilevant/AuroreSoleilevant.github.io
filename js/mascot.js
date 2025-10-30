@@ -22,8 +22,8 @@ const MASCOT_CONFIG = {
       dialogTextColor: "#1e3a34",
     },
   ],
-  autoShowDuration: 6000, // auto 显示时长（毫秒）
-  minScreenWidthToShow: 1024, // 小于该宽度则不注入
+  autoShowDuration: 6000,
+  minScreenWidthToShow: 1024,
 };
 /* ============================ */
 
@@ -31,13 +31,12 @@ const MASCOT_CONFIG = {
   if (window.__MASCOT_WIDGET_INJECTED) return;
   window.__MASCOT_WIDGET_INJECTED = true;
 
-  // 小屏幕直接不注入（避免加载图片）
   if (window.innerWidth < (MASCOT_CONFIG.minScreenWidthToShow || 1024)) {
     return;
   }
 
   const ID = "mw-root";
-  const PLACEHOLDER_TEXT = "Ciallo～(∠・ω< )⌒☆"; //默认句子
+  const PLACEHOLDER_TEXT = "Ciallo～(∠・ω< )⌒☆";
   const STORAGE_KEY = "mascot-outfit-id";
 
   // ---------------- 小工具 ----------------
@@ -51,7 +50,6 @@ const MASCOT_CONFIG = {
   // ---------------- 换装系统 ----------------
   let currentOutfitIndex = 0;
 
-  // 获取保存的换装ID
   function getSavedOutfitId() {
     try {
       return localStorage.getItem(STORAGE_KEY);
@@ -60,7 +58,6 @@ const MASCOT_CONFIG = {
     }
   }
 
-  // 保存换装ID
   function saveOutfitId(id) {
     try {
       localStorage.setItem(STORAGE_KEY, id);
@@ -69,7 +66,6 @@ const MASCOT_CONFIG = {
     }
   }
 
-  // 初始化当前换装索引
   function initCurrentOutfitIndex() {
     const savedId = getSavedOutfitId();
     if (savedId) {
@@ -81,16 +77,13 @@ const MASCOT_CONFIG = {
         return;
       }
     }
-    // 默认使用第一个换装
     currentOutfitIndex = 0;
   }
 
-  // 获取当前换装
   function getCurrentOutfit() {
     return MASCOT_CONFIG.outfits[currentOutfitIndex];
   }
 
-  // 切换到下一个换装
   function switchToNextOutfit() {
     currentOutfitIndex =
       (currentOutfitIndex + 1) % MASCOT_CONFIG.outfits.length;
@@ -99,7 +92,6 @@ const MASCOT_CONFIG = {
     return newOutfit;
   }
 
-  // 应用换装样式
   function applyOutfitStyle(outfit) {
     const dialog = $(".mw-dialog");
     if (dialog && outfit) {
@@ -109,7 +101,6 @@ const MASCOT_CONFIG = {
     }
   }
 
-  // 更新小马图片
   function updateMascotImage(outfit) {
     const img = $(".mw-mascot-btn img");
     if (img && outfit) {
@@ -120,8 +111,7 @@ const MASCOT_CONFIG = {
 
   // ---------------- DOM 创建 ----------------
   function createWidget() {
-    let existing = document.getElementById(ID);
-    if (existing) return existing;
+    if (document.getElementById(ID)) return document.getElementById(ID);
 
     // 初始化当前换装
     initCurrentOutfitIndex();
@@ -130,39 +120,37 @@ const MASCOT_CONFIG = {
     const root = document.createElement("div");
     root.id = ID;
     root.setAttribute("aria-hidden", "false");
-    root.innerHTML = `
-    <!-- 主按钮先加载 -->
-    <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-      <img src="${currentOutfit.image}" alt="左下角的${
-      currentOutfit.label
-    }" loading="eager">
-    </button>
-    <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
-      PLACEHOLDER_TEXT
-    )}</div>
-  `;
 
-    // 同步插入主元素
+    // 同步插入主内容（小马图片和对话框）
+    root.innerHTML = `
+      <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
+        <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
+      </button>
+      <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
+        PLACEHOLDER_TEXT
+      )}</div>
+    `;
+
     document.body.appendChild(root);
     applyOutfitStyle(currentOutfit);
 
-    // 延迟添加换装按钮
+    // 延迟插入换装按钮（让它自己闪去吧）
     setTimeout(() => {
       const changerHTML = `
-      <div class="mw-outfit-changer-container">
-        <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-          <img src="/icons/icon-changer.svg" alt="换套衣服" loading="lazy">
-        </button>
-      </div>
-    `;
+        <div class="mw-outfit-changer-container">
+          <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
+            <img src="/icons/icon-changer.svg" alt="换套衣服">
+          </button>
+        </div>
+      `;
       root.insertAdjacentHTML("afterbegin", changerHTML);
-      setupOutfitChangerLogic(root); // 重新绑定事件
-    }, 500); // 等页面完全稳定后再添加
+    }, 300);
 
     return root;
   }
 
-  // ---------------- SPA URL 变化钩子 ----------------
+  // ---------------- 其他系统全部恢复 ----------------
+  // SPA URL 变化钩子
   function hookUrlChange(cb) {
     ["pushState", "replaceState"].forEach((fnName) => {
       const orig = history[fnName];
@@ -178,13 +166,12 @@ const MASCOT_CONFIG = {
     window.addEventListener("mw-history-change", cb);
   }
 
-  // ---------------- 载入句子 JSON ----------------
+  // 载入句子 JSON
   let sentences = [];
   let lastLoadedOutfitId = null;
   let sentencesLoading = false;
   let sentencesLoadPromise = null;
   async function loadSentences() {
-    // 尽量避免重复 fetch
     const currentOutfit = getCurrentOutfit();
     if (!currentOutfit) {
       sentences = [];
@@ -197,11 +184,9 @@ const MASCOT_CONFIG = {
       Array.isArray(sentences) &&
       sentences.length > 0
     ) {
-      // 已有缓存，直接返回
       return sentences;
     }
 
-    // 如果已有正在进行的加载，重用该 promise（去重）
     if (sentencesLoading && sentencesLoadPromise) {
       return sentencesLoadPromise;
     }
@@ -210,7 +195,6 @@ const MASCOT_CONFIG = {
 
     sentencesLoadPromise = (async () => {
       try {
-        // 取消强制 no-store
         const res = await fetch(currentOutfit.sentencesUrl);
         if (!res.ok) throw new Error("fetch failed " + res.status);
         const j = await res.json();
@@ -239,17 +223,11 @@ const MASCOT_CONFIG = {
     return sentencesLoadPromise;
   }
 
-  // ---------------- 重新加载当前换装的句子 ----------------
   function reloadCurrentOutfitSentences() {
     return loadSentences();
   }
 
-  // ---------------- 匹配规则 ----------------
-  // pages 支持三种模式：
-  //  - 正则：以 / 开头并以 / 结尾（例如 "/\\/book\\/\\d+/"）
-  //  - 前缀通配：以 '*' 结尾（例如 "/book/*"）
-  //  - 子串包含：其他字符串 -> href.includes(pattern)
-  //  指不定明天我就看不懂了
+  // 匹配规则
   function matchesPagePattern(pattern, href) {
     if (!pattern) return true;
     if (pattern.startsWith("/") && pattern.endsWith("/")) {
@@ -266,6 +244,7 @@ const MASCOT_CONFIG = {
     }
     return href.indexOf(pattern) !== -1;
   }
+
   function matchesPage(sentence, href) {
     if (
       !sentence.pages ||
@@ -276,27 +255,24 @@ const MASCOT_CONFIG = {
     return sentence.pages.some((p) => matchesPagePattern(p, href));
   }
 
-  // 时间格式: { from: "HH:MM", to: "HH:MM" } 支持跨日（22:00-06:00）
-  // 日期格式: { from: "YYYY-MM-DD", to: "YYYY-MM-DD" }
   function timeToMinutes(t) {
     const parts = String(t).split(":");
     const hh = parseInt(parts[0] || "0", 10);
     const mm = parseInt(parts[1] || "0", 10);
     return hh * 60 + mm;
   }
+
   function matchesTime(sentence) {
     const now = new Date();
-    // 日期格式
     if (
       sentence.dateRange &&
       sentence.dateRange.from &&
       sentence.dateRange.to
     ) {
-      const d = now.toISOString().slice(0, 10); // YYYY-MM-DD
+      const d = now.toISOString().slice(0, 10);
       if (d < sentence.dateRange.from || d > sentence.dateRange.to)
         return false;
     }
-    // 时间格式
     if (
       sentence.timeRange &&
       sentence.timeRange.from &&
@@ -314,12 +290,11 @@ const MASCOT_CONFIG = {
     return true;
   }
 
-  // 一条句子是否为当前候选（尊重 pages/time）
   function isCandidate(sentence, href) {
     return matchesPage(sentence, href) && matchesTime(sentence);
   }
 
-  // ---------------- 权重抽取 ----------------
+  // 权重抽取
   function weightedPickObjects(arr) {
     const total = arr.reduce((s, item) => s + (Number(item.weight) || 1), 0);
     if (total <= 0) return null;
@@ -331,7 +306,7 @@ const MASCOT_CONFIG = {
     return arr[arr.length - 1] || null;
   }
 
-  // ---------------- 链式触发 ----------------
+  // 链式触发
   let forcedNextId = null;
   let lastShownId = null;
 
@@ -366,7 +341,7 @@ const MASCOT_CONFIG = {
     return pick;
   }
 
-  // ---------------- 显示 / 隐藏 ----------------
+  // 显示 / 隐藏
   let autoTimer = null;
   function showText(root, sentenceObj) {
     const dialog = $(".mw-dialog", root);
@@ -374,7 +349,6 @@ const MASCOT_CONFIG = {
       sentenceObj && sentenceObj.text ? sentenceObj.text : PLACEHOLDER_TEXT;
     const safeText = escapeHtml(text);
 
-    // 只有文本变化时才写入
     if (dialog.textContent !== safeText) {
       dialog.textContent = safeText;
     }
@@ -395,7 +369,7 @@ const MASCOT_CONFIG = {
     }
   }
 
-  // ---------------- 悬停逻辑（链式 pick） ----------------
+  // 悬停逻辑
   function setupHoverLogic(root) {
     const btn = $(".mw-mascot-btn", root);
     const dialog = $(".mw-dialog", root);
@@ -434,7 +408,7 @@ const MASCOT_CONFIG = {
     });
   }
 
-  // ---------------- 换装按钮逻辑 ----------------
+  // 换装按钮逻辑
   function setupOutfitChangerLogic(root) {
     const changerBtn = $(".mw-outfit-changer-btn", root);
 
@@ -442,14 +416,11 @@ const MASCOT_CONFIG = {
       ev.preventDefault();
       ev.stopPropagation();
 
-      // 同步切换当前换装
       const newOutfit = switchToNextOutfit();
 
-      // 立即更新图片与样式
       updateMascotImage(newOutfit);
       applyOutfitStyle(newOutfit);
 
-      // 异步在后台刷新句
       reloadCurrentOutfitSentences()
         .then(() => {
           console.info(
@@ -461,7 +432,6 @@ const MASCOT_CONFIG = {
           console.warn("Mascot: background reload failed:", err);
         });
 
-      // 添加点击反馈（视觉）
       changerBtn.classList.add("mw-outfit-changer-btn-active");
       setTimeout(() => {
         changerBtn.classList.remove("mw-outfit-changer-btn-active");
@@ -469,7 +439,7 @@ const MASCOT_CONFIG = {
     });
   }
 
-  // ---------------- 页面进入时的 auto 触发 ----------------
+  // 页面进入时的 auto 触发
   function triggerAutoForUrl(root) {
     if (!sentences || sentences.length === 0) return;
     const href = location.href;
@@ -478,7 +448,7 @@ const MASCOT_CONFIG = {
     const pick = weightedPickObjects(candidates);
     if (!pick) return;
     const dialog = $(".mw-dialog", root);
-    if (dialog.classList.contains("mw-visible")) return; // 不覆盖悬停
+    if (dialog.classList.contains("mw-visible")) return;
     showText(root, pick);
     clearTimeout(autoTimer);
     autoTimer = setTimeout(
@@ -488,17 +458,21 @@ const MASCOT_CONFIG = {
   }
 
   // ---------------- 初始化 ----------------
-  // ---------------- 初始化 ----------------
   async function init() {
     const root = createWidget();
     await loadSentences();
     setupHoverLogic(root);
+
+    // 延迟设置换装按钮逻辑（等按钮插入后再绑定）
+    setTimeout(() => {
+      setupOutfitChangerLogic(root);
+    }, 500);
+
     hookUrlChange(() => {
       triggerAutoForUrl(root);
     });
     triggerAutoForUrl(root);
 
-    // 暴露一些接口用于调试/扩展
     window.__MASCOT_WIDGET = Object.assign(window.__MASCOT_WIDGET || {}, {
       root,
       reloadSentences: reloadCurrentOutfitSentences,
@@ -515,7 +489,6 @@ const MASCOT_CONFIG = {
     });
   }
 
-  // 恢复简单直接的启动逻辑
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
