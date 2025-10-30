@@ -89,33 +89,23 @@
 /* ======= 对话框 ======= */
 #mw-root .mw-dialog {
   position: absolute;
-  left: 120px; /* 对话框在小马右侧 */
+  left: 120px;
   bottom: 30px;
   width: var(--mw-dialog-width, 280px);
   max-width: 90vw;
-
-  /* 毛玻璃 - 默认态 */
-  background: rgba(230, 220, 255, 0.5);
+  background: rgba(230, 220, 255, 0.95); /* ❗去掉毛玻璃 */
   border: 1px solid rgba(255, 255, 255, 0.65);
-  color: #2d2640; /* 文字色 */
+  color: #2d2640;
   box-shadow: 0 6px 24px rgba(50, 40, 100, 0.15);
-  -webkit-backdrop-filter: blur(10px) saturate(130%);
-  backdrop-filter: blur(10px) saturate(130%);
-
   border-radius: 14px;
   padding: 12px 16px;
   opacity: 0;
   pointer-events: none;
-
-  /* 动画 */
-  transform: translateY(6px) scale(0.98) translateZ(0);
-  transform-origin: left bottom;
-  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
-    box-shadow 0.25s ease;
-
+  transform: none; /* ❗去掉任何 transform */
+  transition: opacity 0.22s ease;
   font-size: 20px;
   line-height: 1.4;
-  will-change: opacity, transform;
+  will-change: opacity;
 }
 
 #mw-root .mw-dialog.mw-visible {
