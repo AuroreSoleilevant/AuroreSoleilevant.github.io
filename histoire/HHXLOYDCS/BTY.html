@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>标题页 | Spica</title>
+  <link rel="modulepreload" href="/js/common-head.js" crossorigin="anonymous">
+  <!-- 调用列表 -->
+  <script src="/js/special/common-head-peur.js" fetchpriority="high"></script>
+  <link rel="stylesheet" href="/css/intro.css">
+
+  <style>
+    .story-scene {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  background-color: #000044;
+  border: 2px solid #000;
+  border-radius: 10px;
+  margin: 20px auto;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.night-sky {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.moon {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  width: 80px;
+  height: 80px;
+  background-color: #ffffcc;
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
+  animation: moon-glow 3s infinite alternate;
+}
+
+@keyframes moon-glow {
+  0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.7); }
+  100% { box-shadow: 0 0 25px rgba(255, 255, 255, 0.9); }
+}
+
+.stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.star {
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 50%;
+  animation: twinkle 4s infinite;
+}
+
+.star-1 { top: 20px; left: 50px; width: 5px; height: 5px; animation-delay: 0s; }
+.star-2 { top: 60px; left: 200px; width: 3px; height: 3px; animation-delay: 1s; }
+.star-3 { top: 100px; left: 120px; width: 4px; height: 4px; animation-delay: 2s; }
+.star-4 { top: 30px; left: 180px; width: 3px; height: 3px; animation-delay: 0.5s; }
+.star-5 { top: 80px; left: 70px; width: 2px; height: 2px; animation-delay: 1.5s; }
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+.ground {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background-color: #006400;
+}
+
+.tree {
+  position: absolute;
+  bottom: 40px;
+  left: 30px;
+}
+
+.tree-trunk {
+  width: 30px;
+  height: 60px;
+  background-color: #8b4513;
+}
+
+.tree-leaves {
+  position: absolute;
+  bottom: 60px;
+  left: -25px;
+  width: 80px;
+  height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 60px solid #228b22;
+}
+
+.hidden-link-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hidden-link {
+  font-size: 20px;
+  color: #000044;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+}
+
+.hidden-link:hover {
+  color: #ffffcc;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .story-scene {
+    height: 300px;
+  }
+  
+  .moon {
+    width: 60px;
+    height: 60px;
+    top: 15px;
+    right: 20px;
+  }
+  
+  .ground {
+    height: 80px;
+  }
+  
+  .tree {
+    bottom: 30px;
+    left: 20px;
+  }
+  
+  .tree-trunk {
+    width: 25px;
+    height: 50px;
+  }
+  
+  .tree-leaves {
+    bottom: 50px;
+    border-bottom-width: 50px;
+  }
+}
+  </style>
+
+</head>
+
+<body>
+
+  <!-- 顶栏，需带着 -->
+  <div id="header-placeholder"></div>
+
+  <!-- 主体内容 -->
+<main class="main-content" role="main">
+<p data-progress-start></p>
+  <!-- 大标题 -->
+  <h1 class="shaking-text" style="position:relative;">
+  标题页
+  <span class="tag-container" aria-hidden="false">
+  <a class="page-tag" href="/histoire/HHXLOYDCS">幻形灵ω应对测试</a>
+  </span>
+  </h1>
+  <p class="date-line">发布：16/8/2024</p>
+  <div style="background: linear-gradient(to bottom, #4b0000, #1c1c1c); padding: 20px; color: white;">
+<h2 style="text-align: center;"><span><strong>S.M.I.L.E内部文档，禁止公开。</strong></span></h2>
+<p style="text-align: center;">&nbsp;</p>
+<p style="text-align: left;"><span style="color: #ffffff;">为了确保您的阅读安全，请遵守以下规则：</span></span></p>
+<p style="text-align: left;"><span style="color: #ffffff;">-在太阳落山后阅读本文。</span></span></p>
+<p style="text-align: left;"><span style="color: #ffffff;">-在左侧栏中启用暗夜模式。</span></span></p>
+<p style="text-align: left;"><span style="color: #ffffff;">-减少身边的可见光源。</span></span></p>
+<p style="text-align: left;"><span style="color: #ffffff;">-开启设备音量。</span></span></p>
+<p style="text-align: left;"><span style="color: #ffffff;">-禁止外传文件。</span></span></p>
+<p style="color: white; opacity: 0.5; filter: blur(1px);"><span style="color: #ffffff;">-保证周围没有幻形灵。</span></p>
+<p style="color: white; opacity: 0.5; filter: blur(1px);">&nbsp;</p>
+<p style="text-align: center;"><span style="color: #e03e2d;">模因滤网&ldquo;明月夜&rdquo;已激活！您仅在暗夜模式下才能发现文档入口。</span></p>
+<p style="text-align: center;"><span style="color: #e03e2d;">检定通过，您已经处在暗夜模式下，也推荐您进入黑暗环境以保证安全。</span></p>
+
+<!-- 画-->
+<p style="text-align: center;">&nbsp;</p>
+<p style="text-align: center;">&nbsp;</p>
+</div>
+<div class="story-scene">
+  <div class="night-sky">
+    <div class="moon"></div>
+    <div class="stars">
+      <div class="star star-1"></div>
+      <div class="star star-2"></div>
+      <div class="star star-3"></div>
+      <div class="star star-4"></div>
+      <div class="star star-5"></div>
+    </div>
+  </div>
+  
+  <div class="ground"></div>
+  
+  <div class="tree">
+    <div class="tree-trunk"></div>
+    <div class="tree-leaves"></div>
+  </div>
+  
+  <div class="hidden-link-container">
+    <a href="/histoire/HHXLOYDCS/J" class="hidden-link">
+      点击此处以开始阅读
+    </a>
+  </div>
+</div>
+  <hr class="section-divider">
+<div id="giscus-container"></div>   <!-- 评论系统 -->
+<script src="/js/special/giscus-peur.js"></script>
+</main>
+
+  <!-- 左下角日期 -->
+  <div class="page-dates">
+  发布：1/11/2025　修改：1/11/2025　字数：<span id="count"></span>
+  </div>
+
+  <!-- 底栏，需带着 -->
+  <div id="footer-placeholder"></div>
+
+</body>
+</html>

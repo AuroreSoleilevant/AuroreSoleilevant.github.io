@@ -1,0 +1,264 @@
+/* 恐怖故事用css */
+
+/* ---------- 顶栏：开始 ---------- */
+.site-header {
+  background: #0f2a1a !important;
+}
+
+.site-header::before {
+  background-color: #0f2a1a !important;
+}
+
+.site-header.scrolled::before {
+  background-color: rgba(15, 42, 26, 0.35) !important;
+}
+
+@supports (
+  (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))
+) {
+  .site-header {
+    background-color: rgba(15, 42, 26, 0.35) !important;
+  }
+}
+
+/* 网站标题和导航改为黄绿色 */
+.site-title::before {
+  color: #ccff99 !important;
+}
+
+.site-title:hover::before {
+  text-shadow: 0 0 4px #ccff66, 0 0 8px #99ff33, 0 0 14px #66cc00 !important;
+}
+
+.nav-item {
+  color: #ccff99 !important;
+}
+
+/* 星星改为绿色系 */
+.site-header::after {
+  background-image: radial-gradient(circle, #99ff66 3px, transparent 3px),
+    radial-gradient(circle, #66ff33 3px, transparent 3px),
+    radial-gradient(circle, #33cc00 3px, transparent 3px) !important;
+}
+
+.site-header .stars {
+  background-image: radial-gradient(circle, #88ff88 3px, transparent 3px),
+    radial-gradient(circle, #44ff44 3px, transparent 3px),
+    radial-gradient(circle, #00cc00 3px, transparent 3px) !important;
+}
+
+.site-header .stars2 {
+  background-image: radial-gradient(circle, #006600a3 3px, transparent 3px),
+    radial-gradient(circle, #00ff00c6 3px, transparent 3px),
+    radial-gradient(circle, #66ff6682 3px, transparent 3px) !important;
+}
+/* ---------- 顶栏：结束 ---------- */
+
+/* ---------- 主体：开始 ---------- */
+body {
+  background-color: #2a0f0f;
+  background-image: radial-gradient(
+      circle at 30px 40px,
+      rgba(139, 0, 0, 0.35) 0px,
+      rgba(139, 0, 0, 0.35) 3px,
+      transparent 3px
+    ),
+    radial-gradient(
+      circle at 90px 110px,
+      rgba(120, 0, 0, 0.4) 0px,
+      rgba(120, 0, 0, 0.4) 2.5px,
+      transparent 2.5px
+    ),
+    radial-gradient(
+      circle at 160px 70px,
+      rgba(160, 20, 20, 0.3) 0px,
+      rgba(160, 20, 20, 0.3) 3.5px,
+      transparent 3.5px
+    ),
+    radial-gradient(
+      circle at 230px 130px,
+      rgba(100, 0, 0, 0.45) 0px,
+      rgba(100, 0, 0, 0.45) 2.8px,
+      transparent 2.8px
+    ),
+    radial-gradient(
+      circle at 320px 60px,
+      rgba(139, 0, 0, 0.32) 0px,
+      rgba(139, 0, 0, 0.32) 4px,
+      transparent 4px
+    ),
+    radial-gradient(
+      circle at 200px 180px,
+      rgba(80, 0, 0, 0.5) 0px,
+      rgba(80, 0, 0, 0.5) 2.2px,
+      transparent 2.2px
+    ),
+    radial-gradient(
+      circle at 350px 170px,
+      rgba(150, 10, 10, 0.38) 0px,
+      rgba(150, 10, 10, 0.38) 3px,
+      transparent 3px
+    );
+  background-size: 400px 200px;
+  background-repeat: repeat;
+
+  /* 覆盖文字颜色为浅色 */
+  color: #d69c9c;
+}
+
+/* 覆盖所有主要文字容器的颜色 */
+main,
+article,
+.content,
+.story-content,
+.container,
+.wrapper {
+  color: #d69c9c;
+}
+
+/* 覆盖标题颜色 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #dc7b7b;
+}
+
+/* 覆盖链接颜色 */
+a {
+  color: #cf7d7d;
+}
+
+/* 覆盖段落和文本颜色 */
+p,
+span,
+div,
+li {
+  color: #d69c9c;
+}
+
+/* 恐怖氛围的叠加层 */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+      ellipse at 20% 20%,
+      transparent 0%,
+      rgba(40, 0, 0, 0.1) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse at 80% 80%,
+      transparent 0%,
+      rgba(60, 0, 0, 0.15) 30%,
+      transparent 70%
+    );
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ---------- 主体：结束 ---------- */
+
+/* ---------- 底栏：开始 ---------- */
+/* 覆盖底栏背景色 */
+.site-footer {
+  background: #0f2a1a !important;
+}
+
+/* 覆盖底栏文字颜色 */
+.site-footer,
+.site-footer::after,
+.footer-links a {
+  color: #ccff99 !important;
+}
+
+/* 覆盖链接颜色 */
+.footer-links a {
+  color: #ccff99 !important;
+}
+
+/* 覆盖按钮背景色 */
+.contact-btn {
+  background: rgba(204, 255, 153, 0.5) !important;
+  border: 1px solid rgba(204, 255, 153, 0.14) !important;
+}
+
+.contact-btn:hover,
+.contact-btn:focus {
+  background: rgba(204, 255, 153, 0.18) !important;
+}
+/* ---------- 底栏：结束 ---------- */
+
+/* ---------- 按钮：开始 ---------- */
+.retro-buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.retro-computer-btn {
+  display: inline-flex; /* 保持内容居中 */
+  align-items: center;
+  justify-content: center;
+  background: #0a0a0a;
+  border: 2px solid #00ff00;
+  border-radius: 4px;
+  padding: 12px 24px;
+  color: #00ff00 !important; /* 确保文字颜色是绿色 */
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.3), inset 0 0 10px rgba(0, 255, 0, 0.1);
+  min-width: 120px;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none; /* 去除下划线 */
+}
+
+.retro-computer-btn:hover {
+  background: #001a00;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.6), inset 0 0 15px rgba(0, 255, 0, 0.2);
+  transform: translateY(-2px);
+  color: #00ff00 !important; /* 保持悬停时文字颜色不变 */
+  text-decoration: none; /* 确保悬停时没有下划线 */
+}
+
+.retro-computer-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.8), inset 0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+/* 光效 */
+.retro-computer-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 0, 0.1),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.retro-computer-btn:hover::after {
+  left: 100%;
+}
+/* ---------- 按钮：结束 ---------- */
+
+.page-dates {
+  color: #d69c9c;
+}
