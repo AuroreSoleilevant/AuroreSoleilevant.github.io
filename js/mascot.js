@@ -5,15 +5,24 @@ var MASCOT_CONFIG = window.MASCOT_CONFIG || {
   outfits: [
     {
       id: "1",
+      label: "天使",
+      image: "/images/mascot/天使.webp",
+      sentencesUrl: "/json/mascot/天使.json",
+      dialogBg: "rgba(255, 248, 235, 0.55)",
+      dialogBorder: "rgba(255, 210, 160, 0.8)",
+      dialogTextColor: "#5a3e2b",
+    },
+    {
+      id: "2",
       label: "女巫",
       image: "/images/mascot/女巫.webp",
       sentencesUrl: "/json/mascot/女巫.json",
-      dialogBg: "rgba(230, 220, 255, 0.5)",
+      dialogBg: "rgba(230, 220, 255, 0.55)",
       dialogBorder: "rgba(255,255,255,0.65)",
       dialogTextColor: "#3a3228",
     },
     {
-      id: "2",
+      id: "3",
       label: "汉服",
       image: "/images/mascot/汉服.webp",
       sentencesUrl: "/json/mascot/汉服.json",
@@ -22,6 +31,7 @@ var MASCOT_CONFIG = window.MASCOT_CONFIG || {
       dialogTextColor: "#1e3a34",
     },
   ],
+
   autoShowDuration: 6000,
   minScreenWidthToShow: 1024,
 };
