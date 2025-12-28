@@ -21,6 +21,7 @@
       "tag/traduction": 1, //2
       "tag/interactif": 1, //1
       "tag/serie": 1, //1
+      "tag/photographie": 1, //1
       // 1.在这里扩展未来可能的新区的最大页数
     },
   };
@@ -65,7 +66,8 @@
       section !== "futuriste" &&
       section !== "traduction" &&
       section !== "interactif" &&
-      section !== "serie"
+      section !== "serie" &&
+      section !== "photographie"
     )
       // 2.把新区的名字写进白名单
       return { section: null, page: null };

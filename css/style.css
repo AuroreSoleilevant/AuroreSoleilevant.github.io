@@ -880,6 +880,29 @@ footer {
 .note-refres:hover {
   text-decoration: underline;
 }
+
+/* 内嵌pdf查看器 */
+.pdfiframe {
+  width: 90%; /* 尺寸 */
+  height: 85vh; /* 相对视口高度 */
+  margin: 2rem auto; /* 居中 + 留白 */
+  display: block;
+
+  /* 边框 */
+  background-color: #f5ecd9;
+  border: 3px solid #d6c7a1;
+
+  /* 圆角 */
+  border-radius: 14px;
+
+  /* 阴影 */
+  box-shadow: 0 10px 25px rgba(90, 70, 30, 0.25),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+
+  /* 防止 iframe 角落露白 */
+  overflow: hidden;
+}
+
 /* ---------- 其他：结束 ---------- */
 
 /* 平板设备 */
