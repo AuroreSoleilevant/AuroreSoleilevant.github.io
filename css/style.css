@@ -3,9 +3,10 @@
 @font-face {
   font-family: "LXGWWenKai";
   src: url("../fonts/LXGWWenKai-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
-    U+FEFF, U+FFFD;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF,
+    U+FFFD;
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -57,7 +58,9 @@
   overflow: hidden;
   z-index: 1000; /* 确保覆盖内容 */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* 阴影效果 */
-  transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+  transition:
+    background-color 0.4s ease,
+    backdrop-filter 0.4s ease;
   isolation: isolate;
 }
 
@@ -96,7 +99,9 @@
   border-radius: 0 0 12px 12px;
   background-clip: padding-box;
   background-color: #232946;
-  transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+  transition:
+    background-color 0.4s ease,
+    backdrop-filter 0.4s ease;
 }
 
 /* 确保星星层与文字在毛玻璃上面显示 */
@@ -128,7 +133,10 @@
 }
 
 .site-title:hover::before {
-  text-shadow: 0 0 4px #f0e9ff, 0 0 8px #cfc3ff, 0 0 14px #b6a5ff;
+  text-shadow:
+    0 0 4px #f0e9ff,
+    0 0 8px #cfc3ff,
+    0 0 14px #b6a5ff;
   cursor: pointer; /* 手型光标 */
 }
 
@@ -139,12 +147,16 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background-image: radial-gradient(circle, #fcf0b5 3px, transparent 3px),
+  background-image:
+    radial-gradient(circle, #fcf0b5 3px, transparent 3px),
     radial-gradient(circle, #87e7ff 3px, transparent 3px),
     radial-gradient(circle, #ff9bb4 3px, transparent 3px);
   transform: rotate(1deg);
   background-size: 250px 250px;
-  background-position: 10% 20%, 55% 50%, 80% 65%;
+  background-position:
+    10% 20%,
+    55% 50%,
+    80% 65%;
   animation: twinkle 4s infinite ease-in-out;
   animation-delay: 2.9s;
 }
@@ -155,12 +167,16 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background-image: radial-gradient(circle, #ffd488 3px, transparent 3px),
+  background-image:
+    radial-gradient(circle, #ffd488 3px, transparent 3px),
     radial-gradient(circle, #87fda1 3px, transparent 3px),
     radial-gradient(circle, #74e3ff 3px, transparent 3px);
   transform: rotate(1.5deg);
   background-size: 300px 300px;
-  background-position: 30% 35%, 65% 60%, 90% 75%;
+  background-position:
+    30% 35%,
+    65% 60%,
+    90% 75%;
   animation: twinkle 5s infinite ease-in-out;
   animation-delay: 3.9s;
 }
@@ -171,13 +187,19 @@
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background-image: radial-gradient(circle, #dc22f9a3 3px, transparent 3px),
+  background-image:
+    radial-gradient(circle, #dc22f9a3 3px, transparent 3px),
     radial-gradient(circle, #83f7ffc6 3px, transparent 3px),
     radial-gradient(circle, #d0ff0082 3px, transparent 3px);
   transform: rotate(3deg);
   background-size: 280px 280px;
-  background-position: 25% 40%, 70% 55%, 85% 70%;
-  animation: twinkle 5s infinite ease-in-out, drift3-down 60s linear infinite;
+  background-position:
+    25% 40%,
+    70% 55%,
+    85% 70%;
+  animation:
+    twinkle 5s infinite ease-in-out,
+    drift3-down 60s linear infinite;
 }
 
 /* 闪烁动画 */
@@ -194,10 +216,16 @@
 /* 漂移动画 */
 @keyframes drift3-down {
   0% {
-    background-position: 25% 80%, 50% 110%, 85% 150%; /* 屏幕外上方 */
+    background-position:
+      25% 80%,
+      50% 110%,
+      85% 150%; /* 屏幕外上方 */
   }
   100% {
-    background-position: 25% -20%, 50% -15%, 85% -10%; /* 屏幕外下方 */
+    background-position:
+      25% -20%,
+      50% -15%,
+      85% -10%; /* 屏幕外下方 */
   }
 }
 
@@ -275,7 +303,8 @@ body {
 /* body 全局背景 */
 body {
   background-color: #f5f5dc;
-  background-image: radial-gradient(
+  background-image:
+    radial-gradient(
       circle at 30px 40px,
       rgba(238, 221, 204, 0.55) 0px,
       rgba(238, 221, 204, 0.55) 3px,
@@ -439,14 +468,16 @@ main a {
   box-sizing: border-box;
   min-height: 80px;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.25);
-  transition: transform 360ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 260ms ease;
+  transition:
+    transform 360ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity 260ms ease;
   transform: translateY(0);
   opacity: 1;
 }
 
 .site-footer::after {
   /* 底栏版权语句 */
-  content: "© 2025 Aurore Soleilevant";
+  content: "© 2026 Aurore Soleilevant";
   position: absolute;
   top: 50%; /* 定位到容器的中线 */
   right: 16px; /* 再靠右 */
@@ -479,7 +510,10 @@ main a {
   border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   text-decoration: none;
-  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
   overflow: hidden;
 }
 
@@ -541,7 +575,9 @@ main a {
 }
 
 footer {
-  transition: transform 300ms ease, opacity 300ms ease;
+  transition:
+    transform 300ms ease,
+    opacity 300ms ease;
 }
 /* ---------- 底栏：结束 ---------- */
 
@@ -567,8 +603,11 @@ footer {
   z-index: var(--backtop-z);
   opacity: 0;
   pointer-events: none; /* 隐藏时不可点 */
-  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1), opacity 260ms ease,
-    background 160ms ease, box-shadow 160ms ease;
+  transition:
+    transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity 260ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
 }
 
 /* 回到顶部图标 */
@@ -677,7 +716,8 @@ footer {
   height: auto;
   opacity: 0;
   transform: translateY(6px) scale(0.985);
-  transition: opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
+  transition:
+    opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
     transform 0.48s cubic-bezier(0.2, 0.8, 0.2, 1);
   will-change: opacity, transform;
 }
@@ -698,7 +738,8 @@ footer {
   background-repeat: no-repeat;
   opacity: 0;
   transform: translateY(6px) scale(0.985);
-  transition: opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
+  transition:
+    opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
     transform 0.48s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -738,14 +779,15 @@ footer {
 
   /* 多层背景：最下面是纯色 -> 细条纹 -> 两个污点点阵 -> 底部接缝 */
   background:
-    /* 底部接缝：放在最上层，定位到右下，宽度 70% 高 2px，不重复 */ repeating-linear-gradient(
+    /* 底部接缝：放在最上层，定位到右下，宽度 70% 高 2px，不重复 */
+    repeating-linear-gradient(
         to right,
         rgba(192, 192, 112, 0.6) 0 3px,
         transparent 3px 6px
       )
       right calc(6px) / 70% 2px no-repeat,
     /* 污点（右下/左上两处点阵），用 radial-gradients，指定尺寸并重复 */
-      radial-gradient(
+    radial-gradient(
         circle at 80% 70%,
         rgba(220, 220, 150, 0.28) 0.6px,
         transparent 1px
@@ -758,14 +800,14 @@ footer {
       )
       0 0 / 15px 15px repeat,
     /* 细条纹（壁纸风格） */
-      repeating-linear-gradient(
+    repeating-linear-gradient(
         0deg,
         rgba(232, 232, 160, 0.4) 0 2px,
         /* 浅线条半透明 */ rgba(245, 245, 184, 0.4) 2px 4px /* 底色半透明 */
       )
       repeat,
     /* 最底色 */
-      linear-gradient(rgba(245, 245, 184, 0.95), rgba(245, 245, 184, 0.95));
+    linear-gradient(rgba(245, 245, 184, 0.95), rgba(245, 245, 184, 0.95));
 }
 
 /* 左引号：用像素/正偏移，避免因 line-height 导致“飞起来！” */
@@ -833,7 +875,9 @@ footer {
   margin: 0 auto;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .IntroNor:hover {
@@ -896,7 +940,8 @@ footer {
   border-radius: 14px;
 
   /* 阴影 */
-  box-shadow: 0 10px 25px rgba(90, 70, 30, 0.25),
+  box-shadow:
+    0 10px 25px rgba(90, 70, 30, 0.25),
     inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 
   /* 防止 iframe 角落露白 */
