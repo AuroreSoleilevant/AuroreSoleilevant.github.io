@@ -3,16 +3,16 @@
 (function () {
   const CONFIG = {
     maxPages: {
-      histoire: 4, // 故事区最大页数，目前故事23
+      histoire: 5, // 故事区最大页数，目前故事25
       article: 1, // 文章区最大页数，目前文章1
       // 分类页面配置 - 每个分类单独设置最大页数
       "tag/musique": 1, //1
       "tag/long": 1, //3
-      "tag/fini": 4, //23
+      "tag/fini": 4, //24
       "tag/MLP": 3, //17
-      "tag/apaisant": 1, //5
+      "tag/apaisant": 1, //6
       "tag/amour": 2, //7
-      "tag/moyenne": 2, //7
+      "tag/moyenne": 2, //8
       "tag/court": 2, //12
       "tag/comedie": 1, //4
       "tag/suspense": 1, //2
