@@ -3,7 +3,7 @@
 (function () {
   const CONFIG = {
     maxPages: {
-      histoire: 5, // 故事区最大页数，目前故事25
+      histoire: 5, // 故事区最大页数，目前故事26
       article: 1, // 文章区最大页数，目前文章1
       // 分类页面配置 - 每个分类单独设置最大页数
       "tag/musique": 1, //1
@@ -12,17 +12,17 @@
       "tag/MLP": 3, //17
       "tag/apaisant": 1, //6
       "tag/amour": 2, //7
-      "tag/moyenne": 2, //8
+      "tag/moyenne": 2, //9
       "tag/court": 2, //12
       "tag/comedie": 1, //4
       "tag/suspense": 1, //2
       "tag/epouvante": 1, //2
-      "tag/futuriste": 1, //1
+      "tag/futuriste": 1, //2
       "tag/traduction": 1, //2
       "tag/interactif": 1, //1
-      "tag/serie": 1, //0
+      "tag/serie": 1, //1
       "tag/photographie": 1, //1
-      "tag/NeuroEvil": 1, //1
+      "tag/NeuroEvil": 1, //2
       "tag/Prose": 1, //1
       // 1.在这里扩展未来可能的新区的最大页数
     },
