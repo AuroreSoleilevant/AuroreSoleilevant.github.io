@@ -8,7 +8,7 @@
       // 分类页面配置 - 每个分类单独设置最大页数
       "tag/musique": 1, //1
       "tag/long": 1, //3
-      "tag/fini": 4, //24
+      "tag/fini": 5, //25
       "tag/MLP": 3, //17
       "tag/apaisant": 1, //6
       "tag/amour": 2, //7
@@ -20,7 +20,7 @@
       "tag/futuriste": 1, //2
       "tag/traduction": 1, //2
       "tag/interactif": 1, //1
-      "tag/serie": 1, //1
+      "tag/serie": 1, //0
       "tag/photographie": 1, //1
       "tag/NeuroEvil": 1, //2
       "tag/Prose": 1, //1
