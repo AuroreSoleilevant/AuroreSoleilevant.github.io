@@ -125,6 +125,4 @@
   // 同步脚本（仅在数组中有项时才执行同步加载）
   syncScripts.forEach((src) => injectSyncScript(src));
 
-  // deferred / non-blocking 脚本
-  preloadAndDeferScripts(deferredScripts);
 })();
