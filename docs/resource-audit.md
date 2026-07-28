@@ -155,9 +155,8 @@
 以下均为候选，不是删除结论。
 
 1. **`img.js` 的 `.bg-image` 分支。** `handleBgImages()` 在 `js/img.js:72-151` 会查询 `.bg-image` 和可选 `data-bg-src`；全仓库（排除本文档）只有 `img.js` 与 `style.css` 出现这两个标记，没有 HTML 或其他 JS 创建它们。因此该分支当前没有页面输入。
-2. **章节目录按钮的 `openSidebar()` 直调分支。** `chapter-nav.js:108` 在独立 IIFE 内检查 `typeof openSidebar`；`chapters-sidebar.js:198` 的同名函数位于另一个 IIFE，未赋给 `window`。当前该直调条件不可满足，实际走 `#chapter-toggle` click 回退（第 109-111 行）。回退是现有功能路径，不能删除。
-3. **无 HTML/JS 证据的 CSS 状态/布局规则。** `.clickable`、`#chapter-sidebar.dark`、`.ratio-box` / `.inner`、`.mt-tile.is-lifted`、`.site-content`、`.story-content` 只在 CSS selector 中出现。它们可能是预留样式，也可能是遗留，尚未做浏览器行为验证。
-4. **HTML class `preload`。** 仅出现在 `autre/moi/index.html` 的两张 `.resp-img` 上；未找到 `.preload` CSS selector、JS selector 或 classList 操作。它不影响 `img.js` 的 `.loaded` 动画逻辑，但在移除前仍应人工验证该页。
+2. **无 HTML/JS 证据的 CSS 状态/布局规则。** `.clickable`、`#chapter-sidebar.dark`、`.ratio-box` / `.inner`、`.mt-tile.is-lifted`、`.site-content`、`.story-content` 只在 CSS selector 中出现。它们可能是预留样式，也可能是遗留，尚未做浏览器行为验证。
+3. **HTML class `preload`。** 仅出现在 `autre/moi/index.html` 的两张 `.resp-img` 上；未找到 `.preload` CSS selector、JS selector 或 classList 操作。它不影响 `img.js` 的 `.loaded` 动画逻辑，但在移除前仍应人工验证该页。
 
 ## 静态资源审计
 
@@ -177,7 +176,7 @@
 | --- | --- | --- | --- |
 | P0 | 无 | 未发现需要立刻删除才能恢复正确性的资源 | 不动作 |
 | P1 | 3 个无静态路径证据资源 | 对每个资源都完成了路径与文件名搜索，结果均为 0 | 后续单独确认仓库外用途、视觉和历史回退后再决定 |
-| P2 | `.bg-image` 分支、7 组 CSS selector、`preload` class、章节 `openSidebar()` 直调分支 | 有明确“当前无页面触发”或“当前不可达”的源码证据，但可能涉及视觉、交互或未来内容 | 分别设计小范围验证，不能合并成一次清理 |
+| P2 | `.bg-image` 分支、7 组 CSS selector、`preload` class | 有明确“当前无页面触发”或“当前不可达”的源码证据，但可能涉及视觉、交互或未来内容 | 分别设计小范围验证，不能合并成一次清理 |
 
 ## 暂不建议动
 

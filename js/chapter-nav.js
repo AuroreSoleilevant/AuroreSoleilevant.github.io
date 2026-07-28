@@ -105,16 +105,12 @@
     tocBtn.addEventListener("click", (e) => {
       e.preventDefault();
       try {
-        if (typeof openSidebar === "function") openSidebar();
-        else {
-          const t = document.getElementById("chapter-toggle");
-          if (t) t.click();
-        }
+        const t = document.getElementById("chapter-toggle");
+        if (t) t.click();
       } catch (err) {
         console.warn("chapter-nav: open sidebar failed", err);
       }
     });
-    tocBtn.classList.add("toc");
     container.appendChild(tocBtn);
 
     let nextId = null;
@@ -130,7 +126,7 @@
       if (idSet.has(cur + 1)) nextId = cur + 1;
     }
 
-    if (nextId !== null && nextId !== undefined) {
+    if (nextId !== null) {
       const nextHref = `${info.basePath}/${nextId}`;
       const nextBtn = makeLinkBtn("下一章", nextHref, "next");
       container.appendChild(nextBtn);
