@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="pfcmMKiUt7UatYNyY205M5vCxZO10F-vjZ6Gv2hF68o" />
+  <meta name="description" content="这里是晨曦初阳的个人博客，用来分享我的一切~">
+  <meta name="keywords" content="博客, 生活, 编程, 写作，摄影，彩虹小马，文学">
+  <meta name="author" content="Aurore Soleilevant">
+  <title>Spica</title>
+  <link rel="modulepreload" href="/js/common-head.js" crossorigin="anonymous">
+  <!-- 调用列表 -->
+  <script src="/js/common-head.js" fetchpriority="high"></script>
+  <link rel="stylesheet" href="/css/tuile.css">
+  <script src="/js/list.js"></script>
+  <script src="/js/catalogue.js"></script>
+  <link rel="stylesheet" href="/css/morceau.css">
+  <link rel="stylesheet" href="/css/tagflow.css">
+  <script src="/js/tagflow.js"></script>
+  <!-- 对谷歌的抗议 -->
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var s = document.createElement("script");
+    s.src = "https://keepandroidopen.org/banner.js?lang=zh&size=mini&id=kao-banner";
+    document.body.appendChild(s);
+  });
+  </script>
+
+  <!-- 本页的CSS -->
+  <style>
+    /* 抖动动画 */
+    .shaking-text {
+      display: block; 
+      margin: 0.25em auto;    /* 也许是用来水平居中并留一点上下距 */
+      text-align: center;     /* 保险：文字内容居中 */
+      font-size: 60px;
+      font-weight: 700;
+      line-height: 1;
+      will-change: transform;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%   { transform: translateY(0px); }
+      25%  { transform: translateY(-10px); }
+      50%  { transform: translateY(0px); }
+      75%  { transform: translateY(10px); }
+      100% { transform: translateY(0px); }
+    }
+
+  .random-btn-wrapper {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center;
+  width: 100%;
+  margin: 2em 0;
+  gap: 20px;
+}
+
+/* 按钮（a 元素） */
+.random-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 20px;
+  font-size: 2rem !important;     /* 字号 */
+  font-weight: 900;
+  font: inherit;          /* 继承字体 */
+  color: #fff;
+  text-decoration: none;  /* 去掉下划线 */
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  box-shadow: 0 8px 18px rgba(255,146,178,0.28);
+  background-image: linear-gradient(90deg,#FF92B2,#FFD36B);
+  transition: transform .18s ease, box-shadow .18s ease, opacity .12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 悬停与按下效果（不会影响页面全局） */
+.random-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(255,146,178,0.36); }
+.random-btn:active { transform: translateY(0) scale(0.98); }
+
+/* 禁用态（防止重复点击） */
+.random-btn[aria-disabled="true"]{
+  opacity: 0.65;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
+}
+  
+  @media (prefers-reduced-motion: reduce) {
+  .shaking-text {
+    animation: none;
+  }
+  }
+
+  /* 字号标准化*/
+ .fsize2{
+  font-size: 2rem;
+ }
+
+ .fsize2p5{
+  font-size: 2.5rem;
+ }
+
+ .dishaut{
+  height: 5em;
+ }
+
+ @media (max-width: 800px) {
+  .fsize2 {
+    font-size: 1.5rem;
+  }
+ }
+
+ @media (max-width: 480px) {
+   .fsize2{
+  font-size: 1rem;
+ }
+
+ .fsize2p5{
+  font-size: 1.5rem;
+ }
+
+   .dishaut{    /* 通用顶部空格 */
+  height: 0rem;
+ }
+
+ .random-btn {
+  padding: 13px 13px;
+  font-size: 1.2rem !important;     /* 字号 */
+}
+ 
+}
+  </style>
+
+</head>
+
+<body class="no-comments">
+
+  <!-- 顶栏，需带着 -->
+  <div id="header-placeholder"></div>
+
+  <!-- 主体内容 -->
+<main role="main">
+  <!-- 大标题 -->
+  <h1 class="shaking-text" title="Ciallo = Ciao + Hello = 你好">
+  欢迎<span class="mobile-break"></span> Ciallo～<span class="mobile-break320"></span>(∠・ω< )⌒☆
+  </h1>
+
+  <p class="text-center fsize2">欢迎来到Spica！这里是晨曦初阳的个人小站，希望你可以在这里度过愉快的时光~</p>
+
+  <p class="text-center fsize2p5"><b>那么，今天要来点什么吗<span class="mobile-break"></span> (ゝ∀･)</b></p>
+
+  <div class="tiles">
+  <a class="tile" href="/article" style="--tile-color: rgba(201,60,86,0.22);">
+  <img class="tile-svg" src="/icons/icon-article.svg" alt="" aria-hidden="true" decoding="async">
+  <h1 class="text-center">文章</h1>
+  <p class="text-center">我们总是会经历很多事情，然后分享在其中得到的一切，这不是快乐么？</p>
+  <p class="text-center show-mobile">一共有2篇文章</p>
+  <p class="text-center show-mobile show-mobileBBB">上次更新：20/7</p>
+  </a>
+
+  <a class="tile" href="/histoire" style="--tile-color: rgba(80,44,107,0.20);">
+  <img class="tile-svg" src="/icons/icon-histoire.svg" alt="" aria-hidden="true" decoding="async">
+  <h1 class="text-center">故事</h1>
+  <p class="text-center">既然经历许多，那必定思绪也会溢出来不少，何尝不换作故事与果汁呢？</p>
+  <p class="text-center show-mobile">一共有29篇故事</p>
+  <p class="text-center show-mobile show-mobileBBB">上次更新：14/6</p>
+  </a>
+
+  <a class="tile" href="/laboratoire" style="--tile-color: rgba(255,160,64,0.18);">
+  <img class="tile-svg" src="/icons/icon-laboratoire.svg" alt="" aria-hidden="true" decoding="async">
+  <h1 class="text-center">实验室</h1>
+  <p class="text-center">一个好的功能总需要点火焰、噪音和爆炸，不是么？</p>
+  <p class="text-center show-mobile">一共有2个实验</p>
+  <p class="text-center show-mobile show-mobileBBB">上次更新：8/3</p>
+  </a>
+  </div>
+
+  <div class="dishaut"></div>
+  <p class="text-center fsize2p5"><b>推荐！寻找好看的<span class="mobile-break"></span> ᕕ( ᐛ )ᕗ</b></p>
+  <div id="mt-list" class="home-center"></div>
+
+<div class="random-btn-wrapper">
+  <a id="randomLink" class="random-btn" role="button" href="#" aria-live="polite">随机看看</a>
+</div>
+
+<script>
+/* ---------- 随机按钮：配置 ---------- */
+const jsonFiles = [
+  '/json/article.json',
+  '/json/histoire.json'
+];
+const link = document.getElementById('randomLink');
+
+/* ---------- 内部状态 ---------- */
+let cachedUrls = [];      // 预缓存的所有 url
+let prefetchDone = false; // 标记预取是否完成
+let inFlight = false;     // 防止重复点击并防止重复导航
+
+/* ---------- 帮助函数 ---------- */
+function pickRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+async function fetchJsonAndExtract(url){
+  try{
+    const res = await fetch(url, {cache: 'no-store'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const j = await res.json();
+    if(Array.isArray(j)) return j.map(i=>i && i.url).filter(Boolean);
+    const tryKeys = ['items','data','articles','list'];
+    for(const k of tryKeys){ if(Array.isArray(j[k])) return j[k].map(i=>i && i.url).filter(Boolean); }
+    return [];
+  }catch(e){
+    console.warn('[随机按钮] 读取 JSON 失败: ', url, e);
+    return [];
+  }
+}
+
+/* ---------- 预取（减少点击卡顿） ---------- */
+async function prefetchAll(){
+  try{
+    const promises = jsonFiles.map(p => fetchJsonAndExtract(p));
+    const results = await Promise.all(promises);
+    cachedUrls = [...new Set(results.flat())];
+  }catch(e){
+    console.warn('[随机按钮] 预取发生错误', e);
+  }finally{
+    prefetchDone = true;
+    // 如果没有取到任何链接，保留按钮但提示
+    if(!cachedUrls.length){
+      link.title = '未找到链接（请检查 JSON 路径或 CORS）';
+    }
+  }
+}
+// 在低优先级启动预取，不阻塞页面渲染
+if('requestIdleCallback' in window){
+  requestIdleCallback(prefetchAll, {timeout:2000});
+} else {
+  // 在可用时尽快执行
+  setTimeout(prefetchAll, 400);
+}
+
+/* ---------- 点击处理 ---------- */
+async function handleRandomClick(e){
+  e.preventDefault();
+  if(inFlight) return; // 防抖：忽略重复点击
+  inFlight = true;
+  link.setAttribute('aria-disabled', 'true');
+  const originalText = link.textContent;
+  link.textContent = '加载中…';
+
+  // 如果缓存里没有数据（可能预取失败或未完成或者乱七八糟的情况啊啊），立即尝试加载
+  if(!cachedUrls.length){
+    // 尝试即时加载（并行），但不再添加人为最小 loading 延时
+    const results = await Promise.all(jsonFiles.map(p => fetchJsonAndExtract(p)));
+    cachedUrls = [...new Set(results.flat())];
+  }
+
+  if(!cachedUrls.length){
+    link.textContent = '未找到链接';
+    setTimeout(()=>{ link.removeAttribute('aria-disabled'); link.textContent = originalText; inFlight = false; }, 1200);
+    return;
+  }
+
+  const chosen = pickRandom(cachedUrls);
+  link.href = chosen; // 设 href，便于 SPA 监听或右键复制
+
+  // 模拟一次真实的用户点击（大多数站内路由/动画会捕获）
+  // 只触发一次导航（不再执行后备 location.href），以避免重复历史项的奇怪问题
+  const evt = new MouseEvent('click', { bubbles: true, cancelable: true, view: window });
+  link.dispatchEvent(evt);
+
+  link.textContent = '走咯~';
+
+  // 作为安全：如果 1800ms 后页面仍未导航（极少见），恢复按钮
+  setTimeout(()=>{
+    if(document.location.href === window.location.href){ // 仍在当前页
+      link.removeAttribute('aria-disabled');
+      link.textContent = originalText;
+      inFlight = false;
+    }
+  }, 1800);
+}
+
+/* 键盘可访问性 */
+link.addEventListener('click', handleRandomClick);
+link.addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); link.click(); }
+});
+</script>
+
+<div class="category-flow-wrapper">
+  <div class="flow-container">
+    <div class="flow-track" id="flowTrack1">
+      <a href="/tag/long" class="flow-tag">长篇</a>
+      <a href="/tag/moyenne" class="flow-tag">中篇</a>
+      <a href="/tag/court" class="flow-tag">短篇</a>
+      <a href="/tag/fini" class="flow-tag">已完结</a>
+      <a href="/tag/serie" class="flow-tag">连载中</a>
+      <a href="/tag/traduction" class="flow-tag">翻译</a>
+      <a href="/tag/interactif" class="flow-tag">互动</a>
+      <a href="/tag/photographie" class="flow-tag">摄影</a>
+      <!-- 重复一份以实现无缝循环 -->
+      <a href="/tag/long" class="flow-tag">长篇</a>
+      <a href="/tag/moyenne" class="flow-tag">中篇</a>
+      <a href="/tag/court" class="flow-tag">短篇</a>
+      <a href="/tag/fini" class="flow-tag">已完结</a>
+      <a href="/tag/serie" class="flow-tag">连载中</a>
+      <a href="/tag/traduction" class="flow-tag">翻译</a>
+      <a href="/tag/interactif" class="flow-tag">互动</a>
+      <a href="/tag/photographie" class="flow-tag">摄影</a>
+    </div>
+    <div class="flow-track" id="flowTrack2">
+      <a href="/tag/apaisant" class="flow-tag">治愈</a>
+      <a href="/tag/comedie" class="flow-tag">喜剧</a>
+      <a href="/tag/MLP" class="flow-tag">彩虹小马</a>
+      <a href="/tag/suspense" class="flow-tag">悬疑</a>
+      <a href="/tag/epouvante" class="flow-tag">恐怖</a>
+      <a href="/tag/amour" class="flow-tag">爱情</a>
+      <a href="/tag/futuriste" class="flow-tag">科幻</a>
+      <a href="/tag/musique" class="flow-tag">音乐</a>
+      <a href="/tag/NeuroEvil" class="flow-tag">Neuro & Evil</a>
+      <!-- 重复一份以实现无缝循环 -->
+      <a href="/tag/apaisant" class="flow-tag">治愈</a>
+      <a href="/tag/comedie" class="flow-tag">喜剧</a>
+      <a href="/tag/MLP" class="flow-tag">彩虹小马</a>
+      <a href="/tag/suspense" class="flow-tag">悬疑</a>
+      <a href="/tag/epouvante" class="flow-tag">恐怖</a>
+      <a href="/tag/amour" class="flow-tag">爱情</a>
+      <a href="/tag/futuriste" class="flow-tag">科幻</a>
+      <a href="/tag/musique" class="flow-tag">音乐</a>
+      <a href="/tag/NeuroEvil" class="flow-tag">Neuro & Evil</a>
+    </div>
+  </div>
+</div>
+
+  <div class="dishaut"></div>
+  <p class="text-center fsize2p5"><b>友情链接，友谊就是魔法<span class="mobile-break"></span> (・∀・)</b></p>
+
+  <div class="tiles">
+  <a class="tile tile-strip-new" href="https://www.zexnocs.top/" target="_blank" rel="noopener noreferrer" style="--tile-color: rgba(40,140,134,0.3);">
+    <img src="https://www.zexnocs.top/img/avatar.jpg" alt="zExNocs" title="zExNocs" class="tile-thumb" decoding="async">
+    <div class="tile-content">
+      <h1>
+        <span class="full-title">茶会大猫猫 ———— 蒟蒻zExNocs's Blog</span>
+        <span class="short-title">蒟蒻zExNocs's Blog</span>
+      </h1>
+    </div>
+  </a>
+  </div>
+  <br>
+  <div class="tiles">
+  <a class="tile tile-strip-new" href="https://zhuge-tom.github.io/" target="_blank" rel="noopener noreferrer" style="--tile-color: rgba(225,51,51,0.3);">
+    <img src="/images/amis/朱歌的博客.webp" alt="zExNocs" title="zExNocs" class="tile-thumb" decoding="async">
+    <div class="tile-content">
+      <h1>
+        <span class="full-title">黑猫诺瓦 ———— Zhuge's Blog</span>
+        <span class="short-title">Zhuge's Blog</span>
+      </h1>
+    </div>
+  </a>
+  </div>
+  <br>
+  <div class="tiles">
+  <a class="tile tile-strip-new" href="https://blog.qingchenyou.asia/" target="_blank" rel="noopener noreferrer" style="--tile-color: rgba(0,47,167,0.3);">
+    <img src="https://qingchenyou-1301914189.cos.ap-beijing.myqcloud.com/oc%E5%A4%B4%E5%83%8Fv2-%E8%BD%AC%E6%8D%A2%E8%87%AA-png.webp" alt="轻尘呦" title="轻尘呦" class="tile-thumb" decoding="async">
+    <div class="tile-content">
+      <h1>
+        <span class="full-title">NeuroEcho 文学社寄术员 ———— 轻尘呦's Blog</span>
+        <span class="short-title">轻尘呦's Blog</span>
+      </h1>
+    </div>
+  </a>
+  </div>
+  <br>
+  <!-- 对谷歌的抗议 -->
+  <div id="kao-banner"></div>
+</main>
+
+  <!-- 左下角日期 -->
+  <div class="page-dates">
+  发布：28/9/2025　修改：23/11/2025
+  </div>
+
+  <!-- 底栏，需带着 -->
+  <div id="footer-placeholder"></div>
+
+</body>
+</html>

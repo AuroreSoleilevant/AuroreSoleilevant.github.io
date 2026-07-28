@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的歌单~ | Spica</title>
+  <link rel="modulepreload" href="/js/common-head.js" crossorigin="anonymous">
+  <!-- 调用列表 -->
+  <script src="/js/common-head.js" fetchpriority="high"></script>
+  <link rel="stylesheet" href="/css/intro.css">
+  
+  <style>
+    .p-title{
+      font-size: 32px;
+    }
+
+    .a-li{
+      font-size: 25px;
+    }
+
+    .colorful-list {
+      list-style: disc;
+    }
+
+    /* li 内的链接 */
+    .colorful-list li a {
+      text-decoration: underline; /* 保留下划线 */
+      color: var(--li-color, #0078ff);   /* 颜色变量 */
+      transition: transform 0.15s ease-out, opacity 0.15s ease-out; /* hover 效果 */
+    }
+
+    /* 悬停效果 */
+    .colorful-list li a:hover {
+      opacity: 0.5; /* 微微变暗 */
+    }
+
+    /* 访问后仍然保持原色 */
+    .colorful-list li a:visited {
+      color: var(--li-color, #0078ff);
+    }
+
+    /* [新！] */
+    .colorful-list .tag-new {
+      font-size: 24px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #6bbcff, #b78fff, #ff9ff7);
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent; /* 兼容 Safari */
+    }
+
+    @media (max-width: 1020px) {
+    .p-title{
+      font-size: 30px;
+    }
+
+    .a-li{
+      font-size: 23px;
+    }
+
+    .colorful-list .tag-new {
+      font-size: 22px;
+    }
+    }
+
+    @media (max-width: 525px) {
+    .p-title{
+      font-size: 23px;
+    }
+
+    .a-li{
+      font-size: 18px;
+    }
+
+    .colorful-list .tag-new {
+      font-size: 17px;
+    }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- 顶栏，需带着 -->
+  <div id="header-placeholder"></div>
+
+  <!-- 主体内容 -->
+<main class="main-content" role="main">
+<p data-progress-start></p>
+  <!-- 大标题 -->
+  <h1 class="shaking-text" style="position:relative;">
+  我的歌单~
+    <span class="tag-container" aria-hidden="false">
+    <a class="page-tag" href="/tag/musique">音乐</a>
+  </span>
+  </h1>
+  <p>为了避免一些可能的问题，歌单中的音乐均指向官方发布渠道而非站内播放，还请谅解！默认指向bilibili、dizzylab或网易云音乐上的页面~</p>
+  <p>大多是可爱或者清新风格的曲子，希望听得开心哦！ (ゝ∀･)</p>
+  <p class="p-title"><b>华语 🎶</b></p>
+  <ul class="colorful-list" style="--li-color: #FA8E5B;">
+  <li><a href="https://www.dizzylab.net/d/HNOA-001/" target="_blank" rel="noopener noreferrer" class="a-li">单向地铁</a></li>
+  <li><a href="https://www.dizzylab.net/d/STXH2/" target="_blank" rel="noopener noreferrer" class="a-li">A F T E R M O O N T E A</a></li>
+  <li><a href="https://www.dizzylab.net/d/HNOA-001/" target="_blank" rel="noopener noreferrer" class="a-li">海豚与广播</a></li>
+  <li><a href="https://www.dizzylab.net/d/DLCD04/" target="_blank" rel="noopener noreferrer" class="a-li">Best One</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1e4411q7zC/" target="_blank" rel="noopener noreferrer" class="a-li">Black River</a></li>
+  <li class="a-li"><a href="https://www.bilibili.com/video/BV1ub411s7Jd/" target="_blank" rel="noopener noreferrer" class="a-li">每颗流星都见证</a></li>
+  <li><a href="https://www.dizzylab.net/d/DLCD03/" target="_blank" rel="noopener noreferrer" class="a-li">Satell-knight</a></li>
+  <li><a href="https://www.dizzylab.net/d/STXH1/" target="_blank" rel="noopener noreferrer" class="a-li">SWEETSWEETSWEET</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1Xx41117Tz/" target="_blank" rel="noopener noreferrer" class="a-li">夜行少女</a></li>
+  <li><a href="https://www.dizzylab.net/d/DLCD03/" target="_blank" rel="noopener noreferrer" class="a-li">星球上的追溯诗</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1X741127vR/" target="_blank" rel="noopener noreferrer" class="a-li">雨后甜点
+  </a></li>
+  </ul>
+  <p class="p-title"><b>英语 🎶</b></p>
+  <ul class="colorful-list" style="--li-color: #6ECFF6;">
+  <li><a href="https://www.bilibili.com/video/BV1qZ421N7n7/" target="_blank" rel="noopener noreferrer" class="a-li">By the Seaside</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1yKBwB6EgS/" target="_blank" rel="noopener noreferrer" class="a-li">Colorful Array</a><span class="tag-new"> [新!]</span></li>
+  <li><a href="https://music.163.com/#/song?id=28471464" target="_blank" rel="noopener noreferrer" class="a-li">My Little Pony Theme Song</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1ms411v7fD/" target="_blank" rel="noopener noreferrer" class="a-li">Night Wander</a></li>
+  <li><a href="https://music.163.com/#/song?id=22797196" target="_blank" rel="noopener noreferrer" class="a-li">Our House Below</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1B1421b7AX/" target="_blank" rel="noopener noreferrer" class="a-li">Sweet Dream</a></li>
+  <li><a href="https://music.163.com/#/song?id=28077563" target="_blank" rel="noopener noreferrer" class="a-li">The Smile Song</a></li>
+  </ul>
+  <p class="p-title"><b>日语 🎶</b></p>
+  <ul class="colorful-list" style="--li-color: #39C5BB;">
+  <li><a href="https://www.bilibili.com/video/BV1KV4y187qj/" target="_blank" rel="noopener noreferrer" class="a-li">Ariamaru</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1Ah411N7bH/" target="_blank" rel="noopener noreferrer" class="a-li">变色龙</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1P14y1X7y2/" target="_blank" rel="noopener noreferrer" class="a-li">橙色</a></li>
+  <li><a href="https://www.bilibili.com/video/BV137411p7hs/" target="_blank" rel="noopener noreferrer" class="a-li">Colors</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1La4y1y7g4/" target="_blank" rel="noopener noreferrer" class="a-li">Evergreen</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1AzqpYKE29/" target="_blank" rel="noopener noreferrer" class="a-li">だって女の子だもん</a></li>
+  <li><a href="https://www.dizzylab.net/d/dlvo01/" target="_blank" rel="noopener noreferrer" class="a-li">Iyaiya</a></li>
+  <li><a href="https://www.bilibili.com/video/BV14u4y1o73k/" target="_blank" rel="noopener noreferrer" class="a-li">苹果派</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1Hc411M7Ge/" target="_blank" rel="noopener noreferrer" class="a-li">Slow Down</a></li>
+  <li><a href="https://www.dizzylab.net/d/dlvo01/" target="_blank" rel="noopener noreferrer" class="a-li">未来色メロディア</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1sP411y7gT/" target="_blank" rel="noopener noreferrer" class="a-li">自己愛主義天使</a></li>
+  </ul>
+  <p class="p-title"><b>纯音乐 🎶</b></p>
+  <ul class="colorful-list" style="--li-color: #5C4B8B;">
+  <li><a href="https://www.bilibili.com/video/BV1CV4y1h776/" target="_blank" rel="noopener noreferrer" class="a-li">初夏晨星</a></li>
+  <li><a href="https://music.163.com/#/song?id=491233180" target="_blank" rel="noopener noreferrer" class="a-li">红茶与布丁</a></li>
+  <li><a href="https://music.163.com/#/song?id=33737008" target="_blank" rel="noopener noreferrer" class="a-li">美少女迷宮</a></li>
+  <li><a href="https://music.163.com/#/song?id=2020599066" target="_blank" rel="noopener noreferrer" class="a-li">Magical Wonderland（More Colorful Mix）</a></li>
+  <li class="a-li"><a href="https://open.spotify.com/track/1aW6Pm6mmRh1qkMuHkbD22" target="_blank" rel="noopener noreferrer" class="a-li">Morose Dreamer</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1Us411b7Yx/" target="_blank" rel="noopener noreferrer" class="a-li">森林</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1AT411s7zq/" target="_blank" rel="noopener noreferrer" class="a-li">深海流星群</a></li>
+  <li><a href="https://www.bilibili.com/video/BV19t411n72S/" target="_blank" rel="noopener noreferrer" class="a-li">四月一日 晴</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1DV4y1a7Rr/" target="_blank" rel="noopener noreferrer" class="a-li">Toy Quest</a></li>
+  <li><a href="https://www.bilibili.com/video/BV19x411271v/" target="_blank" rel="noopener noreferrer" class="a-li">星茶会</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1vx411q7VM/" target="_blank" rel="noopener noreferrer" class="a-li">星萤火</a></li>
+  <li><a href="https://music.163.com/#/song?id=431357981" target="_blank" rel="noopener noreferrer" class="a-li">記憶</a></li>
+  <li><a href="https://music.163.com/#/song?id=1452181426" target="_blank" rel="noopener noreferrer" class="a-li">寂しい夜</a></li>
+  <li><a href="https://music.163.com/#/song?id=447279302" target="_blank" rel="noopener noreferrer" class="a-li">どこまでも続くこの路を</a></li>
+  <li><a href="https://www.bilibili.com/video/BV1y1421B7hc/" target="_blank" rel="noopener noreferrer" class="a-li">月茶会</a></li>
+  <li><a href="https://music.163.com/#/song?id=477913" target="_blank" rel="noopener noreferrer" class="a-li">遠い空へ</a></li>
+  </ul>
+  <p class="p-title"><b>其他语言 🎶</b></p>
+  <ul class="colorful-list" style="--li-color: #dada55ff;">
+  <li><a href="https://www.bilibili.com/video/BV1ux411W72j/" target="_blank" rel="noopener noreferrer" class="a-li">I really like you（西班牙语）</a></li>
+  </ul>
+  <p data-progress-end></p>
+<div id="giscus-container"></div>
+<script src="/js/giscus.js"></script>
+</main>
+
+  <!-- 左下角日期 -->
+  <div class="page-dates">
+  发布：13/10/2025　修改：20/7/2026　字数：<span id="count"></span>
+  </div>
+
+  <!-- 底栏，需带着 -->
+  <div id="footer-placeholder"></div>
+
+</body>
+</html>

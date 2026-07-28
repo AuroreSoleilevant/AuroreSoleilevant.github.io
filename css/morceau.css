@@ -1,0 +1,394 @@
+/* 文章磁贴模块  */
+
+:root {
+  --mt-radius: 14px;
+  --mt-elev-y: 4px;
+  --mt-elev-blur: 20px;
+  --mt-elev-color: rgba(0, 0, 0, 0.25);
+  --mt-glow-color: rgba(255, 255, 255, 0.08);
+
+  --mt-image-height: 140px;
+  --mt-image-radius: 10px;
+  --mt-content-padding: 20px;
+  --mt-tag-gap: 8px;
+}
+
+/* 磁贴容器 - 三列布局，避开右侧分页模块 */
+.mt-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: calc(100% - 160px);
+  max-width: 100%;
+  margin: 0 0 0 40px;
+  box-sizing: border-box;
+}
+
+/* 单个磁贴 - 固定宽度 */
+.mt-tile {
+  flex: 0 0 calc(33.333% - 14px);
+  min-width: 280px;
+  max-width: calc(33.333% - 14px);
+
+  /* 使用半透明背景，透出底部圆点 */
+  background: radial-gradient(
+      circle at 30% 20%,
+      rgba(255, 255, 255, 0.15) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 50%
+    ),
+    var(--mt-color, rgba(255, 255, 255, 0.25));
+
+  border-radius: var(--mt-radius);
+  box-shadow: 0 var(--mt-elev-y) var(--mt-elev-blur) var(--mt-elev-color),
+    0 0 20px var(--mt-glow-color), inset 0 1px 0 rgba(255, 255, 255, 0.2); /* 内发光增强立体感 */
+
+  isolation: isolate;
+  overflow: hidden;
+  transition: transform 280ms cubic-bezier(0.2, 0.9, 0.3, 1),
+    box-shadow 280ms cubic-bezier(0.2, 0.9, 0.3, 1);
+  will-change: auto;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+
+  position: relative;
+  contain: paint;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* 顶部图片 */
+.mt-image {
+  width: 100%;
+  height: var(--mt-image-height);
+  object-fit: cover;
+  border-radius: var(--mt-image-radius) var(--mt-image-radius) 0 0;
+  display: block;
+
+  /* 优化图片渲染 */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* 内容区域 */
+.mt-content {
+  padding: var(--mt-content-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  /* 优化文本渲染 */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* 大标题 - 居中 */
+.mt-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  line-height: 1.2;
+  font-family: "LXGWWenKai", system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  color: #2c3e50; /* 深色确保在浅色背景上可读 */
+}
+
+/* 描述文本 - 左对齐 */
+.mt-description {
+  font-size: 1.2rem;
+  line-height: 1.5;
+  margin: 0;
+  text-align: left;
+  color: #34495e; /* 深灰色确保可读性 */
+}
+
+.mt-info {
+  font-size: 1rem;
+}
+
+/* 标签容器 - 自动换行 */
+.mt-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mt-tag-gap);
+  margin-top: 8px;
+}
+
+.mt-tags a.mt-tag,
+.mt-tags a.mt-tag:link,
+.mt-tags a.mt-tag:visited,
+.mt-tags a.mt-tag:hover,
+.mt-tags a.mt-tag:active {
+  text-decoration: none !important;
+  color: inherit !important; /* 保持文字颜色和原来一致 */
+}
+
+/* 单个标签 */
+.mt-tag {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 1rem;
+  line-height: 1.2;
+  white-space: nowrap;
+  color: #2c3e50;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* 主页磁贴居中样式 */
+.home-center .mt-container {
+  width: 100% !important;
+  margin: 0 auto !important;
+  justify-content: center;
+  padding: 0;
+}
+
+/* 确保主页的磁贴完全居中 */
+.home-center .mt-tile {
+  flex: 0 0 calc(33.333% - 20px);
+  max-width: calc(33.333% - 20px);
+  margin-left: 0 !important;
+}
+
+/* =========== 视觉效果 =========== */
+/* 悬停效果 */
+.mt-tile:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 calc(var(--mt-elev-y) * 2) calc(var(--mt-elev-blur) + 10px)
+      rgba(0, 0, 0, 0.35),
+    0 0 30px var(--mt-glow-color), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* 点击效果 */
+.mt-tile:active {
+  transform: translateY(-2px) scale(0.997);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2), 0 0 15px var(--mt-glow-color),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition-duration: 120ms;
+}
+
+/* 键盘焦点样式 */
+.mt-tile:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.3);
+  outline-offset: 4px;
+  transform: translateY(-6px);
+  box-shadow: 0 calc(var(--mt-elev-y) * 1.5) calc(var(--mt-elev-blur) + 6px)
+      rgba(0, 0, 0, 0.3),
+    0 0 25px var(--mt-glow-color);
+}
+
+.mt-tile:hover,
+.mt-tile:active,
+.mt-tile.is-lifted {
+  will-change: transform, box-shadow;
+}
+
+/* =========== 响应式 =========== */
+/* 平板：两列布局 */
+@media (max-width: 1024px) {
+  .mt-container {
+    width: calc(100% - 140px);
+    margin-left: 30px;
+  }
+
+  .mt-tile {
+    flex: 0 0 calc(50% - 10px);
+    max-width: calc(50% - 10px);
+  }
+
+  .mt-description {
+    font-size: 1.2rem;
+  }
+
+  .mt-info {
+    font-size: 0.9rem;
+  }
+
+  .home-center .mt-container {
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  .home-center .mt-tile {
+    flex: 0 0 calc(50% - 15px);
+    max-width: calc(50% - 15px);
+  }
+}
+
+/* 手机：单列布局，性能容易爆炸，哎呀 */
+@media (max-width: 750px) {
+  .mt-container {
+    width: calc(100% - 80px); /* 减少宽度，为分页模块留出空间 */
+    margin-left: 0;
+    padding: 0 20px 0 0; /* 右侧保留内边距 */
+    box-sizing: border-box;
+    gap: 16px;
+  }
+
+  .mt-tile {
+    flex: 0 0 100%;
+    max-width: 100%;
+    min-width: auto;
+    margin-left: 20px; /* 磁贴整体右移，避开左侧边缘 */
+
+    /* 移动端简化效果 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  /* 移动端简化光泽效果 */
+  .mt-tile::after {
+    display: none;
+  }
+
+  /* 移动端简化悬停效果 */
+  .mt-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .mt-tile:active {
+    transform: translateY(-1px) scale(0.998);
+    transition-duration: 100ms;
+  }
+
+  .mt-content {
+    padding: 16px;
+    gap: 10px;
+  }
+
+  .mt-title {
+    font-size: 1.3rem;
+  }
+
+  .mt-image {
+    height: 120px;
+  }
+
+  .mt-description {
+    font-size: 0.9rem;
+  }
+
+  .mt-info {
+    font-size: 0.7rem;
+  }
+
+  .home-center .mt-container {
+    width: 100% !important;
+    padding: 0 20px !important;
+  }
+
+  .home-center .mt-tile {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-left: 0 !important;
+  }
+}
+
+/* 小手机调整 */
+@media (max-width: 480px) {
+  .mt-container {
+    gap: 12px;
+    padding: 0 16px;
+  }
+
+  .mt-tile {
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  /* 移动端完全禁用悬停抬起效果 */
+  .mt-tile:hover {
+    transform: none;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+  }
+
+  .mt-tile:active {
+    transform: scale(0.99);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .mt-image {
+    height: 100px;
+  }
+
+  .mt-content {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .mt-title {
+    font-size: 1.2rem;
+  }
+
+  .mt-description {
+    font-size: 0.9rem;
+  }
+
+  .mt-info {
+    font-size: 0.7rem;
+  }
+
+  .mt-tag {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+  }
+}
+
+/* 超小手机额外调整 */
+@media (max-width: 375px) {
+  .mt-container {
+    width: calc(100% - 60px); /* 进一步减少宽度 */
+  }
+
+  .mt-tile {
+    margin-left: 7.5px; /* 进一步降低左边距 */
+  }
+}
+
+/* =========== 无障碍 =========== */
+
+/* 减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .mt-tile,
+  .mt-tile::after {
+    transition: none !important;
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .mt-tile::after {
+    opacity: 0;
+  }
+
+  .mt-tile:hover {
+    transform: none;
+  }
+}
+
+/* ====== 性能优化补丁，未来可以改改 ====== */
+@media (max-width: 750px) {
+  .mt-tile {
+    background: var(--mt-color, rgba(255, 255, 255, 0.1)) !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1) !important;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+  }
+
+  .mt-tag {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(255, 255, 255, 0.75) !important;
+    border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  }
+
+  .mt-tile::after {
+    display: none !important;
+  }
+}

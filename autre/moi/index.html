@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moi | Spica</title>
+  <link rel="modulepreload" href="/js/common-head.js" crossorigin="anonymous">
+  <!-- 调用列表 -->
+  <script src="/js/common-head.js" fetchpriority="high"></script>
+
+  <style>
+  .about-title {
+  display: flex;            /* 水平排列文字和图片 */
+  flex-direction: row;  /* 水平排列 */
+  align-items: center;      /* 垂直居中对齐 */
+  gap: 1.2em;                /* 标题与图片间距*/
+  }
+
+  .about-title a {
+    display: flex;
+    width: fit-content;     /* 宽度适应内容 */
+    height: fit-content;    /* 高度适应内容 */
+  }
+
+  .about-img {
+    width: 150px;           /* 图片宽 */
+    height: 150px;          /* 图片高 */
+    border-radius: 20px;
+    object-fit: cover;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    vertical-align: middle;  /* 与文字基线对齐中间 */
+  }
+
+  .about-text {
+  display: inline-block;
+  transform: none !important;
+  white-space: nowrap;         /* 防止文字换行 */
+  }
+  
+  /* 本页左右两栏布局（右侧为图片） */
+    .content-row {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;        /* 窄屏自动换行 */
+      margin: 0 auto;
+      max-width: 1300px;
+      padding: 0 16px;
+      box-sizing: border-box;
+    }
+
+    .content-text {
+      flex: 1 1 420px;
+      min-width: 240px;
+      font-size: 25px; /* 正文字号 */
+      line-height: 1.6; /* 行高 */
+    }
+
+    .content-image {
+      flex: 0 0 auto; /* 根据内容自动宽度 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 140px;
+    }
+
+    .content-image img {
+      width: 400px;
+      height: auto;
+      max-width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .content-image img:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .headimg-top{
+      margin-top: 30px;
+    }
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 1000px) {
+  .about-title {
+    flex-direction: row;        /* 保持横排 */
+    align-items: center;        /* 垂直居中 */
+    gap: 0.6em;                 /* 缩小间距 */
+  }
+
+  .about-title a {
+    width: fit-content;         /* 保持宽度适应内容 */
+  }
+
+  .about-img {
+    width: 100px;               /* 移动端使用更小的固定尺寸 */
+    height: 100px;
+    border-radius: 16px;
+  }
+
+  .headimg-top{
+      margin-top: 0px;
+    }
+
+  /* 主内容两栏布局变成纵向 */
+  .content-row {
+    flex-direction: column;
+    gap: 0px;
+    padding: 0 12px;
+  }
+
+  .content-text {
+    flex: 1 1 100%;
+    min-width: auto;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  .content-image {
+    flex: 1 1 100%;
+    min-width: auto;
+    transform: center,
+    display: flex;
+    justify-content: center;  /* 水平居中 */
+    align-items: center;      /* 垂直居中 */
+  }
+
+  .content-image img {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    display: block; 
+  }
+}
+
+@media (max-width: 450px) {
+  .about-img {
+    width: 60px;               /* 手机端使用更小的固定尺寸 */
+    height: 60px;
+    border-radius: 16px;
+  }
+}
+
+  </style>
+
+</head>
+<body class="no-comments">
+
+  <!-- 顶栏，需带着 -->
+  <div id="header-placeholder"></div>
+
+  <!-- 主体内容 -->
+<main class="main-content" role="main">
+<p data-progress-start></p>
+  <!-- 大标题 -->
+  <h1 class="shaking-text about-title">
+  <span class="about-text">关于本站</span>
+  <a href="/images/ASH.webp" target="_blank" title="晨曦初阳">
+    <img src="/images/ASH.webp" aria-label="这是晨曦初阳的头像，也就是一只青春马娘的头像。她有淡蓝色的短发和淡橙色的皮肤，并目视着你" class="about-img resp-img preload" decoding="async">
+  </a>
+  </h1>
+  <!-- 内容左右两栏 -->
+  <div class="content-row headimg-top">
+    <!-- 左侧文字 -->
+    <div class="content-text">
+      <p style="margin-left:5px; margin-right:5px;">欢迎来到Spica！这里是晨曦初阳的个人小站，会用来放置一些文章、小说、资源或者奇怪的小东西。</p>
+      <p style="margin-left:5px; margin-right:5px;">站名Spica来自拉丁语，意为角宿一，是全天空（当然，地球上的天空）第十六亮的恒星，也是室女座最明亮的恒星哦~其实准确来说是两颗恒星组成的双子系统，在古时候也被称为“室女的麦穗”，是收获的象征！就让我们在过去，现在与未来，一起收获星光吧！</p>
+    </div>
+  <div class="content-image headimg-top">
+      <img
+        style="margin-left:5px; margin-right:5px;"
+        src="/images/Etoile_Spica.webp"
+        decoding="async"
+        title="角宿一"
+        class="resp-img preload"
+        aria-label="这是一张星空的图片，角宿一在图片中心，它是一颗蓝色的恒星，而周围有许多各色的小星星。"
+        loading="lazy"
+      >
+    </div>
+  </div>
+  <hr class="section-divider">
+  <p>
+  关于我······有什么好说的呢？我也不知道呢！晨曦初阳，也就是我，只是一个普通的大学生，硬要说的话还有些关于文学创作与摄影的爱好！你可以在这个小站里找到我写的故事，或者拍摄的一些照片哦~如果要联系我，请选择底栏上三个小按钮中适合你的那一个，我会尽快回复的！此外，如果发现了本网站的BUG，也务必告诉我，感激不尽！
+  </p>
+  <p>
+  对于写程序这些东西呢，我只是一个刚刚起步的新手，如果真的有人看了仓库里关于这个网站的代码，一定会觉得相当粗糙吧哈哈哈，但我也会继续尽力扩宽我的小站的，向未来进发！对了，本网站的建立日期是二零二五年九月二十八日哦！
+  </p>
+  <p>
+  还有什么要说的呢？似乎也没有了，想起来了再写吧。那么就祝你早安，午安，晚安！让我们一起，团结于不熄希光中。
+  </p>
+<p data-progress-end></p>
+</main>
+
+  <!-- 左下角日期 -->
+  <div class="page-dates">
+  发布：30/9/2025　修改：5/6/2026　字数：<span id="count"></span>
+  </div>
+
+  <!-- 底栏，需带着 -->
+  <div id="footer-placeholder"></div>
+
+</body>
+</html>
