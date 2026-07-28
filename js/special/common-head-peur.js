@@ -10,7 +10,6 @@
       (window.__mainVisibilityState = {
         fallbackShown: false,
         leaving: false,
-        fadeReady: false,
       });
 
     let timer = null;
@@ -58,6 +57,49 @@
       document.addEventListener("DOMContentLoaded", start, { once: true });
     } else {
       start();
+    }
+  }
+
+  function loadProgressionIfNeeded() {
+    const start = document.querySelector("[data-progress-start]");
+    const end = document.querySelector("[data-progress-end]");
+    if (!start || !end || window.__progressionResourcesStarted) return;
+    window.__progressionResourcesStarted = true;
+
+    let scriptStarted = false;
+    const loadScript = () => {
+      if (scriptStarted) return;
+      scriptStarted = true;
+      const script = document.createElement("script");
+      script.src = "/js/progression.js";
+      script.addEventListener("error", () => {
+        console.error("脚本加载失败：/js/progression.js");
+      });
+      head.appendChild(script);
+    };
+
+    const stylesheet = document.createElement("link");
+    stylesheet.rel = "stylesheet";
+    stylesheet.href = "/css/progression.css";
+    stylesheet.addEventListener("load", loadScript, { once: true });
+    stylesheet.addEventListener(
+      "error",
+      () => {
+        console.error("样式加载失败：/css/progression.css");
+        loadScript();
+      },
+      { once: true }
+    );
+    head.appendChild(stylesheet);
+  }
+
+  function scheduleProgressionLoad() {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", loadProgressionIfNeeded, {
+        once: true,
+      });
+    } else {
+      loadProgressionIfNeeded();
     }
   }
 
@@ -126,7 +168,6 @@
     },
     { rel: "stylesheet", href: `/css/style.css?v=${version1}` }, // 全局样式表
     { rel: "stylesheet", href: `/css/special/style_peur.css` }, // 恐怖覆盖
-    { rel: "stylesheet", href: `/css/progression.css` }, // 进度条
     { rel: "icon", href: "/icons/logo.png", type: "image/x-icon" },
   ];
 
@@ -139,6 +180,8 @@
     head.appendChild(link);
   });
 
+  scheduleProgressionLoad();
+
   // ================================
   // 普通加载区
   // ================================
@@ -147,7 +190,6 @@
     "/js/backtop.js", // 回到顶部按钮
     "/js/blink.js", // 顶栏闪烁
     "/js/headtran.js", // 渐变顶栏玻璃
-    "/js/progression.js", // 阅读进度条
   ];
 
   preloadAndDeferScripts(deferredScripts);

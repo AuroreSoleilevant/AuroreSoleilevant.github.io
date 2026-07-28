@@ -32,7 +32,7 @@
 | 文件 | HTML | JS | 主要加载者 / 页面 |
 | --- | ---: | ---: | --- |
 | `css/style.css` | 0 | 2 | 两个 Loader 的全站基础样式 |
-| `css/progression.css` | 0 | 2 | 两个 Loader |
+| `css/progression.css` | 0 | 2 | 两个 Loader 的 DOM 能力检测；仅完整进度锚点页面实际请求 |
 | `css/mascot.css` | 0 | 1 | 普通 Loader；特殊 Loader 不加载 |
 | `css/special/style_peur.css` | 0 | 1 | 特殊 Loader；仅 HHXLOYDCS |
 | `css/intro.css` | 76 | 1 | 作品/文章页面直接引用，常规 histoire 也由 `common-his.js` 加载 |
@@ -80,13 +80,13 @@
 | --- | --- | --- | --- | --- |
 | `common-head.js` | Loader | HTML 225 页 | 加载共享脚本、样式；普通页面入口 | fallback guard `__mainVisibilityFallbackInstalled` |
 | `special/common-head-peur.js` | Special + Loader | HHXLOYDCS 59 页 | 特殊主题共享入口 | 同一 fallback guard |
-| `fade.js` | Lifecycle / 同步启动 | 两个 Loader | 提供正文、header/footer、导航生命周期；被 Loader 先执行 | `__fetchAndInsertFooter`、`__fetchAndInsertHeader` |
+| `fade.js` | Lifecycle / 外链启动 | 两个 Loader | 提供正文、header/footer、导航生命周期；由 Loader 外链加载 | `__fetchAndInsertFooter`、`__fetchAndInsertHeader` |
 | `img.js` | Feature | 两个 Loader | 无其他运行时调用者；处理静态图片快照 | 无 |
 | `mots.js` | Feature | 两个 Loader | 依赖 main、可选 `#count` | `mots`、`motsRefresh` |
 | `backtop.js` | Widget | 两个 Loader | 依赖 main/body、可选 footer 与评论容器 | 无 |
 | `blink.js` | Feature | 两个 Loader | 等待 `.nav-item` 或 `header:inserted` | 无 |
 | `headtran.js` | Feature | 两个 Loader | 依赖动态 header、滚动和 pageshow | 安装 guard `__headtran_installed` |
-| `progression.js` | Feature | 两个 Loader | 必须同时有两个 progress data 属性 | 无 |
+| `progression.js` | Feature | 两个 Loader 的能力检测，186 页实际加载 | 必须同时有两个 progress data 属性 | 无 |
 | `mascot.js` | Widget | 普通 Loader | 普通桌面页的吉祥物 | `MASCOT_CONFIG`、`__MASCOT_*`、`__MASCOT_WIDGET` |
 | `common-his.js` | Loader | HTML 164 页 | 串行加载章节侧栏/导航及其 CSS | 无 |
 | `chapters-sidebar.js` | Feature | `common-his.js` | 作品 URL、章节 JSON、main/body | 无 |
@@ -112,7 +112,7 @@
 | `catalogue.js` | 无上述异步/观察 API | 1 |
 | `chapter-nav.js` | F×1 | 1 |
 | `chapters-sidebar.js` | rAF×2、F×1 | 1 |
-| `common-head.js` | TO×1、XHR×1 | 2 |
+| `common-head.js` | TO×1 | 2 |
 | `common-his.js` | 无 | 0 |
 | `fade.js` | MO×2、rAF×7、TO×13、F×2 | 1 |
 | `giscus.js` | 无 | 0 |
@@ -123,7 +123,7 @@
 | `mots.js` | MO×3、TO×1、TI×1 | 4 |
 | `page-number.js` | TO×1 | 1 |
 | `progression.js` | MO×1、rAF×1、TO×5 | 1 |
-| `special/common-head-peur.js` | TO×1、XHR×1 | 2 |
+| `special/common-head-peur.js` | TO×1 | 2 |
 | `special/giscus-peur.js` | 无 | 0 |
 | `tag.js` | 无上述 API | 1 |
 | `tagflow.js` | TO×2 | 1 |
@@ -134,13 +134,13 @@
 
 | 组件 | 加载页面 | 实际条件 / 当前结果 |
 | --- | ---: | --- |
-| fade | 284 | 两个 Loader 都同步启动；依赖 main 和 header/footer 占位 |
+| fade | 284 | 两个 Loader 都创建一次外链 script；依赖 main 和 header/footer 占位 |
 | img | 284 | 两个 Loader 都创建一次外链 script；处理执行时存在的图片快照 |
 | backtop | 284 | 两个 Loader 都加载；组件再按页面高度、footer/评论条件决定显示 |
 | mots | 284 | 两个 Loader 都加载；`#count` 是可选目标 |
 | blink | 284 | 动态 header 插入后或已有 nav-item 时初始化 |
 | headtran | 284 | 动态 header 与滚动条件满足时生效 |
-| progression | 284 | 只有 186 个普通页同时具备 start/end；59 个 HHXLOYDCS 页只有 start，脚本在 `progression.js:4-8` 直接返回；其余 39 个普通页也没有完整锚点 |
+| progression | 186 | Loader 只在同时具备 start/end 的页面加载 CSS 与 JS；59 个 HHXLOYDCS 页只有 start，另外 39 个普通页也没有完整锚点，均不请求该功能资源 |
 | mascot | 225 | 仅普通 Loader；移动宽度会隐藏，特殊页不加载 |
 | chapters-sidebar | 164 | 仅 `common-his.js` 页面；读取章节 JSON 并动态创建 UI |
 | chapter-nav | 164 | 仅 `common-his.js` 页面；164 页均有 `#chapter-nav-root` |
@@ -155,10 +155,9 @@
 以下均为候选，不是删除结论。
 
 1. **`img.js` 的 `.bg-image` 分支。** `handleBgImages()` 在 `js/img.js:72-151` 会查询 `.bg-image` 和可选 `data-bg-src`；全仓库（排除本文档）只有 `img.js` 与 `style.css` 出现这两个标记，没有 HTML 或其他 JS 创建它们。因此该分支当前没有页面输入。
-2. **特殊页的阅读进度。** `progression.js:4-8` 要求同时存在 `data-progress-start`、`data-progress-end`。59 个 HHXLOYDCS 页均只有 start、没有 end，故每页加载脚本和 CSS，但不创建进度条。
-3. **章节目录按钮的 `openSidebar()` 直调分支。** `chapter-nav.js:108` 在独立 IIFE 内检查 `typeof openSidebar`；`chapters-sidebar.js:198` 的同名函数位于另一个 IIFE，未赋给 `window`。当前该直调条件不可满足，实际走 `#chapter-toggle` click 回退（第 109-111 行）。回退是现有功能路径，不能删除。
-4. **无 HTML/JS 证据的 CSS 状态/布局规则。** `.clickable`、`#chapter-sidebar.dark`、`.ratio-box` / `.inner`、`.mt-tile.is-lifted`、`.site-content`、`.story-content` 只在 CSS selector 中出现。它们可能是预留样式，也可能是遗留，尚未做浏览器行为验证。
-5. **HTML class `preload`。** 仅出现在 `autre/moi/index.html` 的两张 `.resp-img` 上；未找到 `.preload` CSS selector、JS selector 或 classList 操作。它不影响 `img.js` 的 `.loaded` 动画逻辑，但在移除前仍应人工验证该页。
+2. **章节目录按钮的 `openSidebar()` 直调分支。** `chapter-nav.js:108` 在独立 IIFE 内检查 `typeof openSidebar`；`chapters-sidebar.js:198` 的同名函数位于另一个 IIFE，未赋给 `window`。当前该直调条件不可满足，实际走 `#chapter-toggle` click 回退（第 109-111 行）。回退是现有功能路径，不能删除。
+3. **无 HTML/JS 证据的 CSS 状态/布局规则。** `.clickable`、`#chapter-sidebar.dark`、`.ratio-box` / `.inner`、`.mt-tile.is-lifted`、`.site-content`、`.story-content` 只在 CSS selector 中出现。它们可能是预留样式，也可能是遗留，尚未做浏览器行为验证。
+4. **HTML class `preload`。** 仅出现在 `autre/moi/index.html` 的两张 `.resp-img` 上；未找到 `.preload` CSS selector、JS selector 或 classList 操作。它不影响 `img.js` 的 `.loaded` 动画逻辑，但在移除前仍应人工验证该页。
 
 ## 静态资源审计
 
@@ -178,11 +177,11 @@
 | --- | --- | --- | --- |
 | P0 | 无 | 未发现需要立刻删除才能恢复正确性的资源 | 不动作 |
 | P1 | 3 个无静态路径证据资源 | 对每个资源都完成了路径与文件名搜索，结果均为 0 | 后续单独确认仓库外用途、视觉和历史回退后再决定 |
-| P2 | `.bg-image` 分支、特殊页 progression、7 组 CSS selector、`preload` class、章节 `openSidebar()` 直调分支 | 有明确“当前无页面触发”或“当前不可达”的源码证据，但可能涉及视觉、交互或未来内容 | 分别设计小范围验证，不能合并成一次清理 |
+| P2 | `.bg-image` 分支、7 组 CSS selector、`preload` class、章节 `openSidebar()` 直调分支 | 有明确“当前无页面触发”或“当前不可达”的源码证据，但可能涉及视觉、交互或未来内容 | 分别设计小范围验证，不能合并成一次清理 |
 
 ## 暂不建议动
 
-- `style.css`、`progression.css`、`mascot.css`、`chapters-sidebar.css` 和特殊主题 CSS 虽然直接路径引用数很少，但都由 Loader 或 `common-his.js` 覆盖多页。
+- `style.css`、`progression.css`、`mascot.css`、`chapters-sidebar.css` 和特殊主题 CSS 虽然直接路径引用数很少，但都由 Loader 或 `common-his.js` 覆盖其适用页面；其中 progression 现仅覆盖 186 个具备完整锚点的页面。
 - 所有由 JS 创建的 class（特别是 `mw-*`、`pg2-*`、`chapter-*`、`mt-*`、`reading-progress`、`back-to-top`）没有静态 HTML 是正常现象。
 - `fade.js`、两个 Loader、`common-his.js`、`list.js`/`catalogue.js`/`tag.js` 存在顺序或全局 API 关系；引用次数不能单独证明可删除。
 - 除上表 3 项外的资源均已有静态引用证据；不能仅因未在某个 HTML 页面出现就判断为无用，因为 CSS、JS、JSON 和共享片段也会引用资源。

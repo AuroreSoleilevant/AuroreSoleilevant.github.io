@@ -64,9 +64,6 @@
   function getMain() {
     return document.querySelector("main");
   }
-  function getHeader() {
-    return document.querySelector(".site-header");
-  }
 
   function getMainVisibilityState() {
     return (
@@ -74,7 +71,6 @@
       (window.__mainVisibilityState = {
         fallbackShown: false,
         leaving: false,
-        fadeReady: false,
       })
     );
   }
@@ -83,7 +79,6 @@
     const visibilityState = getMainVisibilityState();
     if (visibilityState.leaving || isTransitioning) return;
     visibilityState.fallbackShown = false;
-    visibilityState.fadeReady = true;
     main.classList.add(FADE_CLASS);
     document.dispatchEvent(new CustomEvent("main:visible"));
   }
@@ -142,7 +137,6 @@
 
     // 标记当前没有正在导航过渡
     isTransitioning = false;
-    visibilityState.fadeReady = true;
 
     if (visibilityState.fallbackShown && main.classList.contains(FADE_CLASS)) {
       return;

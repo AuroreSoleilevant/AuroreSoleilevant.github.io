@@ -24,7 +24,6 @@
 | --- | --- | --- |
 | `fallbackShown` | Loader fallback | 仅当 1.2 秒 timer 实际为未显示的 main 添加 `loaded` 时设为 `true` |
 | `leaving` | `fade.js` | 同源离场开始或 beforeunload 时设为 `true`，阻止 fallback、rAF 与 retry 重新显示正文 |
-| `fadeReady` | `fade.js` | `fadeInMain()` 接管生命周期后设为 `true`；它记录接管状态，不单独驱动视觉 |
 
 Loader 只有在真正强制显示正文时才记录 `fallbackShown`，并沿用 `main:visible` 事件。若正常 `fade.js` 先完成，既有 `main:visible` 会取消 timer，状态不会被误标。`fadeInMain()` 发现 `fallbackShown` 且 main 已有 `loaded` 时直接返回，不再 remove/add class；header/footer、点击拦截、pageshow 和其他入口已在同一脚本初始化时照常继续运行。
 

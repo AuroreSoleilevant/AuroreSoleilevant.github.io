@@ -17,16 +17,17 @@
 HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。加载器当前按以下顺序工作：
 
 1. 先安装正文可见性降级保护，再由 Loader 创建经典外链脚本 `/js/fade.js`；它只在 `fade.js` 未正常把正文显示出来时生效。
-3. 由 Loader 创建经典外链脚本 `/js/img.js`；该 IIFE 自行判断 DOM 状态并登记图片任务，实际处理会在 DOMContentLoaded 后的 idle/timeout 阶段开始。
-4. 动态插入字体 preload、全局样式、进度条样式、吉祥物样式和站点图标。
-5. 动态插入共享功能脚本：`mots.js`、`backtop.js`、`blink.js`、`headtran.js`、`progression.js`、`mascot.js`。
+2. 由 Loader 创建经典外链脚本 `/js/img.js`；该 IIFE 自行判断 DOM 状态并登记图片任务，实际处理会在 DOMContentLoaded 后的 idle/timeout 阶段开始。
+3. 动态插入字体 preload、全局样式、吉祥物样式和站点图标。
+4. 动态插入共享功能脚本：`mots.js`、`backtop.js`、`blink.js`、`headtran.js`、`mascot.js`。
+5. DOM 就绪后，Loader 只在页面同时存在 `[data-progress-start]` 与 `[data-progress-end]` 时，先加载 `progression.css`，再加载 `progression.js`。
 6. HTML 继续解析；各功能脚本自行等待 DOM、header、footer 或图片等条件。
 
 普通加载器中“按数组插入”的顺序是脚本标签插入顺序。它们是动态创建的脚本；未来代码不能把这当成浏览器一定按完成顺序执行的承诺。若两个功能存在严格先后依赖，应在代码中明确等待 `load`、事件或 Promise，而不是依赖数组位置。
 
 ### `HHXLOYDCS` 特殊主题页面
 
-特殊页面用 `/js/special/common-head-peur.js`，流程与普通入口的基础部分相同：先安装正文可见性保护，再由 Loader 加载 `fade.js` 和 `img.js`，动态插入字体与基础样式，然后动态插入 `mots.js`、`backtop.js`、`blink.js`、`headtran.js`、`progression.js`。
+特殊页面用 `/js/special/common-head-peur.js`，流程与普通入口的基础部分相同：先安装正文可见性保护，再由 Loader 加载 `fade.js` 和 `img.js`，动态插入字体与基础样式，然后动态插入 `mots.js`、`backtop.js`、`blink.js`、`headtran.js`。只有同时具备两个阅读进度锚点的页面才会额外加载 progression；当前 `HHXLOYDCS` 页面没有完整锚点，故不会请求该资源。
 
 它额外载入 `/css/special/style_peur.css`，但不载入 `mascot.js` 或 mascot CSS。特殊页面还在各自 HTML 中直接载入 `giscus-peur.js`；这不是特殊加载器的延迟脚本。
 
@@ -55,8 +56,9 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
 │   ├── backtop.js ────> main/body、可选 footer、可选 giscus 容器
 │   ├── blink.js ──────> header:inserted 或已有 .nav-item
 │   ├── headtran.js ───> .site-header、滚动、完整导航
-│   ├── progression.js -> [data-progress-start] 与 [data-progress-end]
 │   └── mascot.js ─────> 普通桌面页面、body/main 挂载点、吉祥物资源
+├── DOM 能力检测（同时有 start/end 锚点）
+│   └── progression.css load/error ──> progression.js
 └── 普通故事 HTML（额外 common-his.js）
     ├── 动态 CSS：intro.css、chapters-sidebar.css、chapter-nav.css
     └── 串行动态 JS：chapters-sidebar.js → chapter-nav.js
@@ -64,7 +66,8 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
         └── nav：URL、同一 JSON、#chapter-nav-root、章节侧栏按钮
 
 HHXLOYDCS HTML（special/common-head-peur.js）
-├── 与上方共享：Loader 外链 fade.js、Loader 外链 img.js、mots.js、backtop.js、blink.js、headtran.js、progression.js
+├── 与上方共享：Loader 外链 fade.js、Loader 外链 img.js、mots.js、backtop.js、blink.js、headtran.js
+├── 阅读进度：只有完整 start/end 锚点时加载；当前特殊页面全部跳过
 ├── 特殊覆盖：css/special/style_peur.css
 └── 页面专属：giscus-peur.js、分支 HTML、图片与音频
 ```
@@ -78,7 +81,7 @@ HHXLOYDCS HTML（special/common-head-peur.js）
 | `headtran.js` | 动态 header、滚动状态 | footer、故事数据 |
 | `blink.js` | `.nav-item` 或 `header:inserted` | footer、章节系统 |
 | `backtop.js` | main/body、可选 footer、可选评论容器 | header、章节 JSON |
-| `progression.js` | 起点与终点 data 属性 | header、footer、作品 JSON |
+| `progression.js` | 同时存在起点与终点 data 属性；Loader 先加载对应 CSS | header、footer、作品 JSON |
 | `mots.js` | main、可选 `#count` | header、footer |
 | `chapters-sidebar.js` | 故事 URL、作品章节 JSON、main/body | header、footer |
 | `chapter-nav.js` | 故事 URL、作品章节 JSON、`#chapter-nav-root` 或 body、侧栏切换按钮 | header、footer |
@@ -100,6 +103,7 @@ HHXLOYDCS HTML（special/common-head-peur.js）
 - 有严格依赖的动态脚本必须明确等待前一个脚本完成；不要只靠数组顺序。
 - 加载器不能重复注入同一资源；任何新增 fallback 必须可清理且有唯一 guard。
 - 新增 Loader 级脚本默认使用外链脚本，不得以同步 XHR 取回后以内联脚本执行。应声明失败后的降级边界；首屏可见性等关键状态应通过明确状态/事件协作，而不是叠加任意延迟。
+- 页面专属功能优先以明确 DOM 能力标记按需加载；禁止在 Loader 维护 URL 页面名单。
 
 ### Lifecycle 层
 
@@ -182,6 +186,8 @@ HHXLOYDCS HTML（special/common-head-peur.js）
 
 回答不清楚时，先补设计，不要直接把脚本加入 `common-head.js`。
 
+若功能只适用于具备特定 DOM 的页面，应以该 DOM 能力判断并按需加载，而不是按 URL 维护人工白名单。阅读进度的契约就是同时存在 `data-progress-start` 与 `data-progress-end`；新增需要进度条的页面应提供完整锚点。
+
 ### 新增 CSS
 
 先回答：
@@ -228,7 +234,7 @@ node tools/verify-content.mjs
 - `backtop.js`：初始化后可观察晚到 footer。
 - `blink.js`：可等待 `header:inserted`。
 - `headtran.js`：可观察动态 header，并自行在 DOM/scroll/pageshow 同步。
-- `progression.js`：只依赖阅读进度锚点。
+- `progression.js`：当前已按需加载，只依赖同时存在的阅读进度起止锚点；没有完整锚点的普通页和特殊页不请求 CSS 或 JS。
 - `mascot.js`：普通页面的独立 widget。
 
 这些是未来的设计候选，不是本轮授权的优化清单。任何改动都要先验证动态脚本的真实执行顺序、冷缓存、BFCache 与视觉基准。
