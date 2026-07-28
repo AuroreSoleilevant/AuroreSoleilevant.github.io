@@ -27,3 +27,7 @@ node tools/verify-content.mjs
 - 当前未接入 GitHub Actions；校验命令仅供本地或命令行使用。
 - 当前未引入自动截图测试；视觉检查请按 [visual-regression-checklist.md](visual-regression-checklist.md) 手工执行。
 - 校验工具只读，不写入仓库，也没有自动修复模式。
+
+## 架构与新增功能
+
+新增或调整前端功能、样式、加载方式前，请先阅读 [architecture.md](architecture.md)。其中说明了当前加载流程、普通与特殊页面的边界，以及新增 JS/CSS 的接入规则。

@@ -1,0 +1,258 @@
+# 加载体系与前端分层说明
+
+这份文档面向未来维护者。它记录目前的加载事实，并规定新增功能时的放置方式；它不是一次重构计划。网站仍是原生 HTML、CSS、JavaScript 的静态站点，公开 URL、完整页面导航、现有视觉与交互都是优先约束。
+
+## 先读这一节
+
+- 页面不是 SPA。站内跳转最终仍是完整文档导航。
+- 普通页面入口是 `/js/common-head.js`；`HHXLOYDCS` 特殊主题入口是 `/js/special/common-head-peur.js`。
+- 不要为了“现代化”把加载器改成框架、ES module 或 fetch 替换页面；这类变更必须单独设计和验证。
+- 不要把一个功能简单塞进全站加载器。先判断它是否真的需要所有页面。
+- 任何改变加载顺序、`main.loaded`、页眉、页脚、章节 URL 或导航关系的改动，都要先做人工视觉回归。
+
+## 当前页面加载流程
+
+### 普通页面
+
+HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。加载器当前按以下顺序工作：
+
+1. 以同步 XHR 取得并以内联脚本执行 `/js/fade.js`。
+2. 安装正文可见性降级保护；它只在 `fade.js` 未正常把正文显示出来时生效。
+3. 以同步 XHR 取得并执行 `/js/img.js`；该 IIFE 此时只登记 DOM 就绪后的图片任务，实际处理会在 DOMContentLoaded 后的 idle/timeout 阶段开始。
+4. 动态插入字体 preload、全局样式、进度条样式、吉祥物样式和站点图标。
+5. 动态插入共享功能脚本：`mots.js`、`backtop.js`、`blink.js`、`headtran.js`、`progression.js`、`mascot.js`。
+6. HTML 继续解析；各功能脚本自行等待 DOM、header、footer 或图片等条件。
+
+普通加载器中“按数组插入”的顺序是脚本标签插入顺序。它们是动态创建的脚本；未来代码不能把这当成浏览器一定按完成顺序执行的承诺。若两个功能存在严格先后依赖，应在代码中明确等待 `load`、事件或 Promise，而不是依赖数组位置。
+
+### `HHXLOYDCS` 特殊主题页面
+
+特殊页面用 `/js/special/common-head-peur.js`，流程与普通入口的基础部分相同：同步执行 `fade.js`、`img.js`，安装正文可见性保护，动态插入字体与基础样式，然后动态插入 `mots.js`、`backtop.js`、`blink.js`、`headtran.js`、`progression.js`。
+
+它额外载入 `/css/special/style_peur.css`，但不载入 `mascot.js` 或 mascot CSS。特殊页面还在各自 HTML 中直接载入 `giscus-peur.js`；这不是特殊加载器的延迟脚本。
+
+### `fade.js` 的生命周期
+
+`fade.js` 是共享的生命周期脚本：
+
+- 在 DOM 就绪后，给 `main` 加上 `loaded`，触发现有正文淡入。
+- 通过 fetch 把 `outil/header.inc/index.html` 和 `outil/footer.inc/index.html` 填入静态占位节点。
+- 页眉插入后派发 `header:inserted`；`blink.js` 依赖它。
+- 拦截符合条件的同源链接：移除 `main.loaded`、触发页脚离场，再以 `location.href` 完整导航。
+- 在 `pageshow`（包括 BFCache 恢复）时重新同步正文和页脚状态。
+
+它不是业务功能放置处。不要在 `fade.js` 增加文章、故事、评论、组件或页面专属规则。
+
+## 文字版依赖图
+
+```text
+普通 HTML（经典 common-head.js）
+├── 同步：fade.js ──┬── main.loaded / 完整页面导航
+│                  ├── fetch header.inc ──> header:inserted ──> blink.js
+│                  └── fetch footer.inc ──> backtop.js 可计算页脚偏移
+├── 同步：img.js ─────> DOMContentLoaded / idle 后处理 img 与 .bg-image
+├── 动态共享功能
+│   ├── mots.js ───────> main、可选 #count
+│   ├── backtop.js ────> main/body、可选 footer、可选 giscus 容器
+│   ├── blink.js ──────> header:inserted 或已有 .nav-item
+│   ├── headtran.js ───> .site-header、滚动、完整导航
+│   ├── progression.js -> [data-progress-start] 与 [data-progress-end]
+│   └── mascot.js ─────> 普通桌面页面、body/main 挂载点、吉祥物资源
+└── 普通故事 HTML（额外 common-his.js）
+    ├── 动态 CSS：intro.css、chapters-sidebar.css、chapter-nav.css
+    └── 串行动态 JS：chapters-sidebar.js → chapter-nav.js
+        ├── sidebar：URL、/json/histoire/<作品 ID>.json、main/body
+        └── nav：URL、同一 JSON、#chapter-nav-root、章节侧栏按钮
+
+HHXLOYDCS HTML（special/common-head-peur.js）
+├── 与上方共享：fade.js、img.js、mots.js、backtop.js、blink.js、headtran.js、progression.js
+├── 特殊覆盖：css/special/style_peur.css
+└── 页面专属：giscus-peur.js、分支 HTML、图片与音频
+```
+
+### 依赖关系速查
+
+| 脚本 | 主要依赖 | 不依赖 / 不应依赖 |
+| --- | --- | --- |
+| `fade.js` | `main`、header/footer 占位、同源链接 | 作品 JSON、章节 DOM、吉祥物 |
+| `img.js` | 启动时快照中的 `document.images`；当前 `.resp-img` 会获得 `loaded` 入场类 | header、footer、章节 JSON、其他脚本 API |
+| `headtran.js` | 动态 header、滚动状态 | footer、故事数据 |
+| `blink.js` | `.nav-item` 或 `header:inserted` | footer、章节系统 |
+| `backtop.js` | main/body、可选 footer、可选评论容器 | header、章节 JSON |
+| `progression.js` | 起点与终点 data 属性 | header、footer、作品 JSON |
+| `mots.js` | main、可选 `#count` | header、footer |
+| `chapters-sidebar.js` | 故事 URL、作品章节 JSON、main/body | header、footer |
+| `chapter-nav.js` | 故事 URL、作品章节 JSON、`#chapter-nav-root` 或 body、侧栏切换按钮 | header、footer |
+
+## JavaScript 分层规范
+
+### Loader 层
+
+文件：`common-head.js`、`special/common-head-peur.js`、`common-his.js`。
+
+负责：加载共享资源、选择页面族所需资源、建立最小的启动/降级边界。
+
+禁止负责：业务数据处理、章节顺序计算、评论逻辑、具体组件 DOM、视觉细节，或隐含地修复其他脚本的竞态。
+
+规则：
+
+- 普通与特殊入口必须维持为不同页面族的明确入口。
+- 新脚本只有在“所有该入口覆盖的页面都需要它”时才可加入入口。
+- 有严格依赖的动态脚本必须明确等待前一个脚本完成；不要只靠数组顺序。
+- 加载器不能重复注入同一资源；任何新增 fallback 必须可清理且有唯一 guard。
+
+### Lifecycle 层
+
+文件：`fade.js`。
+
+负责：正文进入/离开、完整页面导航、header/footer 片段插入、`pageshow` 恢复和对应可靠性边界。
+
+禁止：页面业务、章节 JSON、评论、卡片、标签、吉祥物和特殊主题内容。
+
+新需求若同时影响普通与特殊页面的“页面何时可见、何时离开”，才可能属于这一层；否则优先放到功能或组件层。
+
+### Feature 层
+
+文件示例：`img.js`、`mots.js`、`progression.js`、`chapter-nav.js`、`chapters-sidebar.js`、`list.js`、`catalogue.js`、`tag.js`、`page-number.js`。
+
+负责：明确的页面能力与对应数据/DOM，例如图片增强、字数、阅读进度、列表、标签、章节目录和章节前后导航。
+
+规则：
+
+- 章节功能继续放在章节专属脚本与 `common-his.js` 链路中，不放入全站加载器。
+- 功能脚本应先检查自己所需的根节点或 data 属性；不存在时安静退出。
+- 涉及故事章节时，以作品 ID、URL 和 `/json/histoire/<作品 ID>.json` 为唯一数据契约，不自行猜测章节。
+
+### Widget 层
+
+文件示例：`backtop.js`、`mascot.js`，以及未来的小型浮动组件。
+
+负责：自带 DOM、交互、状态和样式的可选组件。
+
+规则：
+
+- Widget 必须有唯一根节点或全局 guard，重复执行不能创建重复 ID、重复监听器或重复动画。
+- Widget 应允许“目标节点不存在”时安全退出。
+- 只有所有普通页面都需要的 widget 才进入普通加载器；特殊主题要显式决定是否启用，不能被普通入口副作用带入。
+- Widget 不得控制 `main.loaded`、页眉或页脚生命周期。
+
+### Special 层
+
+文件示例：`special/common-head-peur.js`、`css/special/style_peur.css`、`special/giscus-peur.js`。
+
+负责：特殊主题的视觉覆盖和特殊页面专属能力。
+
+必须继续共享：`fade.js`、`img.js`、正文可见性保护、header/footer 机制、基础导航、返回顶部、文字统计和进度能力（若页面具备相应 DOM）。
+
+禁止：复制一套普通生命周期脚本、改变公开 URL/分支关系，或把普通页面组件未经确认地带入特殊主题。
+
+## CSS 分层规范
+
+| 位置 | 职责 | 何时扩充 |
+| --- | --- | --- |
+| `css/style.css` | 字体、根变量、body、main、共享 header/footer、全站基础排版与共同交互 | 仅当规则确实适用于全站且不是独立组件时 |
+| `css/tuile.css` | 通用磁贴/条目布局 | 新增同一套磁贴变体时 |
+| `css/morceau.css` | 文章磁贴模块 | 文章列表卡片变化时 |
+| `css/intro.css` | 故事/作品页标题、标签与介绍性布局 | 普通作品介绍页面的共同行为时 |
+| `css/chapter-nav.css`、`css/chapters-sidebar.css` | 常规章节导航与目录侧栏 | 章节 UI 本身变化时 |
+| `css/progression.css`、`css/mascot.css` | 单一 widget 的样式 | 对应 widget 的视觉变化时 |
+| `css/page-number.css`、`css/tagflow.css` | 分页、标签流等明确功能 | 对应功能变化时 |
+| `css/special/` | 特殊主题覆盖 | 仅特殊主题且不会反向影响普通页面时 |
+
+禁止做法：
+
+- 不要把仅一个页面、一个组件或一个特殊主题的规则继续堆入 `style.css`。
+- 不要用特殊主题 CSS 覆盖普通功能的结构契约；特殊覆盖应以颜色、氛围、局部视觉为主。
+- 不要因临时修复把相同选择器散落在多个无关 CSS 文件。
+
+新 CSS 的判断：全站基础放 `style.css`；有清晰组件边界则建/扩充组件文件；仅特殊主题才放 `special/`。若不能明确回答影响范围，不要先写全局选择器。
+
+## 新增功能前的必答问题
+
+### 新增 JavaScript
+
+先回答：
+
+1. 它属于 Loader、Lifecycle、Feature、Widget 还是 Special？
+2. 它依赖哪些 DOM、事件、JSON、样式或其他脚本？
+3. 哪些页面需要它，哪些页面不应加载它？
+4. 谁依赖它；是否存在严格的执行先后关系？
+5. 应在解析期、DOMContentLoaded、header/footer 插入后、页面专属 loader，还是用户交互时接入？
+6. 它是否属于特殊主题，是否需要普通页面也具备？
+
+回答不清楚时，先补设计，不要直接把脚本加入 `common-head.js`。
+
+### 新增 CSS
+
+先回答：
+
+1. 它是基础样式、功能样式、widget 样式还是特殊主题覆盖？
+2. 是否影响全站？是否会碰到 header、footer、main 或既有 URL 页面？
+3. 是否已有职责相同的 CSS 文件？
+4. 是否需要新文件，还是扩充同一组件文件？
+5. 它是否必须由某个 loader 加载，还是只应由页面专属 HTML/loader 加载？
+
+### 新增页面功能的推荐流程
+
+```text
+需求
+  ↓
+确定页面族与所属层级
+  ↓
+写出 DOM / 数据 / URL 契约
+  ↓
+创建 JS（如需要）与对应 CSS（如需要）
+  ↓
+选择最窄的接入点：页面专属 > 页面族 > 全站
+  ↓
+人工测试直接访问、刷新、站内跳转、后退/前进
+  ↓
+node tools/verify-content.mjs
+  ↓
+更新本文件、开发说明和视觉回归清单
+```
+
+## 为下一阶段准备：加载分类
+
+### 当前确实需要尽早建立的能力
+
+- `fade.js`：它登记正文进入/离开、同源导航拦截以及 header/footer 生命周期。当前页面视觉与导航直接依赖这些早期注册。
+- 两个入口加载器本身：它们决定普通与特殊页面各自的基础样式和启动边界。
+
+这不等于“永远只能同步 XHR”；它只说明在改变方式前必须保留同等早期注册与失败降级行为。
+
+### 很可能可以延后评估的候选（本阶段不修改）
+
+- `img.js`：实际重活已在 DOMContentLoaded 后的 idle/timeout 执行；它不依赖 header/footer，也没有对外 API。它仍会驱动现有 `.resp-img` 的入场动画，因此延后方案必须做该页面的视觉验证。
+- `mots.js`：只依赖 main 与可选 `#count`。
+- `backtop.js`：初始化后可观察晚到 footer。
+- `blink.js`：可等待 `header:inserted`。
+- `headtran.js`：可观察动态 header，并自行在 DOM/scroll/pageshow 同步。
+- `progression.js`：只依赖阅读进度锚点。
+- `mascot.js`：普通页面的独立 widget。
+
+这些是未来的设计候选，不是本轮授权的优化清单。任何改动都要先验证动态脚本的真实执行顺序、冷缓存、BFCache 与视觉基准。
+
+### 可按需加载的候选
+
+- `common-his.js`、`chapters-sidebar.js`、`chapter-nav.js`：仅常规作品/章节页需要；当前已由故事页面专属的 `common-his.js` 处理。
+- `giscus.js` / `special/giscus-peur.js`：仅有评论容器的页面需要。
+- `list.js`、`catalogue.js`、`tag.js`、`page-number.js`、`tagflow.js`：仅各自首页、列表、标签或分页页面需要。
+- `mascot.js`：仅普通桌面页面需要，特殊主题不加载。
+- `special/common-head-peur.js` 与 `css/special/style_peur.css`：仅 `HHXLOYDCS` 页面需要。
+
+### 当前同步 XHR 实际承担的职责
+
+两个入口都用同步 XHR 取得：
+
+1. `/js/fade.js`：立即注册页面生命周期、导航和 header/footer 的 DOM 就绪处理。
+2. `/js/img.js`：立即注册图片处理的 DOM 就绪入口，实际图片工作仍会延后。它不被其他脚本调用；当前作用是为启动时存在的图片加入 `loaded`，并为未来 `.bg-image` 标记提供处理逻辑。
+
+同步 XHR 不负责取得 header/footer 片段、故事 JSON、章节 JSON、评论、图片或音频；这些由后续 fetch、页面资源或功能脚本处理。不要把“同步 XHR 很旧”当成可以直接删除的理由；先证明替代方案能维持注册时机、可靠性 fallback 和视觉基准。
+
+## 下一阶段建议
+
+1. 先用本说明为新增功能设定接入边界，不改加载时序。
+2. 单独审计动态脚本的真实下载/执行顺序与冷缓存表现。
+3. 单独确认特殊页面的阅读进度锚点是否完整；这属于功能数据/DOM 审计，不应和加载器改动混在一起。
+4. 若未来确实要替换同步 XHR，先写兼容设计、浏览器故障测试和可回滚小步骤，再实施。
