@@ -116,7 +116,7 @@
 | `common-his.js` | 无 | 0 |
 | `fade.js` | MO×2、rAF×7、TO×13、F×2 | 1 |
 | `giscus.js` | 无 | 0 |
-| `headtran.js` | MO×2、TO×3、TI×1 | 2 |
+| `headtran.js` | TO×2 | 1 |
 | `img.js` | rIC×4、TO×3 | 2 |
 | `list.js` | F×2 | 0 |
 | `mascot.js` | rAF×2、TO×5、F×2 | 1 |

@@ -25,7 +25,7 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
 
 普通加载器中“按数组插入”的顺序是脚本标签插入顺序。它们是动态创建的经典脚本，默认按下载完成异步执行；给这类脚本设置 `defer` 不会获得解析器发现的 `<script defer>` 顺序语义，故 Loader 不设置该属性。功能脚本也不再在紧邻 script 注入前插入 preload：同一段同步代码没有可利用的解析器抢跑窗口，且额外高优先级请求会与更早的基础资源竞争。未来代码不能把数组位置当成浏览器一定按完成顺序执行的承诺。若两个功能存在严格先后依赖，应在代码中明确等待 `load`、事件或 Promise，而不是依赖数组位置。
 
-当前这组功能脚本没有彼此的严格执行顺序契约：`mots.js` 只检查 main/可选 `#count`；`backtop.js` 可等待晚到 footer；`blink.js` 等待 `header:inserted`；`headtran.js` 自行观察动态 header；`mascot.js` 只依赖自身 DOM 与资源。因此保持并行动态注入，不增加串行 Loader。
+当前这组功能脚本没有彼此的严格执行顺序契约：`mots.js` 只检查 main/可选 `#count`；`backtop.js` 可等待晚到 footer；`blink.js` 与 `headtran.js` 等待 `header:inserted`；`mascot.js` 只依赖自身 DOM 与资源。因此保持并行动态注入，不增加串行 Loader。
 
 ### 全局 CSS 与字体资源
 
@@ -87,7 +87,7 @@ HHXLOYDCS HTML（special/common-head-peur.js）
 | --- | --- | --- |
 | `fade.js` | `main`、header/footer 占位、同源链接 | 作品 JSON、章节 DOM、吉祥物 |
 | `img.js` | 启动时快照中的 `document.images`；当前 `.resp-img` 会获得 `loaded` 入场类 | header、footer、章节 JSON、其他脚本 API |
-| `headtran.js` | 动态 header、滚动状态 | footer、故事数据 |
+| `headtran.js` | 已有 `.site-header` 或 `header:inserted`、滚动状态 | footer、故事数据 |
 | `blink.js` | 已有 `.nav-item` 或 `header:inserted`；重插入时重新绑定新节点 | footer、章节系统 |
 | `backtop.js` | main/body、可选 footer、可选评论容器 | header、章节 JSON |
 | `progression.js` | 同时存在起点与终点 data 属性；Loader 先加载对应 CSS，脚本立即单次初始化 | header、footer、作品 JSON |
@@ -135,6 +135,7 @@ HHXLOYDCS HTML（special/common-head-peur.js）
 - 章节功能继续放在章节专属脚本与 `common-his.js` 链路中，不放入全站加载器。
 - 功能脚本应先检查自己所需的根节点或 data 属性；不存在时安静退出。
 - 涉及故事章节时，以作品 ID、URL 和 `/json/histoire/<作品 ID>.json` 为唯一数据契约，不自行猜测章节。
+- `chapter-nav.js` 当前按连续数字 ID 使用 `currentId ± 1`；校验工具保证现有常规章节 JSON 的 ID 连续。若未来允许跳号或重排，应另行改为按 JSON 相邻项导航并独立验证。
 
 ### Widget 层
 
@@ -242,7 +243,7 @@ node tools/verify-content.mjs
 - `mots.js`：只依赖 main 与可选 `#count`。
 - `backtop.js`：初始化后可观察晚到 footer。
 - `blink.js`：可等待 `header:inserted`。
-- `headtran.js`：可观察动态 header，并自行在 DOM/scroll/pageshow 同步。
+- `headtran.js`：以 `header:inserted` 处理动态 header，并在 DOM/scroll/pageshow 同步。
 - `progression.js`：当前已按需加载，只依赖同时存在的阅读进度起止锚点；没有完整锚点的普通页和特殊页不请求 CSS 或 JS。
 - `mascot.js`：普通页面的独立 widget。
 

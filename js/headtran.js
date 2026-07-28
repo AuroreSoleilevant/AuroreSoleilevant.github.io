@@ -184,26 +184,14 @@
     }
   }
 
-  // MutationObserver：监听 DOM 变化（子树变动），用于检测 header 被替换或者新 header 被注入
-  const mo = new MutationObserver((mutations) => {
-    for (const m of mutations) {
-      if (m.type === "childList") {
-        // 只要文档结构变动，尝试重新同步状态并迁移离开监听（若有）
-        lastState = null; // 让下一次 applyState 从 DOM 读取真实 class
-        updateOnScroll();
-        onHeaderReplaced();
-        break;
-      }
-    }
-  });
-
-  mo.observe(document.documentElement || document.body, {
-    childList: true,
-    subtree: true,
+  document.addEventListener("header:inserted", () => {
+    lastState = null;
+    updateOnScroll();
+    onHeaderReplaced();
   });
 
   // pageshow / visibility / DOMContentLoaded 处理（bfcache 恢复等）
-  window.addEventListener("pageshow", (ev) => {
+  window.addEventListener("pageshow", () => {
     lastState = null;
     cleanupLeaving(); // 页面恢复时取消任何悬而未决的离开行为，犹豫就会_ _
     updateOnScroll();
@@ -221,14 +209,10 @@
       lastState = null;
       updateOnScroll();
     });
+  } else {
+    updateOnScroll();
   }
 
   // 侦听滚动
   window.addEventListener("scroll", updateOnScroll, { passive: true });
-
-  // 短时间轮询作为保险（避免极端 race），运行几秒后停止
-  const POLL_MS = 1000;
-  const POLL_DURATION_MS = 5000;
-  const pollId = setInterval(updateOnScroll, POLL_MS);
-  setTimeout(() => clearInterval(pollId), POLL_DURATION_MS);
 })();
