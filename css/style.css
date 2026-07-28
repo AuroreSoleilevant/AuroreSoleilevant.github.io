@@ -40,6 +40,10 @@
   --backtop-right: 16px;
   --backtop-bottom: 96px;
   --backtop-z: 1200;
+
+  /* 正文流式水平尺寸 */
+  --content-gutter: clamp(12px, 2.5vw, 32px);
+  --reading-gutter: clamp(12px, calc(6vw - 12px), 96px);
 }
 
 /* ---------- 顶栏：开始 ---------- */
@@ -379,12 +383,11 @@ footer {
 
 /* 文本间距设定 */
 main {
-  padding: 0 32px; /* 左右各留 32px 空间 */
   box-sizing: border-box; /* 保证 padding 不影响宽度计算 */
   opacity: 0;
   transition: opacity 0.4s ease-in-out;
   flex: 1; /* 占据剩余空间，推动 footer 到底部 */
-  padding: 120px 32px 32px 32px; /* 上方留出顶栏高度 */
+  padding: 120px var(--content-gutter) 32px; /* 上方留出顶栏高度 */
 }
 
 main.loaded {
@@ -393,20 +396,17 @@ main.loaded {
 
 /* 段落间距设定 */
 main p {
-  margin-left: 96px;
-  margin-right: 96px;
+  margin-inline: var(--reading-gutter);
   line-height: 1.6;
 }
 
 /* 标题间距设定 */
 main h1 {
-  margin-left: 96px;
-  margin-right: 96px;
+  margin-inline: var(--reading-gutter);
 }
 
 main h2 {
-  margin-left: 96px;
-  margin-right: 96px;
+  margin-inline: var(--reading-gutter);
   font-size: 2.5rem;
 }
 
@@ -422,8 +422,16 @@ p {
 ul {
   /* 列表统一字号 */
   font-size: 20px;
-  margin-left: 96px;
-  margin-right: 96px;
+  margin-inline: var(--reading-gutter);
+}
+
+main > h3,
+main > h4,
+main > h5,
+main > h6,
+main > ol,
+main > blockquote {
+  margin-inline: var(--reading-gutter);
 }
 
 h1.shaking-text {
@@ -974,14 +982,13 @@ footer {
 
   /* 主内容区调整 */
   main {
-    padding: 100px 24px 24px 24px;
+    padding: 100px var(--content-gutter) 24px;
   }
 
   main p,
   main h1,
   ul {
-    margin-left: 48px;
-    margin-right: 48px;
+    margin-inline: var(--reading-gutter);
   }
 
   p {
@@ -997,8 +1004,7 @@ footer {
   }
 
   main h2 {
-    margin-left: 48px;
-    margin-right: 48px;
+    margin-inline: var(--reading-gutter);
     font-size: 2rem;
   }
 
@@ -1087,14 +1093,13 @@ footer {
 
   /* 主内容区调整 */
   main {
-    padding: 90px 16px 16px 16px;
+    padding: 90px var(--content-gutter) 16px;
   }
 
   main p,
   main h1,
   ul {
-    margin-left: 24px;
-    margin-right: 24px;
+    margin-inline: var(--reading-gutter);
   }
 
   p {
@@ -1111,8 +1116,7 @@ footer {
   }
 
   main h2 {
-    margin-left: 24px;
-    margin-right: 24px;
+    margin-inline: var(--reading-gutter);
     font-size: 1.5rem;
   }
 
@@ -1233,14 +1237,13 @@ footer {
 
   /* 主内容区调整 */
   main {
-    padding: 80px 12px 12px 12px;
+    padding: 80px var(--content-gutter) 12px;
   }
 
   main p,
   main h1,
   ul {
-    margin-left: 16px;
-    margin-right: 16px;
+    margin-inline: var(--reading-gutter);
   }
 
   p {
@@ -1256,8 +1259,7 @@ footer {
   }
 
   main h2 {
-    margin-left: 16px;
-    margin-right: 16px;
+    margin-inline: var(--reading-gutter);
   }
 
   .mobile-break {
@@ -1356,8 +1358,7 @@ footer {
   main p,
   main h1,
   ul {
-    margin-left: 12px;
-    margin-right: 12px;
+    margin-inline: var(--reading-gutter);
   }
 
   p {
@@ -1365,8 +1366,7 @@ footer {
   }
 
   main h2 {
-    margin-left: 12px;
-    margin-right: 12px;
+    margin-inline: var(--reading-gutter);
   }
 
   .footer-links {
@@ -1405,8 +1405,7 @@ footer {
   main p,
   main h1,
   ul {
-    margin-left: 72px;
-    margin-right: 72px;
+    margin-inline: var(--reading-gutter);
   }
 }
 
