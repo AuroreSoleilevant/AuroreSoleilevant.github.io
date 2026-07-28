@@ -13,6 +13,15 @@
   --mt-tag-gap: 8px;
 }
 
+/* 超宽屏：限制目录与首页推荐卡片组的整体展开宽度 */
+@media (min-width: 2000px) {
+  .mt-container {
+    max-width: 1856px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 /* 磁贴容器 - 三列布局，避开右侧分页模块 */
 .mt-container {
   display: flex;

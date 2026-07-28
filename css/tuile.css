@@ -16,6 +16,15 @@
   --tile-thumb-size-responsive: var(--tile-thumb-size); /* 全局回退 */
 }
 
+/* 超宽屏：保持首页卡片组接近 1920px 桌面时的最大展开宽度 */
+@media (min-width: 2000px) {
+  .tiles {
+    max-width: 1856px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 /* ---------- 容器：一行三列 ---------- */
 .tiles {
   display: flex;

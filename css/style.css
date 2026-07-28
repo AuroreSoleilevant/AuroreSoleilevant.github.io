@@ -1410,6 +1410,24 @@ footer {
   }
 }
 
+/* 超宽屏：限制直接正文元素的阅读行长，不影响组件容器 */
+@media (min-width: 2000px) {
+  main > p,
+  main > h1,
+  main > h2,
+  main > h3,
+  main > h4,
+  main > h5,
+  main > h6,
+  main > ul,
+  main > ol,
+  main > blockquote {
+    max-width: 1280px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
 /* 对于系统声明prefers-reduced-motion：关闭动画 */
 @media (prefers-reduced-motion: reduce) {
   .resp-img,

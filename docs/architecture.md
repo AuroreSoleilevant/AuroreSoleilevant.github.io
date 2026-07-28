@@ -175,6 +175,8 @@ HHXLOYDCS HTML（special/common-head-peur.js）
 | `css/page-number.css`、`css/tagflow.css` | 分页、标签流等明确功能 | 对应功能变化时 |
 | `css/special/` | 特殊主题覆盖 | 仅特殊主题且不会反向影响普通页面时 |
 
+超宽屏约束以 `min-width: 2000px` 的独立覆盖规则处理：`style.css` 仅限制 `main` 的直接正文元素至 1280px；`tuile.css` 限制 `.tiles` 至 1856px；`morceau.css` 限制 `.mt-container` 至 1856px。三者均居中，不约束 header、footer、吉祥物或章节侧栏，且不得改变 1920px 及以下规则。
+
 禁止做法：
 
 - 不要把仅一个页面、一个组件或一个特殊主题的规则继续堆入 `style.css`。
