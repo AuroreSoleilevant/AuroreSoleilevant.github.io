@@ -23,7 +23,9 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
 5. DOM 就绪后，Loader 只在页面同时存在 `[data-progress-start]` 与 `[data-progress-end]` 时，先加载 `progression.css`，再加载 `progression.js`。
 6. HTML 继续解析；各功能脚本自行等待 DOM、header、footer 或图片等条件。
 
-普通加载器中“按数组插入”的顺序是脚本标签插入顺序。它们是动态创建的脚本；未来代码不能把这当成浏览器一定按完成顺序执行的承诺。若两个功能存在严格先后依赖，应在代码中明确等待 `load`、事件或 Promise，而不是依赖数组位置。
+普通加载器中“按数组插入”的顺序是脚本标签插入顺序。它们是动态创建的经典脚本，默认按下载完成异步执行；给这类脚本设置 `defer` 不会获得解析器发现的 `<script defer>` 顺序语义，故 Loader 不设置该属性。功能脚本也不再在紧邻 script 注入前插入 preload：同一段同步代码没有可利用的解析器抢跑窗口，且额外高优先级请求会与更早的基础资源竞争。未来代码不能把数组位置当成浏览器一定按完成顺序执行的承诺。若两个功能存在严格先后依赖，应在代码中明确等待 `load`、事件或 Promise，而不是依赖数组位置。
+
+当前这组功能脚本没有彼此的严格执行顺序契约：`mots.js` 只检查 main/可选 `#count`；`backtop.js` 可等待晚到 footer；`blink.js` 等待 `header:inserted`；`headtran.js` 自行观察动态 header；`mascot.js` 只依赖自身 DOM 与资源。因此保持并行动态注入，不增加串行 Loader。
 
 ### `HHXLOYDCS` 特殊主题页面
 

@@ -104,32 +104,16 @@
   }
 
   // ------------------------
-  // 辅助：非阻塞/延迟注入脚本
+  // 辅助：动态注入功能脚本
   // ------------------------
-  function preloadAndDeferScripts(srcArray) {
-    srcArray.forEach((src) => {
-      try {
-        const pl = document.createElement("link");
-        pl.setAttribute("rel", "preload");
-        pl.setAttribute("as", "script");
-        pl.setAttribute("href", src);
-        head.appendChild(pl);
-      } catch (e) {
-        // 忽略预加载失败
-        console.warn("预加载提示创建失败：", src, e);
-      }
-    });
-
-    // 按顺序插入带 defer 的 script
+  function loadFeatureScripts(srcArray) {
     srcArray.forEach((src) => {
       try {
         const s = document.createElement("script");
         s.setAttribute("src", src);
-        // 减少解析时阻塞
-        s.defer = true;
         head.appendChild(s);
       } catch (e) {
-        console.warn("defer 注入失败：", src, e);
+        console.warn("脚本注入失败：", src, e);
       }
     });
   }
@@ -192,6 +176,6 @@
     "/js/headtran.js", // 渐变顶栏玻璃
   ];
 
-  preloadAndDeferScripts(deferredScripts);
+  loadFeatureScripts(deferredScripts);
 
 })();
