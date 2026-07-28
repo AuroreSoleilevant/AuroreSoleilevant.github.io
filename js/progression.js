@@ -22,6 +22,7 @@
       endY = 0,
       totalH = 1;
     let hideTimer = null;
+    let recalcTimer = null;
     const HIDE_DELAY = 600;
     let viewportHeight = window.innerHeight;
 
@@ -74,6 +75,8 @@
       const p = (scrollY - startY) / totalH;
 
       if (p <= 0) {
+        clearTimeout(hideTimer);
+        hideTimer = null;
         setProgress(0);
         bar.style.opacity = "0";
         return;
@@ -87,6 +90,7 @@
     function scheduleHide() {
       clearTimeout(hideTimer);
       hideTimer = setTimeout(() => {
+        hideTimer = null;
         bar.style.opacity = "0";
       }, HIDE_DELAY);
     }
@@ -100,17 +104,16 @@
 
     function handleResize() {
       viewportHeight = window.innerHeight;
-      setTimeout(() => {
+      scheduleRecalc();
+    }
+
+    function scheduleRecalc() {
+      clearTimeout(recalcTimer);
+      recalcTimer = setTimeout(() => {
+        recalcTimer = null;
         recalcBounds();
         requestTick();
       }, 100);
-    }
-
-    function handleLoad() {
-      setTimeout(() => {
-        recalcBounds();
-        requestTick();
-      }, 500);
     }
 
     // 事件监听
@@ -126,10 +129,7 @@
 
     // DOM 变化监听
     const observer = new MutationObserver(() => {
-      setTimeout(() => {
-        recalcBounds();
-        requestTick();
-      }, 100);
+      scheduleRecalc();
     });
 
     observer.observe(document.body, {
@@ -140,12 +140,10 @@
     });
   }
 
-  // 多种初始化方式确保执行
+  // Loader 会在 DOM 就绪后确认完整锚点；保留 loading 分支以兼容独立晚到脚本。
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initProgressBar);
-    window.addEventListener("load", initProgressBar);
+    document.addEventListener("DOMContentLoaded", initProgressBar, { once: true });
   } else {
-    // DOM 已经就绪，但稍微延迟确保所有元素加载完成
-    setTimeout(initProgressBar, 100);
+    initProgressBar();
   }
 })();

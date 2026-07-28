@@ -122,7 +122,7 @@
 | `mascot.js` | rAF×2、TO×5、F×2 | 1 |
 | `mots.js` | 无上述异步/观察 API | 1 |
 | `page-number.js` | TO×1 | 1 |
-| `progression.js` | MO×1、rAF×1、TO×5 | 1 |
+| `progression.js` | MO×1、rAF×1、TO×2 | 1 |
 | `special/common-head-peur.js` | TO×1 | 2 |
 | `special/giscus-peur.js` | 无 | 0 |
 | `tag.js` | 无上述 API | 1 |
