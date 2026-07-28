@@ -90,7 +90,7 @@ HHXLOYDCS HTML（special/common-head-peur.js）
 | `blink.js` | `.nav-item` 或 `header:inserted` | footer、章节系统 |
 | `backtop.js` | main/body、可选 footer、可选评论容器 | header、章节 JSON |
 | `progression.js` | 同时存在起点与终点 data 属性；Loader 先加载对应 CSS | header、footer、作品 JSON |
-| `mots.js` | main、可选 `#count` | header、footer |
+| `mots.js` | main、可选 `#count`；DOM 就绪后单次统计，无目标时安静退出 | header、footer |
 | `chapters-sidebar.js` | 故事 URL、作品章节 JSON、main/body | header、footer |
 | `chapter-nav.js` | 故事 URL、作品章节 JSON、`#chapter-nav-root` 或 body、侧栏切换按钮 | header、footer |
 

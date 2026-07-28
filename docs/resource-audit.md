@@ -120,7 +120,7 @@
 | `img.js` | rIC×4、TO×3 | 2 |
 | `list.js` | F×2 | 0 |
 | `mascot.js` | rAF×2、TO×5、F×2 | 1 |
-| `mots.js` | MO×3、TO×1、TI×1 | 4 |
+| `mots.js` | 无上述异步/观察 API | 1 |
 | `page-number.js` | TO×1 | 1 |
 | `progression.js` | MO×1、rAF×1、TO×5 | 1 |
 | `special/common-head-peur.js` | TO×1 | 2 |
@@ -137,7 +137,7 @@
 | fade | 284 | 两个 Loader 都创建一次外链 script；依赖 main 和 header/footer 占位 |
 | img | 284 | 两个 Loader 都创建一次外链 script；处理执行时存在的图片快照 |
 | backtop | 284 | 两个 Loader 都加载；组件再按页面高度、footer/评论条件决定显示 |
-| mots | 284 | 两个 Loader 都加载；`#count` 是可选目标 |
+| mots | 284 | 两个 Loader 都加载；186 个普通页与 59 个特殊页有静态 `#count`，其余 39 页单次检查后安静退出 |
 | blink | 284 | 动态 header 插入后或已有 nav-item 时初始化 |
 | headtran | 284 | 动态 header 与滚动条件满足时生效 |
 | progression | 186 | Loader 只在同时具备 start/end 的页面加载 CSS 与 JS；59 个 HHXLOYDCS 页只有 start，另外 39 个普通页也没有完整锚点，均不请求该功能资源 |
