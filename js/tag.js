@@ -68,7 +68,13 @@
 
   // 启动
   document.addEventListener("DOMContentLoaded", () => {
-    if (!window.CoreList || typeof window.CoreList.mountList !== "function") {
+    if (
+      !window.CoreList ||
+      typeof window.CoreList._loadDatabases !== "function" ||
+      typeof window.CoreList._sortEntries !== "function" ||
+      typeof window.CoreList._paginate !== "function" ||
+      typeof window.CoreList._createTile !== "function"
+    ) {
       console.error(
         "[tag] CoreList 未加载。请先引入 list.js，然后再引入 tag.js。"
       );
@@ -114,7 +120,6 @@
 
         // 使用独立的 ensureContainer 函数
         const container = ensureContainer(mountEl);
-        container.innerHTML = "";
 
         // 排序
         const sorted = window.CoreList._sortEntries(filteredEntries);

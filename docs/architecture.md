@@ -126,9 +126,11 @@ HHXLOYDCS HTML（special/common-head-peur.js）
 
 ### Feature 层
 
-文件示例：`img.js`、`mots.js`、`progression.js`、`chapter-nav.js`、`chapters-sidebar.js`、`list.js`、`catalogue.js`、`tag.js`、`page-number.js`。
+文件示例：`img.js`、`mots.js`、`progression.js`、`chapter-nav.js`、`chapters-sidebar.js`、`list.js`、`catalogue.js`、`tag.js`、`page-number.js`、`tagflow.js`。
 
 负责：明确的页面能力与对应数据/DOM，例如图片增强、字数、阅读进度、列表、标签、章节目录和章节前后导航。
+
+`list.js` 暴露当前唯一跨脚本业务 API `window.CoreList`：`mountList` 供 `catalogue.js` 使用；`_loadDatabases`、`_sortEntries`、`_paginate` 与 `_createTile` 供 `tag.js` 组合标签筛选结果。`page-number.js` 只根据 URL 和固定页数配置创建分页控件，不参与数据加载；`tagflow.js` 独立服务首页标签流。
 
 规则：
 

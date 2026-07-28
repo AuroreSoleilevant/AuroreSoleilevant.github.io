@@ -48,7 +48,6 @@
 
   function createTile(entry, opts) {
     const {
-      id = "",
       url = "#",
       title = "",
       description = "",
@@ -182,7 +181,6 @@
         mountEl.innerHTML = "";
 
         const container = ensureContainer(mountEl);
-        container.innerHTML = "";
 
         pageSlice.forEach((entry) => {
           try {

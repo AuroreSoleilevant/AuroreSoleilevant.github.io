@@ -1,15 +1,14 @@
 //滚动tag
+(() => {
 class TagFlowManager {
   constructor() {
     this.tracks = [];
-    this.animationFrameId = null;
     this.init();
   }
 
   init() {
     this.setupTracks();
     this.setupResizeHandler();
-    this.setupPerformanceOptimization();
   }
 
   setupTracks() {
@@ -143,43 +142,22 @@ class TagFlowManager {
     window.addEventListener("resize", resizeHandler);
   }
 
-  setupPerformanceOptimization() {
-    // 使用 will-change 提前告知浏览器优化
-    document.querySelectorAll(".flow-track").forEach((track) => {
-      track.style.willChange = "transform";
-    });
-  }
-
   updateAllAnimations() {
     this.tracks.forEach((trackData) => {
       this.setupTrackAnimation(trackData);
     });
   }
 
-  destroy() {
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
-  }
 }
 
 // 初始化
-let tagFlowManager;
+function initTagFlow() {
+  new TagFlowManager();
+}
 
-document.addEventListener("DOMContentLoaded", () => {
-  tagFlowManager = new TagFlowManager();
-});
-
-// 响应式更新
-window.addEventListener("resize", () => {
-  if (tagFlowManager) {
-    tagFlowManager.updateAllAnimations();
-  }
-});
-
-// 扫地
-window.addEventListener("beforeunload", () => {
-  if (tagFlowManager) {
-    tagFlowManager.destroy();
-  }
-});
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initTagFlow, { once: true });
+} else {
+  initTagFlow();
+}
+})();

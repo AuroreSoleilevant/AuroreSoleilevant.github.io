@@ -258,7 +258,6 @@
 
     currentEl.setAttribute("aria-current", "page");
 
-    module.dataset.pg2Initialized = "true";
   }
 
   if (document.readyState === "loading") {

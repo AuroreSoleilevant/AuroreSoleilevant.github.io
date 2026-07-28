@@ -50,11 +50,12 @@
 
     const pathname = getPathnameNormalized();
 
+    const mountEl = document.querySelector(mountSelector);
+
     // 优先检查挂载元素上是否指定了 data-json
-    const explicitMount = document.querySelector(mountSelector);
-    if (explicitMount && explicitMount.dataset && explicitMount.dataset.json) {
-      const dbPath = explicitMount.dataset.json;
-      window.CoreList.mountList(dbPath, explicitMount, {
+    if (mountEl && mountEl.dataset && mountEl.dataset.json) {
+      const dbPath = mountEl.dataset.json;
+      window.CoreList.mountList(dbPath, mountEl, {
         pageSize,
         autoFormatDisplay,
       });
@@ -69,7 +70,6 @@
       return;
     }
 
-    const mountEl = document.querySelector(mountSelector);
     if (!mountEl) {
       debugLog(
         `挂载元素 "${mountSelector}" 未找到，请在页面中添加 <div id="mt-list"></div> 或修改 mountSelector 配置。`
