@@ -25,15 +25,6 @@
   const _transCache = new WeakMap();
   const TRANS_CACHE_TTL = 500; // ms
 
-  function ensureFooterVisible(f) {
-    if (!f) return;
-    f.classList.remove("pre-enter", "slide-down");
-    requestAnimationFrame(() => {
-      void f.offsetWidth;
-      f.classList.add("entered");
-    });
-  }
-
   function getTransitionMs(el) {
     if (!el) return 400;
     try {
@@ -358,7 +349,6 @@
 
     const existing = placeholder.querySelector(".site-footer");
     if (existing) {
-      ensureFooterVisible(existing);
       notifyFooterInserted(existing);
       return;
     }
@@ -379,7 +369,6 @@
 
         currPlaceholder.innerHTML = html;
         const footerEl = currPlaceholder.querySelector(".site-footer");
-        ensureFooterVisible(footerEl);
         notifyFooterInserted(footerEl);
 
         const mo = new MutationObserver((mutations, obs) => {
@@ -472,8 +461,6 @@
     prepareFooterInitial();
     requestAnimationFrame(() => {
       fadeInMain();
-      const f = getFooter();
-      if (f) footerEnter(f);
     });
 
     // 尽早发起 header/footer 插入请求（若占位存在则立即）
@@ -489,6 +476,8 @@
 
   // pageshow：兼容 bfcache 恢复，确保 enter 被重新触发，并清理任何悬挂导航计时器
   window.addEventListener("pageshow", (ev) => {
+    if (!ev.persisted) return;
+
     isTransitioning = false;
     const visibilityState = getMainVisibilityState();
     visibilityState.leaving = false;
@@ -508,9 +497,7 @@
 
     const f = getFooter();
     if (f) {
-      f.classList.remove("slide-down");
       prepareFooterInitial(f);
-      ensureFooterVisible(f);
       requestAnimationFrame(() => footerEnter(f));
     } else {
       prepareFooterInitial();

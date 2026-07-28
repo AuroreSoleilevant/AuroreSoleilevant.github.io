@@ -25,7 +25,7 @@
 | `fallbackShown` | Loader fallback | 仅当 1.2 秒 timer 实际为未显示的 main 添加 `loaded` 时设为 `true` |
 | `leaving` | `fade.js` | 同源离场开始或 beforeunload 时设为 `true`，阻止 fallback、rAF 与 retry 重新显示正文 |
 
-Loader 只有在真正强制显示正文时才记录 `fallbackShown`，并沿用 `main:visible` 事件。若正常 `fade.js` 先完成，既有 `main:visible` 会取消 timer，状态不会被误标。`fadeInMain()` 发现 `fallbackShown` 且 main 已有 `loaded` 时直接返回，不再 remove/add class；header/footer、点击拦截、pageshow 和其他入口已在同一脚本初始化时照常继续运行。
+Loader 只有在真正强制显示正文时才记录 `fallbackShown`，并沿用 `main:visible` 事件。若正常 `fade.js` 先完成，既有 `main:visible` 会取消 timer，状态不会被误标。`fadeInMain()` 发现 `fallbackShown` 且 main 已有 `loaded` 时直接返回，不再 remove/add class；header/footer、点击拦截和其他初始化仍照常继续运行。`pageshow` 只处理 `persisted` 的 BFCache 恢复，避免首次加载在 DOMContentLoaded 入场后重复 main/footer 入场。
 
 在离场路径，`notifyMainLeaving()` 和 beforeunload 都标记 `leaving`；`fadeInMain()` 的入口、双 rAF 与两层 retry 都检查它。BFCache 的 persisted pageshow 会清除此文档旧的 `fallbackShown`，让离场前移除的 main 可以按现有恢复路径重新进入；普通初次 pageshow 保留该状态，避免晚到 fade 在 fallback 后再次淡入。
 
@@ -96,7 +96,7 @@ DOM 可交互不必等待 header/footer fetch；它们是后续异步片段。`m
 ### 4. 后退、前进与 BFCache
 
 - 若浏览器重新加载文档：走上面的地址栏流程。
-- 若 BFCache 恢复：既有 JS 堆与 DOM 恢复，`pageshow` 监听（466-491）执行。它不检查 `ev.persisted`，所以初次 pageshow 和 BFCache pageshow 都会执行同一恢复序列：清 `isTransitioning`、再次 `fadeInMain()`、清理导航 timer/listener，并恢复/重触发 footer enter。
+- 若 BFCache 恢复：既有 JS 堆与 DOM 恢复，`pageshow` 监听仅在 `ev.persisted` 时执行恢复序列：清 `isTransitioning`、再次 `fadeInMain()`、清理导航 timer/listener，并恢复/重触发 footer enter。首次加载的非 persisted `pageshow` 直接返回，入场仅由 DOMContentLoaded/readyState 路径负责。
 - `pageshow` 不重新调用 `fetchAndInsertHeader()` 或 `fetchAndInsertFooter()`；这符合 BFCache 中 DOM 已保留的假设。
 
 ### 5. fade.js 完全加载失败
@@ -185,10 +185,12 @@ DOM 可交互不必等待 header/footer fetch；它们是后续异步片段。`m
 
 ### 可能冗余，需独立验证
 
-- 初始加载同样会触发 pageshow，但 `466-491` 不检查 `ev.persisted`，所以正常 DCL 进入后仍会再次 `fadeInMain()`；这可能重复 main/footer 进入序列，但也可能掩盖某些浏览器恢复时序。
-- footer 成功插入时先 `ensureFooterVisible()`（`356-359`），随后 `notifyFooterInserted()` 又置 pre-enter 并调用 `footerEnter()`；其双保险意图明确，是否可合并需视觉测试。
 - `notifyFooterInserted()` 的 20ms 成功路径与 40ms catch 路径有相似的 class 清理、进入和事件派发；catch 仍可能承接 then 回调内部异常，不能直接删。
 - header/footer 的 MutationObserver 在成功插入后持续观察占位，直到占位被清空才 disconnect；这是恢复保护，也可能是长寿命观察器。
+
+### 已清理的 footer 可见性重复
+
+`ensureFooterVisible()` 曾在新插入 footer、已有 footer 的重取路径和 BFCache 恢复中安排一次单 rAF 的 `entered`。前两条路径随即调用 `notifyFooterInserted()`，后者会重设 `pre-enter`，等待图片完成、错误或 2 秒 timeout 后再通过 `footerEnter()` 安排完整双 rAF 入场；BFCache 路径则紧接着由 `footerEnter()` 执行同样的完整入场。因此该函数及三处调用只会产生重复 class 写入/rAF，未提供独立故障恢复能力，现已删除。公开 HTML 不含 `.site-footer`，footer 只来自 fragment，故 DOMContentLoaded rAF 中对“可能刚插入”的 footer 再调用 `footerEnter()` 也没有独立职责，并会与 `notifyFooterInserted()` 竞争，现一并删除。BFCache 仍由 `prepareFooterInitial()` 加 `footerEnter()` 恢复；图片、fragment 请求和重试故障仍由 `notifyFooterInserted()` 的 load/error/timeout 与 fetch retry 路径处理。
 
 ### 明显无仓库消费者但仍需单独验证
 
