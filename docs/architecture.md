@@ -16,8 +16,7 @@
 
 HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。加载器当前按以下顺序工作：
 
-1. 以同步 XHR 取得并以内联脚本执行 `/js/fade.js`。
-2. 安装正文可见性降级保护；它只在 `fade.js` 未正常把正文显示出来时生效。
+1. 先安装正文可见性降级保护，再由 Loader 创建经典外链脚本 `/js/fade.js`；它只在 `fade.js` 未正常把正文显示出来时生效。
 3. 由 Loader 创建经典外链脚本 `/js/img.js`；该 IIFE 自行判断 DOM 状态并登记图片任务，实际处理会在 DOMContentLoaded 后的 idle/timeout 阶段开始。
 4. 动态插入字体 preload、全局样式、进度条样式、吉祥物样式和站点图标。
 5. 动态插入共享功能脚本：`mots.js`、`backtop.js`、`blink.js`、`headtran.js`、`progression.js`、`mascot.js`。
@@ -27,7 +26,7 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
 
 ### `HHXLOYDCS` 特殊主题页面
 
-特殊页面用 `/js/special/common-head-peur.js`，流程与普通入口的基础部分相同：同步执行 `fade.js`、安装正文可见性保护、由 Loader 加载 `img.js`，动态插入字体与基础样式，然后动态插入 `mots.js`、`backtop.js`、`blink.js`、`headtran.js`、`progression.js`。
+特殊页面用 `/js/special/common-head-peur.js`，流程与普通入口的基础部分相同：先安装正文可见性保护，再由 Loader 加载 `fade.js` 和 `img.js`，动态插入字体与基础样式，然后动态插入 `mots.js`、`backtop.js`、`blink.js`、`headtran.js`、`progression.js`。
 
 它额外载入 `/css/special/style_peur.css`，但不载入 `mascot.js` 或 mascot CSS。特殊页面还在各自 HTML 中直接载入 `giscus-peur.js`；这不是特殊加载器的延迟脚本。
 
@@ -47,7 +46,7 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
 
 ```text
 普通 HTML（经典 common-head.js）
-├── 同步：fade.js ──┬── main.loaded / 完整页面导航
+├── Loader 外链脚本：fade.js ──┬── main.loaded / 完整页面导航
 │                  ├── fetch header.inc ──> header:inserted ──> blink.js
 │                  └── fetch footer.inc ──> backtop.js 可计算页脚偏移
 ├── Loader 外链脚本：img.js ─> DOMContentLoaded / idle 后处理 img 与 .bg-image
@@ -65,7 +64,7 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
         └── nav：URL、同一 JSON、#chapter-nav-root、章节侧栏按钮
 
 HHXLOYDCS HTML（special/common-head-peur.js）
-├── 与上方共享：同步 fade.js、Loader 外链 img.js、mots.js、backtop.js、blink.js、headtran.js、progression.js
+├── 与上方共享：Loader 外链 fade.js、Loader 外链 img.js、mots.js、backtop.js、blink.js、headtran.js、progression.js
 ├── 特殊覆盖：css/special/style_peur.css
 └── 页面专属：giscus-peur.js、分支 HTML、图片与音频
 ```
@@ -100,6 +99,7 @@ HHXLOYDCS HTML（special/common-head-peur.js）
 - 新脚本只有在“所有该入口覆盖的页面都需要它”时才可加入入口。
 - 有严格依赖的动态脚本必须明确等待前一个脚本完成；不要只靠数组顺序。
 - 加载器不能重复注入同一资源；任何新增 fallback 必须可清理且有唯一 guard。
+- 新增 Loader 级脚本默认使用外链脚本，不得以同步 XHR 取回后以内联脚本执行。应声明失败后的降级边界；首屏可见性等关键状态应通过明确状态/事件协作，而不是叠加任意延迟。
 
 ### Lifecycle 层
 
@@ -241,18 +241,15 @@ node tools/verify-content.mjs
 - `mascot.js`：仅普通桌面页面需要，特殊主题不加载。
 - `special/common-head-peur.js` 与 `css/special/style_peur.css`：仅 `HHXLOYDCS` 页面需要。
 
-### 当前同步 XHR 实际承担的职责
+### Loader 中的同步 XHR
 
-两个入口当前只用同步 XHR 取得：
+两个入口不再通过同步 XHR 取得 Loader 管理的脚本：`fade.js` 与 `img.js` 都由 Loader 各创建一次经典外链 script。`fade.js` 在正文可见性 fallback 安装之后插入；若请求失败，fallback 仍会在约 1.2 秒后显示正文，但 header/footer、离场动画和导航拦截属于预期降级。
 
-1. `/js/fade.js`：立即注册页面生命周期、导航和 header/footer 的 DOM 就绪处理。
-`/js/img.js` 不再属于同步 XHR 资源：两个 Loader 都直接创建一次经典外链 script。它不被其他脚本调用；自身会根据 `document.readyState` 注册或安排图片处理，当前作用是为启动时存在的图片加入 `loaded`，并为未来 `.bg-image` 标记提供处理逻辑。
-
-同步 XHR 不负责取得 header/footer 片段、故事 JSON、章节 JSON、评论、图片或音频；这些由后续 fetch、页面资源或功能脚本处理。不要把“同步 XHR 很旧”当成可以直接删除的理由；先证明替代方案能维持注册时机、可靠性 fallback 和视觉基准。
+`img.js` 不被其他脚本调用；自身会根据 `document.readyState` 注册或安排图片处理，当前作用是为启动时存在的图片加入 `loaded`，并为未来 `.bg-image` 标记提供处理逻辑。header/footer 片段、故事 JSON、章节 JSON、评论、图片和音频仍由后续 fetch、页面资源或功能脚本处理。
 
 ## 下一阶段建议
 
 1. 先用本说明为新增功能设定接入边界，不改加载时序。
 2. 单独审计动态脚本的真实下载/执行顺序与冷缓存表现。
 3. 单独确认特殊页面的阅读进度锚点是否完整；这属于功能数据/DOM 审计，不应和加载器改动混在一起。
-4. 若未来确实要替换同步 XHR，先写兼容设计、浏览器故障测试和可回滚小步骤，再实施。
+4. 后续若调整 Loader 外链脚本的下载或执行顺序，先写兼容设计、浏览器故障测试和可回滚小步骤，再实施。

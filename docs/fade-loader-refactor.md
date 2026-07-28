@@ -1,10 +1,10 @@
-# `fade.js` 同步启动职责审计与设计记录
+# `fade.js` 外链加载与可见性协议记录
 
-审计日期：2026-07-28。本文记录代码事实、已实现的可见性兼容协议和未来设计边界；本轮没有改变 HTML、CSS、同步 XHR 或 `fade.js` 的加载方式。
+审计与实施日期：2026-07-28。本文记录代码事实、已实现的可见性兼容协议和当前外链加载边界；没有改变 HTML、CSS、`fade.js` 内容或完整页面导航模型。
 
 ## 结论先行
 
-当前 `fade.js` 被两个 Loader 以同步 XHR 取得并立即以内联脚本执行。这样做保证它能在 HTML 仍解析时注册 DOMContentLoaded、页面点击、pageshow、beforeunload 监听器。
+两个 Loader 现在先安装正文可见性 fallback，再创建一次经典外链脚本 `/js/fade.js`。代码不显式设置 `async`、`defer` 或 preload，也不再以 XHR 取回脚本文本；动态创建的经典脚本采用浏览器默认的异步下载/执行语义。`fade.js` 自身的 `document.readyState` 分支使它无论在 DOMContentLoaded 前后到达，都能登记或直接运行初始化。
 
 但从 `fade.js` 自身的 `document.readyState` 分支可证明：**header/footer fetch、main 淡入、页脚动画和大多数初始化并不要求脚本一定在 DOMContentLoaded 前执行；晚到后仍会主动运行初始化。**
 
@@ -14,7 +14,7 @@
 2. 若希望用户第一次可点击的同源链接也有离场淡出，捕获阶段 click 监听应尽早注册。晚到不会破坏导航，只会让极早的一次点击走浏览器默认完整导航。
 3. 页面进入时，须让 `fade.js` 与两个 Loader 的 1.2 秒正文 fallback 协调，避免 fallback 先显示正文后，晚到的 `fadeInMain()` 又移除 `loaded` 并触发第二次淡入。
 
-因此，不能据此直接把整个文件改为普通外链脚本。本轮已先建立可见性状态的幂等协作；同步 XHR 仍保留。
+为避免慢网时的二次淡入，本轮先前建立的可见性状态协议保持不变：fallback 已显示正文后，晚到的 `fade.js` 只接管完整生命周期，不再移除 `loaded`。这使 Loader 外链加载可以保持故障降级，而不改变正常淡入时长。
 
 ## 已实现的共享状态协议
 
@@ -56,16 +56,15 @@ Loader 只有在真正强制显示正文时才记录 `fallbackShown`，并沿用
 
 ```text
 HTML 解析到 Loader（head）
-  -> 同步 XHR 执行 fade.js
-  -> fade.js 发现 readyState=loading，登记 DOMContentLoaded
-  -> 立即登记 capture click、pageshow、beforeunload
-  -> Loader 登记 1.2s main fallback
+  -> Loader 初始化可见性状态并登记 DOMContentLoaded fallback
+  -> Loader 创建一次外链 fade.js script
+  -> fade.js 若已下载且 readyState=loading，则登记 DOMContentLoaded、capture click、pageshow、beforeunload
 HTML 继续解析，body/main/header/footer 占位出现
 DOMContentLoaded
-  -> fade.js 的 onDOMReadyInit（它先登记，所以先运行）
+  -> Loader fallback 开始 1.2s 计时
+  -> 若 fade.js 已到达，其 onDOMReadyInit 运行
   -> 准备 footer 初态；下一帧安排 fadeInMain
   -> 开始 header/footer 两个异步 fetch（cache: no-cache）
-  -> Loader fallback 开始 1.2s 计时
 两次 rAF
   -> fadeInMain 添加 main.loaded，派发 main:visible，取消 Loader fallback
 header fetch 完成 -> 插入 header -> 下一任务派发 header:inserted
@@ -76,7 +75,7 @@ DOM 可交互不必等待 header/footer fetch；它们是后续异步片段。`m
 
 ### 2. 温缓存进入
 
-源码流程不变：同步 XHR 仍发生，两个 fragment fetch 仍带 `cache: no-cache`。差异只能是浏览器缓存、连接和图片 `complete` 状态使脚本、fetch 或 footer 图片等待更快完成；代码没有单独的“温缓存分支”。若 footer 图片已 `complete`，`notifyFooterInserted()` 立即得到 resolved Promise；header 事件仍经 `setTimeout(..., 0)` 派发。
+源码流程不变：两个 fragment fetch 仍带 `cache: no-cache`。温缓存可能让外链 fade.js、fragment、连接和图片 `complete` 状态更快完成；代码没有单独的“温缓存分支”。若 footer 图片已 `complete`，`notifyFooterInserted()` 立即得到 resolved Promise；header 事件仍经 `setTimeout(..., 0)` 派发。
 
 ### 3. 站内链接跳转
 
@@ -103,7 +102,7 @@ DOM 可交互不必等待 header/footer fetch；它们是后续异步片段。`m
 
 ### 5. fade.js 完全加载失败
 
-若同步 XHR 失败，Loader 会记录错误，然后仍安装正文 fallback。DOMContentLoaded 后约 1.2 秒，fallback 给未加载的 main 添加 `loaded`，故正文最终可见。
+若外链 fade.js 请求失败，Loader 的 error 监听会记录错误，已安装的正文 fallback 仍会在 DOMContentLoaded 后约 1.2 秒给未加载的 main 添加 `loaded`，故正文最终可见。
 
 仍会损失：header/footer fetch 与插入、页脚进出场、同源链接离场动画、`main:visible`/`main:leaving`/header/footer 自定义事件、BFCache 恢复与导出的重取函数。fallback 本身不派发 `main:visible`。
 
@@ -156,8 +155,8 @@ DOM 可交互不必等待 header/footer fetch；它们是后续异步片段。`m
 
 | 路线 | 优点 | 风险 / 结论 |
 | --- | --- | --- |
-| A. 保持整体同步 | 当前首帧、click 拦截、BFCache 时序已人工验证 | 同步 XHR 阻塞解析；短期最稳定，但不是长期唯一选择 |
-| B. 整体改为 Loader 动态外链 | 不改 284 个 HTML，header/footer 的 readyState 路径仍可工作 | 慢网可能使 main 在 fallback 前保持透明；fallback 先显示后晚到 fade 重置 class 会二次淡入；首次点击可能无离场动画。未准备好直接实施 |
+| A. 保持整体同步（历史方案） | 脚本解析期立即执行 | 同步 XHR 阻塞解析，且不再是当前实现 |
+| B. Loader 动态外链（当前方案） | 不改 284 个 HTML，header/footer 的 readyState 路径仍可工作，不再阻塞 HTML 解析 | 慢网可能使 main 在 fallback 前保持透明；状态协议已阻止 fallback 后二次淡入；脚本到达前的首次点击仍可能走浏览器默认导航 |
 | C. 解析器管理的 defer | 浏览器提供 DCL 前的稳定执行语义 | 当前 HTML 没有直接引用 fade.js；若逐页加 script，涉及 284 页并扩大 URL/模板维护范围，不推荐作为第一步 |
 | D. 最小启动核心 + 生命周期脚本 | 可把“首帧可见性”与 header/footer/导航实现分开；可测试和回滚 | 需明确状态握手，避免与现有 Loader fallback 重复；可能新增请求或重复代码。最有前景，但先做幂等准备实验 |
 | E. header/footer 从 fade.js 分离 | 未来可降低 fade 文件职责 | 不是让同步 XHR 退休的前提；header/footer 本来就在 DCL 后 fetch，应在可见性路线验证后独立评估 |
@@ -173,7 +172,7 @@ DOM 可交互不必等待 header/footer fetch；它们是后续异步片段。`m
 3. 晚到的 `fadeInMain()` 识别 `fallbackShown` 且 main 已可见时不会 remove `loaded`，不会再触发一次淡入；
 4. `leaving` 同时阻止 fallback、rAF 与 retry 在离场时重新显示正文。
 
-因此，当前 fallback 已能与晚到 fade 协作，但尚未证明动态外链的冷缓存、慢网与 BFCache 体验。任何简化或删除 fallback 的讨论都必须等异步化、慢网、阻断脚本和 BFCache 验证通过后再进行。
+因此，当前 fallback 能与晚到的外链 fade 协作；冷缓存、慢网、阻断脚本和 BFCache 的浏览器验证仍是保留或简化机制前的前提。任何删除 fallback 的讨论都必须等这些验证通过后再进行。
 
 ## 冗余与保留审计
 
@@ -198,13 +197,12 @@ DOM 可交互不必等待 header/footer fetch；它们是后续异步片段。`m
 
 ## 下一轮唯一推荐实验
 
-先完成本轮协议的人工故障验证：普通首页、`/autre/moi/`、普通文章、长章节、HHXLOYDCS 入口和 M4R12；各做冷缓存、温缓存、阻断 fade、慢网、地址栏进入、刷新、五次站内跳转、后退/前进与 BFCache。重点观察 main 是否闪回、header/footer 是否仍插入、顶栏、footer、阅读进度与控制台。
+本轮实施后应验证：普通首页、`/autre/moi/`、普通文章、长章节、HHXLOYDCS 入口和 M4R12；各做冷缓存、温缓存、阻断 fade、慢网、地址栏进入、刷新、五次站内跳转、后退/前进与 BFCache。重点观察 main 是否闪回、header/footer 是否仍插入、顶栏、footer、阅读进度与控制台。
 
-仅在上述验证通过后，下一项运行时实验才是把两个 Loader 中的 `fade.js` 由同步 XHR 改成一次普通经典外链 script，并保留本轮状态协议与 fallback。范围仍限制为 `js/common-head.js`、`js/special/common-head-peur.js`、`js/fade.js`，不拆 header/footer、不改 HTML。成功标准：正常路径淡入时长不变；fallback 先到后无二次淡入；离场不被拉回；两个 Loader 一致。失败时回滚这三个文件的独立 diff。
+下一步不应立即继续改动运行时代码，而应先记录这些浏览器验证结果。若失败，只需回滚两个 Loader 中创建 `/js/fade.js` 外链 script 的独立 diff；不需要改动 HTML、CSS、header/footer 或 `fade.js`。
 
 ## 暂不处理
 
-- 不移除同步 XHR。
 - 不拆分 header/footer。
 - 不删除 pageshow、observer、retry 或 timeout。
 - 不修改 284 个 HTML 以引入 defer。

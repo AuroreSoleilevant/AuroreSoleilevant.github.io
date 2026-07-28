@@ -2,29 +2,6 @@
   const head = document.head;
   const version1 = "191025.1"; // style.css 版本号
 
-  // ------------------------
-  // 同步注入脚本
-  // ------------------------
-  function injectSyncScript(src) {
-    // 使用同步 XHR 获取并立即以内联脚本形式注入（感觉得慎用）
-    try {
-      const xhr = new XMLHttpRequest();
-      xhr.open("GET", src, false); // false = 同步，确保脚本尽早执行
-      xhr.send(null);
-      if (xhr.status === 200) {
-        const s = document.createElement("script");
-        s.textContent = xhr.responseText;
-        head.appendChild(s);
-        return true;
-      } else {
-        console.error("同步加载失败：", src, "状态码：", xhr.status);
-      }
-    } catch (err) {
-      console.error("同步加载出错：", src, err);
-    }
-    return false;
-  }
-
   function installMainVisibilityFallback() {
     if (window.__mainVisibilityFallbackInstalled) return;
     window.__mainVisibilityFallbackInstalled = true;
@@ -110,9 +87,7 @@
         s.defer = true;
         head.appendChild(s);
       } catch (e) {
-        // 回退到同步 XHR
-        console.warn("defer 注入失败，改回同步加载：", src, e);
-        injectSyncScript(src);
+        console.warn("defer 注入失败：", src, e);
       }
     });
   }
@@ -120,8 +95,13 @@
   // ================================
   // 最快加载区
   // ================================
-  injectSyncScript("/js/fade.js");
   installMainVisibilityFallback();
+  const fadeScript = document.createElement("script");
+  fadeScript.src = "/js/fade.js";
+  fadeScript.addEventListener("error", () => {
+    console.error("脚本加载失败：/js/fade.js");
+  });
+  head.appendChild(fadeScript);
   const imgScript = document.createElement("script");
   imgScript.src = "/js/img.js";
   head.appendChild(imgScript);
@@ -162,10 +142,6 @@
   // ================================
   // 普通加载区
   // ================================
-  const syncScripts = [
-    // 同步执行内容位置
-  ];
-
   const deferredScripts = [
     "/js/mots.js", // 字数统计
     "/js/backtop.js", // 回到顶部按钮
@@ -175,8 +151,5 @@
   ];
 
   preloadAndDeferScripts(deferredScripts);
-
-  // 同步脚本（仅在数组中有项时才执行同步加载）
-  syncScripts.forEach((src) => injectSyncScript(src));
 
 })();
