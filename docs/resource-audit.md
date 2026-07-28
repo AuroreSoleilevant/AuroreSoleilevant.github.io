@@ -108,7 +108,7 @@
 | 文件 | 使用的 API（出现次数） | DCL |
 | --- | --- | ---: |
 | `backtop.js` | MO×1、RO×5、rAF×1、TO×4 | 1 |
-| `blink.js` | rAF×2、TI×1 | 1 |
+| `blink.js` | rAF×2 | 1 |
 | `catalogue.js` | 无上述异步/观察 API | 1 |
 | `chapter-nav.js` | F×1 | 1 |
 | `chapters-sidebar.js` | rAF×2、F×1 | 1 |

@@ -87,7 +87,7 @@ HHXLOYDCS HTML（special/common-head-peur.js）
 | `fade.js` | `main`、header/footer 占位、同源链接 | 作品 JSON、章节 DOM、吉祥物 |
 | `img.js` | 启动时快照中的 `document.images`；当前 `.resp-img` 会获得 `loaded` 入场类 | header、footer、章节 JSON、其他脚本 API |
 | `headtran.js` | 动态 header、滚动状态 | footer、故事数据 |
-| `blink.js` | `.nav-item` 或 `header:inserted` | footer、章节系统 |
+| `blink.js` | 已有 `.nav-item` 或 `header:inserted`；重插入时重新绑定新节点 | footer、章节系统 |
 | `backtop.js` | main/body、可选 footer、可选评论容器 | header、章节 JSON |
 | `progression.js` | 同时存在起点与终点 data 属性；Loader 先加载对应 CSS | header、footer、作品 JSON |
 | `mots.js` | main、可选 `#count`；DOM 就绪后单次统计，无目标时安静退出 | header、footer |

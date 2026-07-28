@@ -44,6 +44,11 @@
     let needKeep = false; // 是否还需要继续动画
     for (const [el, state] of states.entries()) {
       try {
+        if (!document.contains(el)) {
+          states.delete(el);
+          continue;
+        }
+
         // 确保元素初始 opacity （避免某些很奇怪的 CSS 未设置）
         if (!el.style.opacity) el.style.opacity = "1";
 
@@ -131,19 +136,19 @@
       // 确保初始样式（避免某些一样很奇怪的 CSS 未显式重置）
       if (!elem.style.opacity) elem.style.opacity = "1";
 
-      // 使用 pointer 事件兼容 touch 与鼠标行为（pointerenter/leave 行为类似 mouseenter）
-      elem.addEventListener("pointerenter", () => handleEnter(elem));
-      elem.addEventListener("pointerleave", () => handleLeave(elem));
-
-      // 用来防止古代浏览器出现什么问题
-      // 只有在指针事件不可用时才会触发这些（browser 会同时支持 pointer events 大多数场景）
-      elem.addEventListener("mouseenter", () => handleEnter(elem));
-      elem.addEventListener("mouseleave", () => handleLeave(elem));
+      if ("PointerEvent" in window) {
+        elem.addEventListener("pointerenter", () => handleEnter(elem));
+        elem.addEventListener("pointerleave", () => handleLeave(elem));
+      } else {
+        elem.addEventListener("mouseenter", () => handleEnter(elem));
+        elem.addEventListener("mouseleave", () => handleLeave(elem));
+      }
     });
   }
 
   // 在 header:inserted 时初始化（支持动态插入）
   document.addEventListener("header:inserted", () => {
+    cleanupStates();
     initNavBlink();
   });
 
@@ -174,6 +179,4 @@
     }
     if (!anyActive) stopLoop();
   }
-  // 轻量低频周期性清理
-  setInterval(cleanupStates, 5000);
 })();
