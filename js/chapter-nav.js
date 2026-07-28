@@ -2,6 +2,7 @@
 (function () {
   const ROOT_ID = "chapter-nav-root";
   const JSON_BASE = "/json/histoire/"; // JSON 存放目录
+  const SHARED_CHAPTER_JSON_CACHE = "__chapterJsonRequests";
   let chaptersCache = {}; // 缓存 per workName
 
   // 解析 URL 得到 workName 与 currentId（若无 /n 则视为首页 = 0）
@@ -22,15 +23,38 @@
     return { workName, currentId: finalId, basePath };
   }
 
+  function getSharedChapterJson(workName) {
+    let cache = window[SHARED_CHAPTER_JSON_CACHE];
+    if (!cache) {
+      cache = Object.create(null);
+      window[SHARED_CHAPTER_JSON_CACHE] = cache;
+    }
+
+    if (!cache[workName]) {
+      const path = JSON_BASE + encodeURIComponent(workName) + ".json";
+      cache[workName] = fetch(path, { cache: "no-cache" })
+        .then((resp) => {
+          if (!resp.ok) throw new Error("HTTP " + resp.status);
+          return resp.json();
+        })
+        .then(
+          (data) => ({ data }),
+          (error) => ({ error })
+        );
+    }
+
+    return cache[workName];
+  }
+
   // 读取 json（缓存）
   async function fetchChapters(workName) {
     if (!workName) return null;
     if (chaptersCache[workName]) return chaptersCache[workName];
     const path = JSON_BASE + encodeURIComponent(workName) + ".json";
     try {
-      const resp = await fetch(path, { cache: "no-cache" });
-      if (!resp.ok) throw new Error("HTTP " + resp.status);
-      const data = await resp.json();
+      const result = await getSharedChapterJson(workName);
+      if (result.error) throw result.error;
+      const data = result.data;
       const list = Array.isArray(data)
         ? data
         : data && data.chapters

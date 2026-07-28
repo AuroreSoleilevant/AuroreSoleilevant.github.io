@@ -5,11 +5,11 @@
   const OVERLAY_CLASS = "chapter-overlay";
   const VISIBLE_CLASS = "visible";
   const POP_CLASS = "pop";
+  const SHARED_CHAPTER_JSON_CACHE = "__chapterJsonRequests";
 
   let toggleBtn = null;
   let sidebar = null;
   let overlay = null;
-  let chaptersCache = null; // 缓存已加载的 JSON
 
   /* ---------- 解析当前 URL 得到作品名与当前章节 id ---------- */
   function getWorkInfo() {
@@ -30,6 +30,29 @@
       : 0;
     const basePath = `/histoire/${encodeURIComponent(workName)}`;
     return { workName, currentId: finalId, basePath };
+  }
+
+  function getSharedChapterJson(workName) {
+    let cache = window[SHARED_CHAPTER_JSON_CACHE];
+    if (!cache) {
+      cache = Object.create(null);
+      window[SHARED_CHAPTER_JSON_CACHE] = cache;
+    }
+
+    if (!cache[workName]) {
+      const path = `/json/histoire/${encodeURIComponent(workName)}.json`;
+      cache[workName] = fetch(path, { cache: "no-cache" })
+        .then((resp) => {
+          if (!resp.ok) throw new Error("HTTP " + resp.status);
+          return resp.json();
+        })
+        .then(
+          (data) => ({ data }),
+          (error) => ({ error })
+        );
+    }
+
+    return cache[workName];
   }
 
   /* ---------- 创建侧栏（DOM） ---------- */
@@ -216,18 +239,10 @@
 
     const jsonPath = `/json/histoire/${encodeURIComponent(info.workName)}.json`;
 
-    // 如果已缓存，直接渲染缓存
-    if (chaptersCache && chaptersCache.workName === info.workName) {
-      renderChapters(chaptersCache.data, info);
-      return;
-    }
-
     try {
-      const resp = await fetch(jsonPath, { cache: "no-cache" });
-      if (!resp.ok) throw new Error("HTTP " + resp.status);
-      const data = await resp.json();
-      // 缓存（包括 workName）
-      chaptersCache = { workName: info.workName, data };
+      const result = await getSharedChapterJson(info.workName);
+      if (result.error) throw result.error;
+      const data = result.data;
       renderChapters(data, info);
     } catch (err) {
       console.error("无法加载章节 JSON:", jsonPath, err);

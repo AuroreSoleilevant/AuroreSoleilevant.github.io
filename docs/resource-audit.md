@@ -110,8 +110,8 @@
 | `backtop.js` | MO×1、RO×5、rAF×1、TO×4 | 1 |
 | `blink.js` | rAF×2 | 1 |
 | `catalogue.js` | 无上述异步/观察 API | 1 |
-| `chapter-nav.js` | F×1 | 1 |
-| `chapters-sidebar.js` | rAF×2、F×1 | 1 |
+| `chapter-nav.js` | 共享章节 JSON fetch（与 sidebar 同文档合计 F×1） | 1 |
+| `chapters-sidebar.js` | rAF×2、共享章节 JSON fetch（同文档合计 F×1） | 1 |
 | `common-head.js` | TO×1 | 2 |
 | `common-his.js` | 无 | 0 |
 | `fade.js` | MO×2、rAF×7、TO×13、F×2 | 1 |

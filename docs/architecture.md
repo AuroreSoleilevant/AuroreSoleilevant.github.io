@@ -72,6 +72,7 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
     └── 串行动态 JS：chapters-sidebar.js → chapter-nav.js
         ├── sidebar：URL、/json/histoire/<作品 ID>.json、main/body
         └── nav：URL、同一 JSON、#chapter-nav-root、章节侧栏按钮
+            └── 两组件通过页面级 `window.__chapterJsonRequests` 复用进行中或已完成的原始 JSON 请求
 
 HHXLOYDCS HTML（special/common-head-peur.js）
 ├── 与上方共享：Loader 外链 fade.js、Loader 外链 img.js、mots.js、backtop.js、blink.js、headtran.js
