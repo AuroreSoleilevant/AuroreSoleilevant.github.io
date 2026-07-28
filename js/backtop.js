@@ -229,9 +229,6 @@
     );
 
     // 键盘可访问性
-    try {
-      btn.removeEventListener("keydown", onKey);
-    } catch (e) {}
     btn.addEventListener("keydown", onKey);
 
     // 若浏览器支持 ResizeObserver，监听 footer 大小变化以即时更新偏移
@@ -265,7 +262,10 @@
               obs.disconnect();
             }
           });
-          mo.observe(document.body, { childList: true, subtree: true });
+          const footerPlaceholder = document.getElementById(
+            "footer-placeholder"
+          );
+          mo.observe(footerPlaceholder, { childList: true });
         }
       }
     } catch (e) {
@@ -452,25 +452,12 @@
     }
   }
 
-  /* 在已有的安装点中加入调用（只注册必要的事件） */
+  /* 评论按钮只需创建与初始同步；全局 resize/pageshow 由 init 统一处理。 */
   function installCommentHandlers() {
     if (commentHandlersInstalled) return;
     commentHandlersInstalled = true;
 
     createCommentButton();
     updateCommentOffset();
-    // 只注册 resize/pageshow/touchend fallback
-    window.addEventListener(
-      "resize",
-      () => {
-        updateCommentOffset();
-        checkCommentBtnVisibilitySimple();
-      },
-      { passive: true }
-    );
-    window.addEventListener("pageshow", () => {
-      updateCommentOffset();
-      checkCommentBtnVisibilitySimple();
-    });
   }
 })();

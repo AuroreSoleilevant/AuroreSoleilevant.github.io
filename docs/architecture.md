@@ -27,6 +27,12 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
 
 当前这组功能脚本没有彼此的严格执行顺序契约：`mots.js` 只检查 main/可选 `#count`；`backtop.js` 可等待晚到 footer；`blink.js` 等待 `header:inserted`；`headtran.js` 自行观察动态 header；`mascot.js` 只依赖自身 DOM 与资源。因此保持并行动态注入，不增加串行 Loader。
 
+### 全局 CSS 与字体资源
+
+两个 Loader 都在解析器执行入口脚本期间、body 解析前动态插入 link：先是 latin/cjk 两个字体 preload，再是 `/css/style.css?v=191025.1`，随后普通页插入 `/css/mascot.css`，特殊页插入 `/css/special/style_peur.css`，最后是图标。特殊覆盖在全局样式之后进入 DOM，故 CSS 级联顺序稳定；普通 Loader 不插入特殊 CSS，特殊 Loader 不插入 mascot CSS。页面自身后续的组件 CSS 仍由 HTML 或页面专属 Loader 另行插入。
+
+`style.css` 的三个 `@font-face` 都使用 `LXGWWenKai`：latin 与 cjk 的 WOFF2 URL、`font/woff2` 类型和匿名 CORS preload 配置完全对应，且这两类字形由全站排版使用；ext WOFF2 仅在 CSS unicode-range 命中扩展汉字时请求，故不作全站 preload。当前没有重复、失配或页面族误加载的 link。由于基础样式 link 会在 body 出现前插入，且 stylesheet 本身已有浏览器的样式优先级，没有静态证据支持改变顺序或额外提权；冷缓存 FOUC/字体切换仍应以浏览器人工检查确认。
+
 ### `HHXLOYDCS` 特殊主题页面
 
 特殊页面用 `/js/special/common-head-peur.js`，流程与普通入口的基础部分相同：先安装正文可见性保护，再由 Loader 加载 `fade.js` 和 `img.js`，动态插入字体与基础样式，然后动态插入 `mots.js`、`backtop.js`、`blink.js`、`headtran.js`。只有同时具备两个阅读进度锚点的页面才会额外加载 progression；当前 `HHXLOYDCS` 页面没有完整锚点，故不会请求该资源。
