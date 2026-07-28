@@ -382,7 +382,7 @@
             }
           }
         });
-        mo.observe(currPlaceholder, { childList: true, subtree: true });
+        mo.observe(currPlaceholder, { childList: true });
       })
       .catch(() => {
         if (_fetchRetries < _maxRetries) {
@@ -446,7 +446,7 @@
             }
           }
         });
-        mo.observe(currPlaceholder, { childList: true, subtree: true });
+        mo.observe(currPlaceholder, { childList: true });
       })
       .catch(() => {
         if (_headerRetries < _headerMaxRetries) {

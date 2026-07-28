@@ -186,7 +186,10 @@ DOM 可交互不必等待 header/footer fetch；它们是后续异步片段。`m
 ### 可能冗余，需独立验证
 
 - `notifyFooterInserted()` 的 20ms 成功路径与 40ms catch 路径有相似的 class 清理、进入和事件派发；catch 仍可能承接 then 回调内部异常，不能直接删。
-- header/footer 的 MutationObserver 在成功插入后持续观察占位，直到占位被清空才 disconnect；这是恢复保护，也可能是长寿命观察器。
+
+### 已收窄的片段恢复观察
+
+header 与 footer 各在成功插入后创建一个 MutationObserver，目标仅为各自的占位节点。它们只需检测直接子节点被移除、使占位内容为空的情况；此时会先 `disconnect()`，再沿用既有重试函数。`header:inserted` 与 `footer:inserted` 只声明插入完成，不能替代“后来被外部清空”的恢复检测；fetch 的 catch 也只覆盖请求失败，不能替代它。因此两个 Observer 保留，但从 `childList + subtree` 收窄为仅 `childList`，不再观察片段内部的无关 DOM 变化。
 
 ### 已清理的 footer 可见性重复
 
