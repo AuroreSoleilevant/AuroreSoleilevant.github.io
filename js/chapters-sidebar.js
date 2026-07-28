@@ -5,7 +5,6 @@
   const OVERLAY_CLASS = "chapter-overlay";
   const VISIBLE_CLASS = "visible";
   const POP_CLASS = "pop";
-  const SHOW_THRESHOLD = 120;
 
   let toggleBtn = null;
   let sidebar = null;
@@ -74,21 +73,11 @@
     host.appendChild(sidebar);
     host.appendChild(overlay);
 
-    // 鼠标悬停标记（用于 wheel 处理）
-    let sidebarHover = false;
-    sidebar.addEventListener("mouseenter", () => {
-      sidebarHover = true;
-    });
-    sidebar.addEventListener("mouseleave", () => {
-      sidebarHover = false;
-    });
-
     // 平滑控制与防止边界滚动传递
     sidebar.style.scrollBehavior = "auto";
     sidebar.style.overscrollBehavior = "contain";
     sidebar.style.webkitOverflowScrolling = "touch";
 
-    let rafId = null;
     let targetScroll = 0;
     let animating = false;
     const speedMultiplier = 1; // 速度，越大越快
@@ -115,15 +104,14 @@
           if (Math.abs(diff) < 0.2) {
             sidebar.scrollTop = targetScroll;
             animating = false;
-            rafId = null;
             return;
           }
         }
 
-        rafId = requestAnimationFrame(step);
+        requestAnimationFrame(step);
       }
 
-      rafId = requestAnimationFrame(step);
+      requestAnimationFrame(step);
     }
 
     // wheel 事件处理
@@ -316,64 +304,14 @@
     });
   }
 
-  /* ---------- 其余函数，也许没用上，但是先留着，以后的事情只有天知道 ---------- */
-  function showToggleButton() {
-    createToggleButton();
-    if (toggleBtn.classList.contains(VISIBLE_CLASS)) return;
-    toggleBtn.classList.add(VISIBLE_CLASS);
-    toggleBtn.classList.remove(POP_CLASS);
-    void toggleBtn.offsetWidth;
-    toggleBtn.classList.add(POP_CLASS);
-  }
-  function hideToggleButton() {
-    createToggleButton();
-    toggleBtn.classList.remove(VISIBLE_CLASS);
-    toggleBtn.classList.remove(POP_CLASS);
-  }
-
-  /* 这两个别动 */
-  function readCSSVarInt(name, fallback = 0) {
-    const val = getComputedStyle(document.documentElement).getPropertyValue(
-      name
-    );
-    const n = parseInt(val, 10);
-    return Number.isFinite(n) ? n : fallback;
-  }
-
-  function updateToggleOffset() {
-    createToggleButton();
-    const base = readCSSVarInt("--backtop-bottom", 96);
-    const btnSize = readCSSVarInt("--backtop-size", 48);
-    const gap = readCSSVarInt("--comment-gap", 12);
-  }
-
-  function pageIsScrollable() {
-    return document.documentElement.scrollHeight > window.innerHeight + 2;
-  }
-
   // init
   function init() {
     createSidebar();
     createToggleButton();
 
-    // 立刻更新按钮位置，防止初始跳动
-    updateToggleOffset();
-
     // 恢复可见并显示（避免初始跳动）
     toggleBtn.style.visibility = "";
     toggleBtn.classList.add("visible");
-
-    window.addEventListener(
-      "resize",
-      () => {
-        updateToggleOffset();
-      },
-      { passive: true }
-    );
-
-    window.addEventListener("pageshow", () => {
-      updateToggleOffset();
-    });
 
     // 触摸动画
     toggleBtn.addEventListener(
