@@ -18,7 +18,7 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
 
 1. 以同步 XHR 取得并以内联脚本执行 `/js/fade.js`。
 2. 安装正文可见性降级保护；它只在 `fade.js` 未正常把正文显示出来时生效。
-3. 以同步 XHR 取得并执行 `/js/img.js`；该 IIFE 此时只登记 DOM 就绪后的图片任务，实际处理会在 DOMContentLoaded 后的 idle/timeout 阶段开始。
+3. 由 Loader 创建经典外链脚本 `/js/img.js`；该 IIFE 自行判断 DOM 状态并登记图片任务，实际处理会在 DOMContentLoaded 后的 idle/timeout 阶段开始。
 4. 动态插入字体 preload、全局样式、进度条样式、吉祥物样式和站点图标。
 5. 动态插入共享功能脚本：`mots.js`、`backtop.js`、`blink.js`、`headtran.js`、`progression.js`、`mascot.js`。
 6. HTML 继续解析；各功能脚本自行等待 DOM、header、footer 或图片等条件。
@@ -27,7 +27,7 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
 
 ### `HHXLOYDCS` 特殊主题页面
 
-特殊页面用 `/js/special/common-head-peur.js`，流程与普通入口的基础部分相同：同步执行 `fade.js`、`img.js`，安装正文可见性保护，动态插入字体与基础样式，然后动态插入 `mots.js`、`backtop.js`、`blink.js`、`headtran.js`、`progression.js`。
+特殊页面用 `/js/special/common-head-peur.js`，流程与普通入口的基础部分相同：同步执行 `fade.js`、安装正文可见性保护、由 Loader 加载 `img.js`，动态插入字体与基础样式，然后动态插入 `mots.js`、`backtop.js`、`blink.js`、`headtran.js`、`progression.js`。
 
 它额外载入 `/css/special/style_peur.css`，但不载入 `mascot.js` 或 mascot CSS。特殊页面还在各自 HTML 中直接载入 `giscus-peur.js`；这不是特殊加载器的延迟脚本。
 
@@ -50,7 +50,7 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
 ├── 同步：fade.js ──┬── main.loaded / 完整页面导航
 │                  ├── fetch header.inc ──> header:inserted ──> blink.js
 │                  └── fetch footer.inc ──> backtop.js 可计算页脚偏移
-├── 同步：img.js ─────> DOMContentLoaded / idle 后处理 img 与 .bg-image
+├── Loader 外链脚本：img.js ─> DOMContentLoaded / idle 后处理 img 与 .bg-image
 ├── 动态共享功能
 │   ├── mots.js ───────> main、可选 #count
 │   ├── backtop.js ────> main/body、可选 footer、可选 giscus 容器
@@ -65,7 +65,7 @@ HTML 在 `<head>` 解析到经典脚本 `/js/common-head.js` 时立即执行。�
         └── nav：URL、同一 JSON、#chapter-nav-root、章节侧栏按钮
 
 HHXLOYDCS HTML（special/common-head-peur.js）
-├── 与上方共享：fade.js、img.js、mots.js、backtop.js、blink.js、headtran.js、progression.js
+├── 与上方共享：同步 fade.js、Loader 外链 img.js、mots.js、backtop.js、blink.js、headtran.js、progression.js
 ├── 特殊覆盖：css/special/style_peur.css
 └── 页面专属：giscus-peur.js、分支 HTML、图片与音频
 ```
@@ -243,10 +243,10 @@ node tools/verify-content.mjs
 
 ### 当前同步 XHR 实际承担的职责
 
-两个入口都用同步 XHR 取得：
+两个入口当前只用同步 XHR 取得：
 
 1. `/js/fade.js`：立即注册页面生命周期、导航和 header/footer 的 DOM 就绪处理。
-2. `/js/img.js`：立即注册图片处理的 DOM 就绪入口，实际图片工作仍会延后。它不被其他脚本调用；当前作用是为启动时存在的图片加入 `loaded`，并为未来 `.bg-image` 标记提供处理逻辑。
+`/js/img.js` 不再属于同步 XHR 资源：两个 Loader 都直接创建一次经典外链 script。它不被其他脚本调用；自身会根据 `document.readyState` 注册或安排图片处理，当前作用是为启动时存在的图片加入 `loaded`，并为未来 `.bg-image` 标记提供处理逻辑。
 
 同步 XHR 不负责取得 header/footer 片段、故事 JSON、章节 JSON、评论、图片或音频；这些由后续 fetch、页面资源或功能脚本处理。不要把“同步 XHR 很旧”当成可以直接删除的理由；先证明替代方案能维持注册时机、可靠性 fallback 和视觉基准。
 

@@ -105,7 +105,9 @@
   // ================================
   injectSyncScript("/js/fade.js");
   installMainVisibilityFallback();
-  injectSyncScript("/js/img.js");
+  const imgScript = document.createElement("script");
+  imgScript.src = "/js/img.js";
+  head.appendChild(imgScript);
 
   // ================================
   // 次优加载区
