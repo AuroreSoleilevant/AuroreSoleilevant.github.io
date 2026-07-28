@@ -68,12 +68,28 @@
     return document.querySelector(".site-header");
   }
 
+  function getMainVisibilityState() {
+    return (
+      window.__mainVisibilityState ||
+      (window.__mainVisibilityState = {
+        fallbackShown: false,
+        leaving: false,
+        fadeReady: false,
+      })
+    );
+  }
+
   function markMainVisible(main) {
+    const visibilityState = getMainVisibilityState();
+    if (visibilityState.leaving || isTransitioning) return;
+    visibilityState.fallbackShown = false;
+    visibilityState.fadeReady = true;
     main.classList.add(FADE_CLASS);
     document.dispatchEvent(new CustomEvent("main:visible"));
   }
 
   function notifyMainLeaving() {
+    getMainVisibilityState().leaving = true;
     document.dispatchEvent(new CustomEvent("main:leaving"));
   }
 
@@ -121,16 +137,27 @@
       document.querySelector("main");
     if (!main) return;
 
+    const visibilityState = getMainVisibilityState();
+    if (visibilityState.leaving) return;
+
     // 标记当前没有正在导航过渡
     isTransitioning = false;
+    visibilityState.fadeReady = true;
+
+    if (visibilityState.fallbackShown && main.classList.contains(FADE_CLASS)) {
+      return;
+    }
 
     // 内部应用序列（remove -> forced reflow -> double rAF -> add）
     const applySequence = () => {
+      if (visibilityState.leaving || isTransitioning) return;
       try {
         main.classList.remove(FADE_CLASS);
         void main.offsetWidth; // 强制重排，保留以确保 transition 注册
         requestAnimationFrame(() => {
+          if (visibilityState.leaving || isTransitioning) return;
           requestAnimationFrame(() => {
+            if (visibilityState.leaving || isTransitioning) return;
             markMainVisible(main);
           });
         });
@@ -148,15 +175,18 @@
     let retries = 0;
 
     const verifier = () => {
+      if (visibilityState.leaving || isTransitioning) return;
       // 如果已经成功添加 class，就不干活
       if (main.classList.contains(FADE_CLASS)) return;
       if (retries < MAX_RETRIES) {
         retries++;
         // 稍微延后再试一次，避免浏览器炸了
         setTimeout(() => {
+          if (visibilityState.leaving || isTransitioning) return;
           applySequence();
           // 再次短时验证；若仍未生效，进行最终保守性保证（直接强制添加 class）
           setTimeout(() => {
+            if (visibilityState.leaving || isTransitioning) return;
             if (!main.classList.contains(FADE_CLASS)) {
               // 最后手段：直接添加 class（避免页面可见性丢失），仅确保页面不会保持未加载状态，听互联网为命吧
               try {
@@ -466,6 +496,9 @@
   // pageshow：兼容 bfcache 恢复，确保 enter 被重新触发，并清理任何悬挂导航计时器
   window.addEventListener("pageshow", (ev) => {
     isTransitioning = false;
+    const visibilityState = getMainVisibilityState();
+    visibilityState.leaving = false;
+    if (ev.persisted) visibilityState.fallbackShown = false;
     fadeInMain();
 
     if (navTimeoutId) {
@@ -496,6 +529,7 @@
   // 页面卸载时标记正在过渡并清理导航计时器
   window.addEventListener("beforeunload", () => {
     isTransitioning = true;
+    getMainVisibilityState().leaving = true;
     if (navTimeoutId) {
       clearTimeout(navTimeoutId);
       navTimeoutId = null;

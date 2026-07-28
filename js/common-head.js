@@ -28,6 +28,13 @@
   function installMainVisibilityFallback() {
     if (window.__mainVisibilityFallbackInstalled) return;
     window.__mainVisibilityFallbackInstalled = true;
+    const visibilityState =
+      window.__mainVisibilityState ||
+      (window.__mainVisibilityState = {
+        fallbackShown: false,
+        leaving: false,
+        fadeReady: false,
+      });
 
     let timer = null;
     const clear = () => {
@@ -44,14 +51,24 @@
     const onLeaving = () => clear();
     const start = () => {
       const main = document.querySelector("main");
-      if (!main || main.classList.contains("loaded")) {
+      if (
+        visibilityState.leaving ||
+        !main ||
+        main.classList.contains("loaded")
+      ) {
         clear();
         return;
       }
       timer = setTimeout(() => {
         const currentMain = document.querySelector("main");
-        if (currentMain && !currentMain.classList.contains("loaded")) {
+        if (
+          !visibilityState.leaving &&
+          currentMain &&
+          !currentMain.classList.contains("loaded")
+        ) {
           currentMain.classList.add("loaded");
+          visibilityState.fallbackShown = true;
+          document.dispatchEvent(new CustomEvent("main:visible"));
         }
         clear();
       }, 1200);
