@@ -68,6 +68,15 @@
     return document.querySelector(".site-header");
   }
 
+  function markMainVisible(main) {
+    main.classList.add(FADE_CLASS);
+    document.dispatchEvent(new CustomEvent("main:visible"));
+  }
+
+  function notifyMainLeaving() {
+    document.dispatchEvent(new CustomEvent("main:leaving"));
+  }
+
   // ----- footer：把元素置于进入前的初始态 -----
   function prepareFooterInitial(el) {
     const f = el || getFooter();
@@ -122,7 +131,7 @@
         void main.offsetWidth; // 强制重排，保留以确保 transition 注册
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            main.classList.add(FADE_CLASS);
+            markMainVisible(main);
           });
         });
       } catch (e) {
@@ -151,7 +160,7 @@
             if (!main.classList.contains(FADE_CLASS)) {
               // 最后手段：直接添加 class（避免页面可见性丢失），仅确保页面不会保持未加载状态，听互联网为命吧
               try {
-                main.classList.add(FADE_CLASS);
+                markMainVisible(main);
               } catch (e) {
                 /* ignore */
               }
@@ -255,6 +264,7 @@
     // 首次触发：设置过渡、开始淡出并安排导航
     isTransitioning = true;
 
+    notifyMainLeaving();
     if (main) main.classList.remove(FADE_CLASS);
     footerExit();
 

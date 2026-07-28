@@ -25,6 +25,48 @@
     return false;
   }
 
+  function installMainVisibilityFallback() {
+    if (window.__mainVisibilityFallbackInstalled) return;
+    window.__mainVisibilityFallbackInstalled = true;
+
+    let timer = null;
+    const clear = () => {
+      if (timer !== null) {
+        clearTimeout(timer);
+        timer = null;
+      }
+      document.removeEventListener("main:visible", onVisible);
+      document.removeEventListener("main:leaving", onLeaving);
+      document.removeEventListener("DOMContentLoaded", start);
+      window.removeEventListener("beforeunload", onLeaving);
+    };
+    const onVisible = () => clear();
+    const onLeaving = () => clear();
+    const start = () => {
+      const main = document.querySelector("main");
+      if (!main || main.classList.contains("loaded")) {
+        clear();
+        return;
+      }
+      timer = setTimeout(() => {
+        const currentMain = document.querySelector("main");
+        if (currentMain && !currentMain.classList.contains("loaded")) {
+          currentMain.classList.add("loaded");
+        }
+        clear();
+      }, 1200);
+    };
+
+    document.addEventListener("main:visible", onVisible);
+    document.addEventListener("main:leaving", onLeaving);
+    window.addEventListener("beforeunload", onLeaving, { once: true });
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", start, { once: true });
+    } else {
+      start();
+    }
+  }
+
   // ------------------------
   // 辅助：非阻塞/延迟注入脚本
   // ------------------------
@@ -62,6 +104,7 @@
   // 最快加载区
   // ================================
   injectSyncScript("/js/fade.js");
+  installMainVisibilityFallback();
   injectSyncScript("/js/img.js");
 
   // ================================
