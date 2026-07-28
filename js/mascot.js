@@ -184,7 +184,8 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     root.style.opacity = "0";
     root.style.transition = "opacity 0.25s ease";
     root.style.pointerEvents = "none";
-    document.body.appendChild(root);
+    const mountPoint = document.querySelector("main") || document.body;
+    mountPoint.appendChild(root);
 
     // 预加载当前皮肤图片
     const img = new Image();
