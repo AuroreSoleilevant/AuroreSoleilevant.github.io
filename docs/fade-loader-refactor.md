@@ -63,7 +63,7 @@ DOMContentLoaded
   -> Loader fallback 开始 1.2s 计时
   -> 若 fade.js 已到达，其 onDOMReadyInit 运行
   -> 准备 footer 初态；下一帧安排 fadeInMain
-  -> 开始 header/footer 两个异步 fetch（cache: no-cache）
+  -> 开始 header/footer 两个采用浏览器默认 HTTP 缓存策略的异步 fetch
 两次 rAF
   -> fadeInMain 添加 main.loaded，派发 main:visible，取消 Loader fallback
 header fetch 完成 -> 插入 header -> 下一任务派发 header:inserted
@@ -74,7 +74,16 @@ DOM 可交互不必等待 header/footer fetch；它们是后续异步片段。`m
 
 ### 2. 温缓存进入
 
-源码流程不变：两个 fragment fetch 仍带 `cache: no-cache`。温缓存可能让外链 fade.js、fragment、连接和图片 `complete` 状态更快完成；代码没有单独的“温缓存分支”。若 footer 图片已 `complete`，`notifyFooterInserted()` 立即得到 resolved Promise；header 事件仍经 `setTimeout(..., 0)` 派发。
+两个 fragment fetch 使用浏览器默认 HTTP 缓存策略。2026-07-28 对正式 GitHub Pages 响应头的读取显示，这两个 URL 均返回 `Cache-Control: max-age=600` 与 ETag：新鲜缓存可在最多 10 分钟内直接复用，过期后浏览器会按 HTTP 缓存头重新验证并在内容变化时更新。因此温缓存的连续完整导航可避免重复网络验证；fragment 发布后，已缓存用户最多可能在剩余 TTL 内看到旧版本，随后会自动验证。普通浏览器刷新或硬刷新还会受浏览器自身 reload 缓存策略影响，不能把它当作绕过 fresh fragment 缓存的唯一保证。若 footer 图片已 `complete`，`notifyFooterInserted()` 立即得到 resolved Promise；header 事件仍经 `setTimeout(..., 0)` 派发。
+
+### Fragment 缓存策略比较
+
+| 策略 | 连续完整导航 | 发布后可见性 | 结论 |
+| --- | --- | --- | --- |
+| 请求 `cache: "no-cache"`（旧） | 每次都向服务器条件验证，即使缓存仍新鲜 | 验证后立即获得新版本 | 正确但增加重复网络验证 |
+| 默认 `fetch()`（当前） | 遵守响应 HTTP 缓存头；新鲜时直接复用，过期后验证 | 受当前 GitHub Pages `max-age=600` 限制，最久约 10 分钟 | 采用；标准、无额外状态 |
+| `force-cache` | 可复用过期缓存，直到缓存被逐出 | 无明确更新时限 | 不采用 |
+| 手工 URL 版本号 | 可由发布流程强制换 URL | 需要维护版本与所有调用 | 无明确必要，不采用 |
 
 ### 3. 站内链接跳转
 

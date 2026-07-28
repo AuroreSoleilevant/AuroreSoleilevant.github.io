@@ -353,7 +353,7 @@
       return;
     }
 
-    fetch(FOOTER_URL, { cache: "no-cache" })
+    fetch(FOOTER_URL)
       .then((res) => {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.text();
@@ -417,7 +417,7 @@
       return;
     }
 
-    fetch(HEADER_URL, { cache: "no-cache" })
+    fetch(HEADER_URL)
       .then((res) => {
         if (!res.ok) throw new Error("HTTP " + res.status);
         return res.text();
