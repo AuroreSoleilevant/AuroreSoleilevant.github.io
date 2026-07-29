@@ -1,0 +1,20 @@
+[
+  { "fr": "long", "zh": "长篇" },
+  { "fr": "moyenne", "zh": "中篇" },
+  { "fr": "court", "zh": "短篇" },
+  { "fr": "fini", "zh": "已完结" },
+  { "fr": "serie", "zh": "连载中" },
+  { "fr": "traduction", "zh": "翻译" },
+  { "fr": "interactif", "zh": "互动" },
+  { "fr": "photographie", "zh": "摄影" },
+  { "fr": "Prose", "zh": "散文" },
+  { "fr": "apaisant", "zh": "治愈" },
+  { "fr": "comedie", "zh": "喜剧" },
+  { "fr": "MLP", "zh": "彩虹小马" },
+  { "fr": "suspense", "zh": "悬疑" },
+  { "fr": "epouvante", "zh": "恐怖" },
+  { "fr": "amour", "zh": "爱情" },
+  { "fr": "futuriste", "zh": "科幻" },
+  { "fr": "musique", "zh": "音乐" },
+  { "fr": "NeuroEvil", "zh": "Neuro & Evil" }
+]

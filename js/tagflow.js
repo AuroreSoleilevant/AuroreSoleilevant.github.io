@@ -17,7 +17,8 @@
       this.syncPauseState = this.syncPauseState.bind(this);
     }
 
-    init() {
+    async init() {
+      if (!(await this.hydrateSource())) return;
       if (!this.buildTracks()) return;
 
       document.addEventListener("visibilitychange", this.syncPauseState);
@@ -31,6 +32,35 @@
       }
 
       this.refresh();
+    }
+
+    async hydrateSource() {
+      if (!this.source) return false;
+      const labels = [...this.source.querySelectorAll(".flow-tag")];
+      if (!labels.length) return false;
+
+      try {
+        const response = await fetch("/json/tag.json", { cache: "force-cache" });
+        if (!response.ok) throw new Error(`tag metadata: ${response.status}`);
+        const metadata = await response.json();
+        const slugs = new Map(
+          metadata.map(({ fr, zh }) => [zh, fr]).filter(([, fr]) => typeof fr === "string")
+        );
+
+        for (const label of labels) {
+          const slug = slugs.get(label.textContent.trim());
+          if (!slug) throw new Error(`missing tag metadata: ${label.textContent}`);
+          const link = document.createElement("a");
+          link.className = label.className;
+          link.href = `/tag/${slug}/`;
+          link.textContent = label.textContent;
+          label.replaceWith(link);
+        }
+        return true;
+      } catch (error) {
+        console.error("[tagflow] metadata unavailable:", error);
+        return false;
+      }
     }
 
     buildTracks() {
