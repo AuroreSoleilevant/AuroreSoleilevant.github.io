@@ -98,6 +98,21 @@
   min-height: 200px;
 }
 
+#mt-list .mt-container,
+#mt-list > .text-center {
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+#mt-list .fade-initial {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+#mt-list .fade-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 #mt-list > .text-center {
   margin: 40px 0;
   padding: 20px;
@@ -107,7 +122,9 @@
 
 @media (prefers-reduced-motion: reduce) {
   .search-input,
-  .search-button {
+  .search-button,
+  #mt-list .mt-container,
+  #mt-list > .text-center {
     transition: none;
   }
 }

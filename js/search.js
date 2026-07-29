@@ -25,25 +25,10 @@
   const normalize = (value) =>
     String(value || "").normalize("NFKC").trim().toLocaleLowerCase();
 
-  const getTerms = (query) => normalize(query).split(/\s+/).filter(Boolean);
-
-  const getSearchText = (entry) =>
-    normalize(
-      [
-        entry.title,
-        entry.description,
-        ...(Array.isArray(entry.tags) ? entry.tags.map((tag) => tag?.name) : []),
-      ].join(" ")
-    );
-
-  const rankMatch = (entry, query, terms) => {
+  const rankMatch = (entry, query) => {
     const title = normalize(entry.title);
-    const searchable = getSearchText(entry);
-    if (!terms.every((term) => searchable.includes(term))) return 0;
-    if (title === query) return 4;
-    if (title.includes(query)) return 3;
-    if (searchable.includes(query)) return 2;
-    return 1;
+    if (!title.includes(query)) return 0;
+    return title === query ? 2 : 1;
   };
 
   const loadEntries = () => {
@@ -77,14 +62,17 @@
 
     if (!results.length) {
       const message = document.createElement("p");
-      message.className = "text-center";
+      message.className = "text-center fade-initial";
       message.textContent = NO_RESULT_TEXT;
       mount.appendChild(message);
+      requestAnimationFrame(() => {
+        message.classList.replace("fade-initial", "fade-visible");
+      });
       return;
     }
 
     const container = document.createElement("div");
-    container.className = "mt-container";
+    container.className = "mt-container fade-initial";
     const fragment = document.createDocumentFragment();
     results.forEach(({ entry }) => {
       fragment.appendChild(
@@ -93,6 +81,9 @@
     });
     container.appendChild(fragment);
     mount.appendChild(container);
+    requestAnimationFrame(() => {
+      container.classList.replace("fade-initial", "fade-visible");
+    });
   };
 
   const init = () => {
@@ -118,11 +109,10 @@
 
       button.disabled = true;
       status.textContent = "搜索中…";
-      const terms = getTerms(query);
       const entries = await loadEntries();
       const results = sortResults(
         entries
-          .map((entry) => ({ entry, score: rankMatch(entry, query, terms) }))
+          .map((entry) => ({ entry, score: rankMatch(entry, query) }))
           .filter(({ score }) => score > 0)
       );
       renderResults(mount, results);
