@@ -1517,11 +1517,9 @@ footer {
     height: 40px;
   }
 
-  /* 移动端降低星场密度与持续装饰 */
+  /* 移动端降低静态星场密度，保留三条流星轨迹的原有频率 */
   .header-stars--soft,
-  .header-stars--accent,
-  .header-meteor--two,
-  .header-meteor--three {
+  .header-stars--accent {
     display: none;
   }
 
