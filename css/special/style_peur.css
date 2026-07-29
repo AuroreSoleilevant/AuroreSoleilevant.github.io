@@ -178,11 +178,6 @@ body::before {
   color: #ccff99 !important;
 }
 
-/* 覆盖链接颜色 */
-.footer-links a {
-  color: #ccff99 !important;
-}
-
 /* 覆盖按钮背景色 */
 .contact-btn {
   background: rgba(204, 255, 153, 0.5) !important;
