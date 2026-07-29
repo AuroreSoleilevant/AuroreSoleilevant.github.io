@@ -57,7 +57,7 @@
       return rightDate - leftDate;
     });
 
-  const renderResults = (mount, results) => {
+  const renderResults = (mount, results, tagSlugs) => {
     mount.replaceChildren();
 
     if (!results.length) {
@@ -74,9 +74,9 @@
     const container = document.createElement("div");
     container.className = "mt-container fade-initial";
     const fragment = document.createDocumentFragment();
-    results.forEach(({ entry }) => {
+    results.forEach(({ entry }, cardIndex) => {
       fragment.appendChild(
-        window.CoreList._createTile(entry, { autoFormatDisplay: true })
+        window.CoreList._createTile(entry, { cardIndex, tagSlugs })
       );
     });
     container.appendChild(fragment);
@@ -109,13 +109,16 @@
 
       button.disabled = true;
       status.textContent = "搜索中…";
-      const entries = await loadEntries();
+      const [entries, tagSlugs] = await Promise.all([
+        loadEntries(),
+        window.CoreList?._loadTagMetadata?.() || Promise.resolve(new Map()),
+      ]);
       const results = sortResults(
         entries
           .map((entry) => ({ entry, score: rankMatch(entry, query) }))
           .filter(({ score }) => score > 0)
       );
-      renderResults(mount, results);
+      renderResults(mount, results, tagSlugs);
       status.textContent = results.length ? `找到 ${results.length} 项结果` : NO_RESULT_TEXT;
       button.disabled = false;
     });
