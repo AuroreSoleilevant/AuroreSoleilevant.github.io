@@ -1,0 +1,63 @@
+.random-btn-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 2em 0;
+}
+
+.random-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1em;
+  padding: 20px;
+  color: #f8f3e9;
+  font-family: inherit;
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  background: #993300;
+  border: 1px solid rgba(125, 107, 83, 0.55);
+  border-radius: 14px;
+  box-shadow: 0 8px 18px rgba(35, 41, 70, 0.22);
+  transition: background-color 0.18s ease, box-shadow 0.18s ease,
+    transform 0.18s ease, opacity 0.12s ease;
+}
+
+.random-btn:hover {
+  background: #993300d1;
+  box-shadow: 0 12px 24px rgba(35, 41, 70, 0.28);
+  transform: translateY(-3px);
+}
+
+.random-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.random-btn:focus-visible {
+  outline: 3px solid rgba(125, 107, 83, 0.85);
+  outline-offset: 3px;
+}
+
+.random-btn[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.65;
+  box-shadow: none;
+  transform: none;
+}
+
+@media (max-width: 480px) {
+  .random-btn {
+    padding: 13px;
+    font-size: 1.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .random-btn {
+    transition: none;
+  }
+}
