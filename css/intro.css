@@ -5,14 +5,18 @@
 }
 
 .tag-container {
+  --tag-gap: clamp(6px, calc(1.1vw + 1px), 12px);
+  --tag-padding-block: clamp(6px, calc(0.55vw + 4.5px), 10px);
+  --tag-padding-inline: clamp(8px, calc(0.55vw + 6.5px), 12px);
+  --tag-font-size: clamp(0.85rem, calc(1.85vw - 1px), 1.5rem);
+  --tag-row-gap: clamp(14px, calc(1.1vw + 9px), 20px);
   position: absolute;
-  left: auto;
   right: -12px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: row-reverse;
-  gap: 12px;
+  gap: var(--tag-gap);
   align-items: center;
   white-space: nowrap;
   z-index: 99;
@@ -27,11 +31,11 @@
 .page-tag {
   position: relative;
   display: inline-block;
-  padding: 10px 12px;
+  padding: var(--tag-padding-block) var(--tag-padding-inline);
   border-radius: 999px;
   background: #ff8c006d;
   color: #222;
-  font-size: 1.5rem;
+  font-size: var(--tag-font-size);
   line-height: 1;
   text-decoration: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
@@ -77,40 +81,10 @@ body.force-wrap-tags .tag-container {
     flex-wrap: wrap;
     justify-content: flex-start;
     margin-top: 15px;
+    padding-bottom: 8px;
     white-space: normal;
     width: 100%;
     right: auto; /* 移除右侧定位 */
-  }
-
-  .page-tag {
-    margin-bottom: 8px;
-    font-size: 1.1rem;
-  }
-}
-
-@media (max-width: 650px) {
-  .page-tag {
-    padding: 8px 10px;
-  }
-
-  .tag-container {
-    gap: 8px;
-  }
-}
-
-@media (max-width: 480px) {
-  .page-tag {
-    font-size: 0.85rem;
-    padding: 6px 8px;
-  }
-
-  .tag-container {
-    gap: 6px;
-  }
-}
-
-@media (max-width: 400px) {
-  .tag-container {
-    display: flex !important;
+    gap: var(--tag-row-gap) var(--tag-gap);
   }
 }
