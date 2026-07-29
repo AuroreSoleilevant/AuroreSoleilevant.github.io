@@ -14,6 +14,8 @@
   --tile-strip-gap: 16px; /* 条，缩略图与文本间距 */
 
   --tile-thumb-size-responsive: var(--tile-thumb-size); /* 全局回退 */
+  --tile-gap: clamp(12px, 1.5vw, 20px);
+  --tile-card-basis: clamp(240px, 22vw, 300px);
 }
 
 /* 超宽屏：保持首页卡片组接近 1920px 桌面时的最大展开宽度 */
@@ -28,7 +30,9 @@
 /* ---------- 容器：一行三列 ---------- */
 .tiles {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--tile-gap);
   align-items: stretch;
   width: 100%;
   box-sizing: border-box;
@@ -61,7 +65,7 @@
 .tiles > .tile {
   /* 保持为块级且在 flex 中伸缩 */
   display: flex;
-  flex: 1 1 300px;
+  flex: 1 1 var(--tile-card-basis);
   flex-direction: column;
   min-height: 200px;
   box-sizing: border-box;
@@ -267,7 +271,7 @@
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-between;
-    gap: 12px;
+    gap: var(--tile-gap);
     padding: 8px 10px;
     background: transparent;
     overflow-x: hidden;
@@ -341,7 +345,7 @@
   .tiles {
     flex-direction: row;
     flex-wrap: nowrap;
-    gap: 12px;
+    gap: var(--tile-gap);
     padding: 8px 10px;
     overflow-x: hidden; /* 可改为 auto 允许横向滚动 */
     background: transparent; /* 恢复透明容器 */
