@@ -7,7 +7,9 @@
   class TagFlowManager {
     constructor(root) {
       this.root = root;
-      this.tracks = [...root.querySelectorAll(TRACK_SELECTOR)];
+      this.container = root.querySelector(".flow-container");
+      this.source = root.querySelector(".flow-source");
+      this.tracks = [];
       this.inViewport = true;
       this.resizeTimer = null;
       this.motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -16,7 +18,7 @@
     }
 
     init() {
-      if (!this.tracks.length) return;
+      if (!this.buildTracks()) return;
 
       document.addEventListener("visibilitychange", this.syncPauseState);
       window.addEventListener("pageshow", this.refresh);
@@ -29,6 +31,38 @@
       }
 
       this.refresh();
+    }
+
+    buildTracks() {
+      if (!this.container || !this.source) return false;
+
+      const tags = [...this.source.querySelectorAll(".flow-tag")];
+      if (!tags.length) return false;
+
+      const midpoint = Math.ceil(tags.length / 2);
+      const rows = [tags.slice(0, midpoint), tags.slice(midpoint)];
+      const fragment = document.createDocumentFragment();
+
+      rows.forEach((row, index) => {
+        if (!row.length) return;
+
+        const lane = document.createElement("div");
+        lane.className = "flow-lane";
+        const track = document.createElement("div");
+        track.className = "flow-track";
+        track.dataset.flowDirection = index === 0 ? "left" : "right";
+        const group = document.createElement("div");
+        group.className = "flow-group";
+        row.forEach((tag) => group.appendChild(tag));
+        track.appendChild(group);
+        lane.appendChild(track);
+        fragment.appendChild(lane);
+      });
+
+      this.container.appendChild(fragment);
+      this.tracks = [...this.container.querySelectorAll(TRACK_SELECTOR)];
+      this.root.classList.add("is-flow-ready");
+      return this.tracks.length > 0;
     }
 
     observeVisibility() {
