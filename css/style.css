@@ -49,7 +49,17 @@
 /* ---------- 顶栏：开始 ---------- */
 /* 标题块骨架 */
 .site-header {
-  background: #232946; /* 回退 */
+  --header-surface: #191d3a;
+  --header-surface-scrolled: rgba(19, 23, 48, 0.9);
+  --header-nebula-primary: rgba(141, 127, 214, 0.22);
+  --header-nebula-secondary: rgba(91, 174, 190, 0.14);
+  --header-star-primary: rgba(255, 248, 218, 0.9);
+  --header-star-secondary: rgba(202, 225, 255, 0.72);
+  --header-edge: rgba(221, 214, 255, 0.2);
+  --header-edge-scrolled: rgba(221, 214, 255, 0.14);
+  --header-text: #e0d7ff;
+  --header-shadow: rgba(8, 10, 28, 0.34);
+  background-color: var(--header-surface);
   position: fixed; /* 固定在视口 */
   top: 0;
   left: 0;
@@ -61,59 +71,56 @@
   align-items: center;
   overflow: hidden;
   z-index: 1000; /* 确保覆盖内容 */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* 阴影效果 */
+  border-bottom: 1px solid var(--header-edge);
+  box-shadow:
+    0 5px 18px var(--header-shadow),
+    inset 0 -1px rgba(255, 255, 255, 0.05);
   transition:
-    background-color 0.4s ease,
-    backdrop-filter 0.4s ease;
+    background-color 320ms ease,
+    border-color 320ms ease,
+    box-shadow 320ms ease;
   isolation: isolate;
 }
 
-.site-header.scrolled::before {
-  background-color: rgba(35, 41, 70, 0.35);
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
-  backdrop-filter: blur(8px) saturate(120%);
-}
-
-@supports (
-  (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))
-) {
-  .site-header {
-    /* 半透明保留原色基调 */
-    background-color: rgba(35, 41, 70, 0.35);
-
-    /* 毛玻璃：模糊 + 稍微提升饱和度 */
-    -webkit-backdrop-filter: blur(8px) saturate(120%);
-    backdrop-filter: blur(8px) saturate(120%);
-
-    /* 让边框/阴影与半透明背景更协调 */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
-    /* 确保背景只在内边距区域绘制（防止边框被滤镜裁切奇怪） */
-    background-clip: padding-box;
-  }
+.site-header.scrolled {
+  background-color: var(--header-surface-scrolled);
+  border-bottom-color: var(--header-edge-scrolled);
+  box-shadow:
+    0 5px 18px rgba(8, 10, 28, 0.26),
+    inset 0 -1px rgba(255, 255, 255, 0.06);
 }
 
 .site-header::before {
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 0; /* 放在所有内容后面 */
-  -webkit-backdrop-filter: blur(8px) saturate(120%);
-  backdrop-filter: blur(8px) saturate(120%);
-  border-radius: 0 0 12px 12px;
-  background-clip: padding-box;
-  background-color: #232946;
-  transition:
-    background-color 0.4s ease,
-    backdrop-filter 0.4s ease;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 48% 140% at 12% -55%,
+      var(--header-nebula-primary),
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 42% 125% at 78% 145%,
+      var(--header-nebula-secondary),
+      transparent 70%
+    ),
+    linear-gradient(
+      112deg,
+      rgba(255, 255, 255, 0.045),
+      transparent 38%,
+      rgba(255, 255, 255, 0.025) 72%,
+      transparent
+    );
 }
 
-/* 确保星星层与文字在毛玻璃上面显示 */
+/* 确保装饰层不覆盖文字与按钮 */
 .site-header::after,
-.site-header .stars,
-.site-header .stars2,
 .site-header .site-title,
-.site-header .nav-links {
+.site-header .nav-links,
+.site-header .search-btn {
   position: relative;
   z-index: 1;
 }
@@ -123,7 +130,7 @@
   content: "Spica";
   font-size: 3.5em;
   font-weight: bold;
-  color: #e0d7ff;
+  color: var(--header-text);
   text-decoration: none;
   line-height: 96px; /* 和 header 高度一致 */
   transition: text-shadow 0.6s ease-in-out; /* Spica鼠标悬停发光效果 */
@@ -144,7 +151,7 @@
   cursor: pointer; /* 手型光标 */
 }
 
-/* 星空层容器1伪元素 */
+/* 稀疏静态微星层：无持续动画与背景位移 */
 .site-header::after {
   content: "";
   position: absolute;
@@ -152,85 +159,30 @@
   pointer-events: none;
   z-index: 1;
   background-image:
-    radial-gradient(circle, #fcf0b5 3px, transparent 3px),
-    radial-gradient(circle, #87e7ff 3px, transparent 3px),
-    radial-gradient(circle, #ff9bb4 3px, transparent 3px);
-  transform: rotate(1deg);
-  background-size: 250px 250px;
+    radial-gradient(
+      circle,
+      var(--header-star-primary) 0 0.8px,
+      transparent 1.35px
+    ),
+    radial-gradient(
+      circle,
+      var(--header-star-secondary) 0 0.7px,
+      transparent 1.25px
+    ),
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.48) 0 0.55px,
+      transparent 1px
+    );
+  background-size:
+    173px 83px,
+    257px 109px,
+    97px 67px;
   background-position:
-    10% 20%,
-    55% 50%,
-    80% 65%;
-  animation: twinkle 4s infinite ease-in-out;
-  animation-delay: 2.9s;
-}
-
-/* 星空层容器2伪元素 */
-.site-header .stars {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  background-image:
-    radial-gradient(circle, #ffd488 3px, transparent 3px),
-    radial-gradient(circle, #87fda1 3px, transparent 3px),
-    radial-gradient(circle, #74e3ff 3px, transparent 3px);
-  transform: rotate(1.5deg);
-  background-size: 300px 300px;
-  background-position:
-    30% 35%,
-    65% 60%,
-    90% 75%;
-  animation: twinkle 5s infinite ease-in-out;
-  animation-delay: 3.9s;
-}
-
-/* 星空层容器3伪元素，移动 */
-.site-header .stars2 {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  background-image:
-    radial-gradient(circle, #dc22f9a3 3px, transparent 3px),
-    radial-gradient(circle, #83f7ffc6 3px, transparent 3px),
-    radial-gradient(circle, #d0ff0082 3px, transparent 3px);
-  transform: rotate(3deg);
-  background-size: 280px 280px;
-  background-position:
-    25% 40%,
-    70% 55%,
-    85% 70%;
-  animation:
-    twinkle 5s infinite ease-in-out,
-    drift3-down 60s linear infinite;
-}
-
-/* 闪烁动画 */
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.3;
-  }
-}
-
-/* 漂移动画 */
-@keyframes drift3-down {
-  0% {
-    background-position:
-      25% 80%,
-      50% 110%,
-      85% 150%; /* 屏幕外上方 */
-  }
-  100% {
-    background-position:
-      25% -20%,
-      50% -15%,
-      85% -10%; /* 屏幕外下方 */
-  }
+    19px 17px,
+    71px 47px,
+    5px 31px;
+  opacity: 0.72;
 }
 
 /* 顶部导航链接容器 */
@@ -242,7 +194,7 @@
 }
 
 .nav-item {
-  color: #e0d7ff;
+  color: var(--header-text);
   font-size: 1.75em;
   text-decoration: none;
   font-weight: 500;
@@ -1074,13 +1026,6 @@ footer {
   .search-btn img {
     width: 40px;
     height: 40px;
-  }
-
-  /* 星空层微调 */
-  .site-header::after,
-  .site-header .stars,
-  .site-header .stars2 {
-    background-size: 180px 180px;
   }
 
   /* 主内容区调整 */
