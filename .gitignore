@@ -1,0 +1,6 @@
+.venv-font/
+__pycache__/
+font-audit/candidates/
+font-audit/charsets/*.unicodes
+tools
+docs

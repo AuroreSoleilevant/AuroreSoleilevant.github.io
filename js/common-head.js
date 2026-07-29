@@ -1,6 +1,6 @@
 (() => {
   const head = document.head;
-  const version1 = "191025.1"; // style.css 版本号
+  const version1 = "290726.1"; // style.css 版本号
 
   function installMainVisibilityFallback() {
     if (window.__mainVisibilityFallbackInstalled) return;
@@ -135,21 +135,34 @@
   // ================================
   // 次优加载区
   // ================================
+  const fontPreloads = [
+    {
+      rel: "preload",
+      href: "/fonts/LXGWWenKai-latin-symbols.woff2",
+      as: "font",
+      type: "font/woff2",
+      crossorigin: true,
+    },
+    {
+      rel: "preload",
+      href: "/fonts/LXGWWenKai-cjk-core.woff2",
+      as: "font",
+      type: "font/woff2",
+      crossorigin: true,
+    },
+  ];
+  if (location.pathname !== "/" && location.pathname !== "/index.html") {
+    fontPreloads.push({
+      rel: "preload",
+      href: "/fonts/LXGWWenKai-cjk-site-extra.woff2",
+      as: "font",
+      type: "font/woff2",
+      crossorigin: true,
+    });
+  }
+
   const links = [
-    {
-      rel: "preload",
-      href: "/fonts/LXGWWenKai-latin.woff2",
-      as: "font",
-      type: "font/woff2",
-      crossorigin: true,
-    },
-    {
-      rel: "preload",
-      href: "/fonts/LXGWWenKai-cjk.woff2",
-      as: "font",
-      type: "font/woff2",
-      crossorigin: true,
-    },
+    ...fontPreloads,
     { rel: "stylesheet", href: `/css/style.css?v=${version1}` }, // 全局样式表
     { rel: "stylesheet", href: `/css/mascot.css` }, // 左下角小马
     { rel: "icon", href: "/icons/logo.png", type: "image/x-icon" },
