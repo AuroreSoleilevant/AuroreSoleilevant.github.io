@@ -40,9 +40,15 @@
       if (!labels.length) return false;
 
       try {
-        const response = await fetch("/json/tag.json", { cache: "force-cache" });
-        if (!response.ok) throw new Error(`tag metadata: ${response.status}`);
-        const metadata = await response.json();
+        const metadata = await (
+          window.__tagMetadataRequest ||
+          (window.__tagMetadataRequest = fetch("/json/tag.json", {
+            cache: "force-cache",
+          }).then((response) => {
+            if (!response.ok) throw new Error(`tag metadata: ${response.status}`);
+            return response.json();
+          }))
+        );
         const slugs = new Map(
           metadata.map(({ fr, zh }) => [zh, fr]).filter(([, fr]) => typeof fr === "string")
         );

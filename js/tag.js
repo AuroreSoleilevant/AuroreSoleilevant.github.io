@@ -30,14 +30,14 @@
     return tagMatch ? tagMatch[1] : null;
   }
 
-  // 过滤出包含指定标签 slug 的条目
-  function filterEntriesByTagSlug(entries, tagSlug) {
-    if (!tagSlug || !entries || !Array.isArray(entries)) return [];
+  // 标签数据只保留中文名；当前 URL 的法语 slug 由 tag.json 映射。
+  function filterEntriesByTagName(entries, tagName) {
+    if (!tagName || !entries || !Array.isArray(entries)) return [];
 
     return entries.filter((entry) => {
       if (!entry.tags || !Array.isArray(entry.tags)) return false;
 
-      return entry.tags.some((tag) => tag && tag.slug === tagSlug);
+      return entry.tags.includes(tagName);
     });
   }
 
@@ -71,6 +71,7 @@
     if (
       !window.CoreList ||
       typeof window.CoreList._loadDatabases !== "function" ||
+      typeof window.CoreList._loadTagMetadata !== "function" ||
       typeof window.CoreList._sortEntries !== "function" ||
       typeof window.CoreList._paginate !== "function" ||
       typeof window.CoreList._createTile !== "function"
@@ -98,13 +99,13 @@
     debugLog(`正在加载标签: ${currentTagSlug}`);
 
     // 加载所有 JSON 文件
-    window.CoreList._loadDatabases(SCAN_JSON_PATHS)
-      .then((allEntries) => {
-        // 过滤出包含当前标签的条目
-        const filteredEntries = filterEntriesByTagSlug(
-          allEntries,
-          currentTagSlug
-        );
+    Promise.all([
+      window.CoreList._loadDatabases(SCAN_JSON_PATHS),
+      window.CoreList._loadTagMetadata(),
+    ])
+      .then(([allEntries, tagSlugs]) => {
+        const tagName = [...tagSlugs].find(([, slug]) => slug === currentTagSlug)?.[0];
+        const filteredEntries = filterEntriesByTagName(allEntries, tagName);
 
         debugLog(
           `找到 ${filteredEntries.length} 个包含标签 "${currentTagSlug}" 的条目`
@@ -131,10 +132,11 @@
         const pageSlice = window.CoreList._paginate(sorted, page, pageSize);
 
         // 创建磁贴
-        pageSlice.forEach((entry) => {
+        pageSlice.forEach((entry, cardIndex) => {
           try {
             const tile = window.CoreList._createTile(entry, {
-              autoFormatDisplay: autoFormatDisplay,
+              cardIndex,
+              tagSlugs,
             });
             container.appendChild(tile);
           } catch (err) {

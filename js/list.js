@@ -4,6 +4,8 @@
 */
 
 (function () {
+  let tagMetadataPromise = null;
+
   function fetchJsonArray(path) {
     return fetch(path)
       .then((res) => {
@@ -38,12 +40,40 @@
 
   function formatDisplay(isoString) {
     if (!isoString) return "";
+    const isoDate = String(isoString).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (isoDate) return `${isoDate[3]}/${isoDate[2]}/${isoDate[1]}`;
     const d = new Date(isoString);
     if (isNaN(d)) return isoString;
     const dd = String(d.getDate()).padStart(2, "0");
     const mm = String(d.getMonth() + 1).padStart(2, "0");
     const yyyy = d.getFullYear();
     return `${dd}/${mm}/${yyyy}`;
+  }
+
+  function loadTagMetadata() {
+    if (!tagMetadataPromise) {
+      const request =
+        window.__tagMetadataRequest ||
+        (window.__tagMetadataRequest = fetch("/json/tag.json", {
+          cache: "force-cache",
+        }).then((res) => {
+          if (!res.ok) throw new Error(`fetch tag metadata failed: ${res.status}`);
+          return res.json();
+        }));
+      tagMetadataPromise = request
+        .then((data) =>
+          new Map(
+            data
+              .filter(({ fr, zh }) => typeof fr === "string" && typeof zh === "string")
+              .map(({ fr, zh }) => [zh, fr])
+          )
+        )
+        .catch((err) => {
+          console.error("[CoreList] tag metadata error:", err);
+          return new Map();
+        });
+    }
+    return tagMetadataPromise;
   }
 
   function cardImageSource(coverImage) {
@@ -66,22 +96,15 @@
       title = "",
       description = "",
       cover_image = null,
-      cover_image_alt = "",
       created_at,
       updated_at,
-      created_display,
-      updated_display,
       word_count,
       color = "rgba(0,0,0,0.0)",
       tags = [],
     } = entry || {};
 
-    const createdDisp =
-      created_display ||
-      (opts.autoFormatDisplay ? formatDisplay(created_at) : created_at || "");
-    const updatedDisp =
-      updated_display ||
-      (opts.autoFormatDisplay ? formatDisplay(updated_at) : updated_at || "");
+    const createdDisp = formatDisplay(created_at);
+    const updatedDisp = formatDisplay(updated_at);
 
     const a = document.createElement("a");
     a.className = "mt-tile";
@@ -92,7 +115,7 @@
       const img = document.createElement("img");
       const cardImage = cardImageSource(cover_image);
       img.className = "mt-image";
-      img.alt = cover_image_alt || title || "";
+      img.alt = title;
       img.decoding = "async";
       img.loading = opts.cardIndex < 2 ? "eager" : "lazy";
       if (opts.cardIndex < 2) img.fetchPriority = "high";
@@ -126,14 +149,14 @@
 
     const tagsDiv = document.createElement("div");
     tagsDiv.className = "mt-tags";
-    (tags || []).forEach((t) => {
-      const tagName = t && t.name ? t.name : "";
-      const tagUrl = t && t.url ? t.url : "#";
-      const tagA = document.createElement("a");
-      tagA.className = "mt-tag";
-      tagA.href = tagUrl;
-      tagA.textContent = tagName;
-      tagsDiv.appendChild(tagA);
+    (tags || []).forEach((tagName) => {
+      if (typeof tagName !== "string") return;
+      const tagSlug = opts.tagSlugs?.get(tagName);
+      const tagEl = document.createElement(tagSlug ? "a" : "span");
+      tagEl.className = "mt-tag";
+      if (tagSlug) tagEl.href = `/tag/${tagSlug}/`;
+      tagEl.textContent = tagName;
+      tagsDiv.appendChild(tagEl);
     });
     content.appendChild(tagsDiv);
 
@@ -176,8 +199,8 @@
       options || {}
     );
 
-    loadDatabases(dbPathOrArray)
-      .then((allData) => {
+    Promise.all([loadDatabases(dbPathOrArray), loadTagMetadata()])
+      .then(([allData, tagSlugs]) => {
         const sorted = sortEntries(allData || []);
         const page =
           opts.page ||
@@ -203,8 +226,8 @@
         pageSlice.forEach((entry, cardIndex) => {
           try {
             const tile = createTile(entry, {
-              autoFormatDisplay: opts.autoFormatDisplay,
               cardIndex,
+              tagSlugs,
             });
             container.appendChild(tile);
           } catch (err) {
@@ -221,6 +244,7 @@
     mountList,
     _fetchJsonArray: fetchJsonArray,
     _loadDatabases: loadDatabases,
+    _loadTagMetadata: loadTagMetadata,
     _createTile: createTile,
     _formatDisplay: formatDisplay,
     _sortEntries: sortEntries,
