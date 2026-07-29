@@ -2,5 +2,5 @@
 __pycache__/
 font-audit/candidates/
 font-audit/charsets/*.unicodes
-tools
-docs
+tools/
+docs/
