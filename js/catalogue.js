@@ -13,7 +13,6 @@
 
   const mountSelector = "#mt-list";
   const pageSize = 6; // 每页显示条目数
-  const autoFormatDisplay = true;
 
   /***** ========== 配置区结束 ========== *****/
 
@@ -37,6 +36,11 @@
       }
     }
     return null;
+  }
+
+  function updateCatalogueMessage({ isLast }) {
+    const message = document.querySelector("[data-catalogue-page-message]");
+    if (message) message.textContent = isLast ? "没有更多了 QAQ" : "用右侧的按钮翻页哦~";
   }
 
   // 启动
@@ -76,7 +80,15 @@
       );
       return;
     }
+    if (pathname === "/histoire" || pathname === "/article") {
+      window.CoreList.mountPagedList(dbPath, mountEl, {
+        pageSize,
+        onPageChange: updateCatalogueMessage,
+      });
+      return;
+    }
+
     //希望我看不见那些报错
-    window.CoreList.mountList(dbPath, mountEl, { pageSize, autoFormatDisplay });
+    window.CoreList.mountList(dbPath, mountEl, { pageSize });
   });
 })();

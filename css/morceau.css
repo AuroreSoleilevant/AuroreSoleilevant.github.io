@@ -37,6 +37,17 @@
   max-width: 100%;
   margin: 0 0 0 var(--mt-container-gutter);
   box-sizing: border-box;
+  transition: opacity 150ms ease;
+}
+
+.mt-container.is-page-changing {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mt-container {
+    transition: none;
+  }
 }
 
 /* 单个磁贴 - 流式三列，空间不足时由平板规则切换为两列 */

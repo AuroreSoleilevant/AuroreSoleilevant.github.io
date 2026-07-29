@@ -166,9 +166,13 @@
 
   function sortEntries(entries) {
     return entries.sort((a, b) => {
-      const ta = new Date((a && (a.updated_at || a.created_at)) || 0).getTime();
-      const tb = new Date((b && (b.updated_at || b.created_at)) || 0).getTime();
-      return tb - ta;
+      const updatedA = new Date((a && a.updated_at) || 0).getTime();
+      const updatedB = new Date((b && b.updated_at) || 0).getTime();
+      if (updatedA !== updatedB) return updatedB - updatedA;
+
+      const createdA = new Date((a && a.created_at) || 0).getTime();
+      const createdB = new Date((b && b.created_at) || 0).getTime();
+      return createdB - createdA;
     });
   }
 
@@ -240,8 +244,87 @@
       });
   }
 
+  function mountPagedList(dbPath, mountEl, options) {
+    if (!mountEl) {
+      console.warn("[CoreList] mountEl is required.");
+      return;
+    }
+
+    const opts = Object.assign({ pageSize: 6, onPageChange: null }, options || {});
+    let page = 1;
+    let totalPages = 1;
+    let sortedEntries = [];
+    let tagSlugs = new Map();
+    let container = null;
+
+    function pageFromLocation() {
+      const value = new URLSearchParams(location.search).get("page");
+      return /^\d+$/.test(value || "") ? Number(value) : 1;
+    }
+
+    function updatePageUrl(nextPage, replace) {
+      const url = new URL(location.href);
+      if (nextPage <= 1) url.searchParams.delete("page");
+      else url.searchParams.set("page", String(nextPage));
+      history[replace ? "replaceState" : "pushState"](
+        { cataloguePage: nextPage },
+        "",
+        `${url.pathname}${url.search}${url.hash}`
+      );
+    }
+
+    function render(nextPage, { updateUrl = false, replaceUrl = false } = {}) {
+      page = Math.min(totalPages, Math.max(1, Math.floor(Number(nextPage) || 1)));
+      if (updateUrl) updatePageUrl(page, replaceUrl);
+
+      const pageSlice = paginate(sortedEntries, page, opts.pageSize);
+      const replaceCards = () => {
+        container.replaceChildren();
+        pageSlice.forEach((entry, cardIndex) => {
+          try {
+            container.appendChild(createTile(entry, { cardIndex, tagSlugs }));
+          } catch (err) {
+            console.error("[CoreList] createTile error:", err, entry);
+          }
+        });
+        requestAnimationFrame(() => container.classList.remove("is-page-changing"));
+      };
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (container.children.length && !reduceMotion) {
+        container.classList.add("is-page-changing");
+        window.setTimeout(replaceCards, 150);
+      } else {
+        replaceCards();
+      }
+
+      const detail = { page, totalPages, isLast: page === totalPages, navigate };
+      opts.onPageChange?.(detail);
+      document.dispatchEvent(new CustomEvent("catalogue:pagination", { detail }));
+    }
+
+    function navigate(nextPage) {
+      render(nextPage, { updateUrl: true });
+    }
+
+    Promise.all([loadDatabases(dbPath), loadTagMetadata()])
+      .then(([allData, nextTagSlugs]) => {
+        sortedEntries = sortEntries(allData || []);
+        tagSlugs = nextTagSlugs;
+        totalPages = Math.max(1, Math.ceil(sortedEntries.length / opts.pageSize));
+        container = ensureContainer(mountEl);
+        render(pageFromLocation());
+      })
+      .catch((err) => console.error("[CoreList] mountPagedList error:", err));
+
+    window.addEventListener("popstate", () => {
+      if (container) render(pageFromLocation());
+    });
+  }
+
   window.CoreList = {
     mountList,
+    mountPagedList,
     _fetchJsonArray: fetchJsonArray,
     _loadDatabases: loadDatabases,
     _loadTagMetadata: loadTagMetadata,

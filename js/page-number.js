@@ -3,8 +3,6 @@
 (function () {
   const CONFIG = {
     maxPages: {
-      histoire: 5, // 故事区最大页数，目前故事29
-      article: 1, // 文章区最大页数，目前文章2
       // 分类页面配置 - 每个分类单独设置最大页数
       "tag/musique": 1, //1
       "tag/long": 1, //3
@@ -135,7 +133,9 @@
     const result = getSectionAndPage();
     if (!result.section) return;
 
-    const { section, page, tagSlug } = result;
+    const { section, tagSlug } = result;
+    let page = result.page;
+    let navigate = null;
 
     let module = document.getElementById("pg2-paginator");
     if (!module) module = createModuleDom();
@@ -150,11 +150,7 @@
     prevBtn.innerHTML = arrowSvg("left");
     nextBtn.innerHTML = arrowSvg("right");
 
-    const maxPages = CONFIG.maxPages[section] || 1;
-    const isFirst = page === 1;
-    const isLast = page >= maxPages;
-
-    currentEl.textContent = String(page);
+    let maxPages = CONFIG.maxPages[section] || 1;
 
     function setDisabled(btn, disabled) {
       if (disabled) {
@@ -168,29 +164,34 @@
       }
     }
 
-    setDisabled(prevBtn, isFirst);
-    setDisabled(nextBtn, isLast);
+    function updateControls() {
+      currentEl.textContent = String(page);
+      setDisabled(prevBtn, page === 1);
+      setDisabled(nextBtn, page >= maxPages);
+      updateGoState();
+    }
 
-    prevBtn.addEventListener("click", () => {
-      if (isFirst) return;
-      const url = buildUrl(section, page - 1, tagSlug);
-      // 模拟链接点击来触发淡入淡出
+    function goToPage(nextPage) {
+      if (navigate) {
+        navigate(nextPage);
+        return;
+      }
+      const url = buildUrl(section, nextPage, tagSlug);
       const link = document.createElement("a");
       link.href = url;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    }
+
+    prevBtn.addEventListener("click", () => {
+      if (page === 1) return;
+      goToPage(page - 1);
     });
 
     nextBtn.addEventListener("click", () => {
-      if (isLast) return;
-      const url = buildUrl(section, page + 1, tagSlug);
-      // 模拟链接点击来触发淡入淡出
-      const link = document.createElement("a");
-      link.href = url;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      if (page >= maxPages) return;
+      goToPage(page + 1);
     });
 
     if (!goBtn) {
@@ -213,13 +214,7 @@
         updateGoState();
         return;
       }
-      const target = buildUrl(section, v, tagSlug);
-      // 模拟链接点击来触发淡入淡出
-      const link = document.createElement("a");
-      link.href = target;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      goToPage(v);
     }
 
     jumpInput.addEventListener("keydown", (ev) => {
@@ -254,9 +249,19 @@
         goBtn.disabled = true;
       }
     }
-    updateGoState();
-
+    updateControls();
     currentEl.setAttribute("aria-current", "page");
+
+    if (section === "histoire" || section === "article") {
+      document.addEventListener("catalogue:pagination", (event) => {
+        const detail = event.detail;
+        if (!detail || typeof detail.navigate !== "function") return;
+        page = detail.page;
+        maxPages = detail.totalPages;
+        navigate = detail.navigate;
+        updateControls();
+      });
+    }
 
   }
 
