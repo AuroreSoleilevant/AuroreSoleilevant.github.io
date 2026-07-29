@@ -3,7 +3,7 @@
 /* ---------- 顶栏：开始 ---------- */
 .site-header {
   --header-surface: #0d2519;
-  --header-surface-scrolled: rgba(8, 29, 18, 0.9);
+  --header-surface-scrolled: rgba(8, 29, 18, 0.75);
   --header-nebula-blue: rgba(72, 133, 104, 0.18);
   --header-nebula-violet: rgba(129, 94, 72, 0.11);
   --header-nebula-cyan: rgba(83, 151, 112, 0.1);

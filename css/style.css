@@ -50,7 +50,7 @@
 /* 标题块骨架 */
 .site-header {
   --header-surface: #10162f;
-  --header-surface-scrolled: rgba(12, 17, 39, 0.88);
+  --header-surface-scrolled: rgba(12, 17, 39, 0.75);
   --header-nebula-blue: rgba(75, 112, 177, 0.2);
   --header-nebula-violet: rgba(119, 90, 166, 0.16);
   --header-nebula-cyan: rgba(67, 142, 155, 0.1);
@@ -436,11 +436,11 @@
 }
 
 .header-stars--near {
-  --star-duration: 12.7s;
-  --star-delay: -1.9s;
-  --star-opacity-high: 0.96;
-  --star-opacity-mid: 0.8;
-  --star-opacity-low: 0.62;
+  --star-duration: 7.8s;
+  --star-delay: -2.6s;
+  --star-opacity-high: 1;
+  --star-opacity-mid: 0.72;
+  --star-opacity-low: 0.3;
   background-image:
     radial-gradient(
       circle at 8.6% 88%,
@@ -500,11 +500,11 @@
 }
 
 .header-stars--accent {
-  --star-duration: 14.2s;
-  --star-delay: -9.4s;
+  --star-duration: 10.6s;
+  --star-delay: -7.1s;
   --star-opacity-high: 1;
-  --star-opacity-mid: 0.86;
-  --star-opacity-low: 0.7;
+  --star-opacity-mid: 0.82;
+  --star-opacity-low: 0.38;
   background-image:
     radial-gradient(
       circle at 2.9% 64%,
