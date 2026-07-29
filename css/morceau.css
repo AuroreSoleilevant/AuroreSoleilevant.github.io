@@ -223,7 +223,6 @@
   }
 
   .home-center .mt-container {
-    width: 100% !important;
     margin-left: 0 !important;
   }
 
@@ -239,8 +238,6 @@
     width: calc(100% - 80px); /* 减少宽度，为分页模块留出空间 */
     margin-left: 0;
     padding: 0 20px 0 0; /* 右侧保留内边距 */
-    box-sizing: border-box;
-    gap: var(--mt-grid-gap);
   }
 
   .mt-tile {
@@ -292,7 +289,6 @@
   }
 
   .home-center .mt-container {
-    width: 100% !important;
     padding: 0 20px !important;
   }
 

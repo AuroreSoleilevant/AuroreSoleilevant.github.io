@@ -985,12 +985,6 @@ footer {
     padding: 100px var(--content-gutter) 24px;
   }
 
-  main p,
-  main h1,
-  ul {
-    margin-inline: var(--reading-gutter);
-  }
-
   p {
     font-size: 22px;
   }
@@ -1004,7 +998,6 @@ footer {
   }
 
   main h2 {
-    margin-inline: var(--reading-gutter);
     font-size: 2rem;
   }
 
@@ -1096,12 +1089,6 @@ footer {
     padding: 90px var(--content-gutter) 16px;
   }
 
-  main p,
-  main h1,
-  ul {
-    margin-inline: var(--reading-gutter);
-  }
-
   p {
     font-size: 19px;
     line-height: 1.5;
@@ -1116,7 +1103,6 @@ footer {
   }
 
   main h2 {
-    margin-inline: var(--reading-gutter);
     font-size: 1.5rem;
   }
 
@@ -1240,12 +1226,6 @@ footer {
     padding: 80px var(--content-gutter) 12px;
   }
 
-  main p,
-  main h1,
-  ul {
-    margin-inline: var(--reading-gutter);
-  }
-
   p {
     font-size: 17px;
   }
@@ -1256,10 +1236,6 @@ footer {
 
   h1.shaking-text {
     font-size: 2rem;
-  }
-
-  main h2 {
-    margin-inline: var(--reading-gutter);
   }
 
   .mobile-break {
@@ -1355,18 +1331,8 @@ footer {
     font-size: 0.9em;
   }
 
-  main p,
-  main h1,
-  ul {
-    margin-inline: var(--reading-gutter);
-  }
-
   p {
     font-size: 16px;
-  }
-
-  main h2 {
-    margin-inline: var(--reading-gutter);
   }
 
   .footer-links {
@@ -1396,16 +1362,6 @@ footer {
 
   main {
     padding-top: 70px;
-  }
-}
-
-/* 高分辨率设备优化 */
-@media (min-width: 1025px) and (max-width: 1440px) {
-  /* 中等桌面屏幕的微调 */
-  main p,
-  main h1,
-  ul {
-    margin-inline: var(--reading-gutter);
   }
 }
 
