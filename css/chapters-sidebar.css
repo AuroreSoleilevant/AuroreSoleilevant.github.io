@@ -4,16 +4,11 @@
 :root {
   --chapter-bg: #94ff629d; /* 按钮背景色 */
   --chapter-color: #fff; /* 按钮文字/图标颜色 */
-  --chapter-width: 380px; /* 侧栏宽度（最大） */
-  --chapter-gap: 12px; /* 与评论/回到顶部间隙，大概是不用动的 */
 }
 
 /* 按钮基础，大部分用的回到顶部的那些，所以需要用那边的css和js加载为前置 */
 .chapter-button {
   /* 复用 back-to-top 的基础规则 */
-  bottom: calc(
-    var(--backtop-bottom) + var(--backtop-size) * 2 + var(--comment-gap) * 2
-  );
   background: var(--chapter-bg);
   color: var(--chapter-color);
   border-color: rgba(0, 0, 0, 0.06);
@@ -30,8 +25,8 @@
   top: 0;
   right: 0;
   height: 100vh;
-  width: min(var(--chapter-width), 90vw);
-  max-width: var(--chapter-width);
+  height: 100dvh;
+  width: min(clamp(250px, calc(13.9vw + 183px), 380px), 90vw);
   transform: translateX(110%); /* 隐藏效果：移动到右侧之外 */
   transition: transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1),
     box-shadow 200ms ease;
@@ -66,8 +61,10 @@
   margin-bottom: 12px;
 }
 #chapter-sidebar .cs-title {
+  flex: 1;
+  min-width: 0;
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: clamp(1.3rem, calc(0.55vw + 16.5px), 1.5rem);
   color: #111;
   white-space: nowrap;
   overflow: hidden;
@@ -112,8 +109,9 @@
   color: #222;
   background: transparent;
   transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
-  font-size: 1.2rem; /* 章节名称字号 */
+  font-size: clamp(1rem, calc(0.7vw + 10.5px), 1.2rem);
   line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 /* hover 效果（轻微上升 + 背景小框，大概是拨玻璃那样吧） */
@@ -172,24 +170,4 @@
 
   /* 平滑移动 */
   transition: bottom 200ms cubic-bezier(0.2, 0.9, 0.2, 1);
-}
-
-@media (max-width: 768px) {
-  :root {
-    --chapter-width: 290px; /* 侧栏宽度（最大） */
-  }
-
-  #chapter-sidebar .chapter-list a {
-    font-size: 1rem; /* 章节名称字号 */
-  }
-
-  #chapter-sidebar .cs-title {
-    font-size: 1.3rem;
-  }
-}
-
-@media (max-width: 480px) {
-  :root {
-    --chapter-width: 250px; /* 侧栏宽度（最大） */
-  }
 }
