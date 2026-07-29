@@ -1,0 +1,113 @@
+.search-container,
+.search-box,
+.search-input,
+.search-button {
+  box-sizing: border-box;
+}
+
+.search-container {
+  width: min(100%, 1000px);
+  margin: 0 auto;
+  padding: clamp(12px, 2vw, 20px);
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: clamp(10px, 2vw, 25px) clamp(52px, 8vw, 80px)
+    clamp(10px, 2vw, 25px) 20px;
+  color: inherit;
+  font: inherit;
+  font-size: clamp(14px, 2vw, 20px);
+  background: rgba(242, 253, 255, 0.9);
+  border: 1px solid rgba(106, 140, 175, 0.2);
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-input:focus-visible {
+  background: #fff;
+  outline: 3px solid rgba(106, 140, 175, 0.45);
+  outline-offset: 2px;
+  box-shadow: 0 4px 20px rgba(100, 149, 237, 0.25);
+}
+
+.search-input::placeholder {
+  color: #777;
+}
+
+.search-button {
+  position: absolute;
+  top: 50%;
+  right: clamp(4px, 0.5vw, 5px);
+  display: grid;
+  width: clamp(30px, 6vw, 60px);
+  height: clamp(30px, 6vw, 60px);
+  place-items: center;
+  color: #fff;
+  cursor: pointer;
+  background: #6a8caf;
+  border: 0;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.search-button:hover {
+  background: #5a7c9f;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.search-button:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.search-button:focus-visible {
+  outline: 3px solid rgba(106, 140, 175, 0.55);
+  outline-offset: 2px;
+}
+
+.search-button:disabled {
+  cursor: progress;
+  opacity: 0.65;
+}
+
+.search-icon {
+  width: clamp(15px, 3vw, 30px);
+  height: clamp(15px, 3vw, 30px);
+}
+
+.instructions,
+.search-status {
+  margin: 15px 0 0;
+  color: #777;
+  font-size: clamp(14px, 2vw, 20px);
+  text-align: center;
+}
+
+.search-status {
+  min-height: 1.5em;
+}
+
+#mt-list {
+  min-height: 200px;
+}
+
+#mt-list > .text-center {
+  margin: 40px 0;
+  padding: 20px;
+  color: #666;
+  font-size: clamp(18px, 2vw, 2rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-input,
+  .search-button {
+    transition: none;
+  }
+}
