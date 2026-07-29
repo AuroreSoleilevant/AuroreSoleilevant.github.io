@@ -8,7 +8,6 @@
   <meta name="keywords" content="博客, 生活, 编程, 写作，摄影，彩虹小马，文学">
   <meta name="author" content="Aurore Soleilevant">
   <title>Spica</title>
-  <link rel="modulepreload" href="/js/common-head.js" crossorigin="anonymous">
   <!-- 调用列表 -->
   <script src="/js/common-head.js" fetchpriority="high"></script>
   <link rel="stylesheet" href="/css/tuile.css">
@@ -97,6 +96,13 @@
   }
   }
 
+  html[data-home-hidden] .shaking-text,
+  html[data-home-hidden] .site-header::after,
+  html[data-home-hidden] .site-header .stars,
+  html[data-home-hidden] .site-header .stars2 {
+    animation-play-state: paused;
+  }
+
   /* 字号标准化*/
  .fsize2{
   font-size: 2rem;
@@ -136,6 +142,21 @@
  
 }
   </style>
+
+  <script>
+  (() => {
+    const syncHomeAnimationState = () => {
+      document.documentElement.toggleAttribute(
+        "data-home-hidden",
+        document.visibilityState === "hidden"
+      );
+    };
+
+    document.addEventListener("visibilitychange", syncHomeAnimationState);
+    window.addEventListener("pageshow", syncHomeAnimationState);
+    syncHomeAnimationState();
+  })();
+  </script>
 
 </head>
 
@@ -343,7 +364,7 @@ link.addEventListener('keydown', (e) => {
 
   <div class="tiles">
   <a class="tile tile-strip-new" href="https://www.zexnocs.top/" target="_blank" rel="noopener noreferrer" style="--tile-color: rgba(40,140,134,0.3);">
-    <img src="https://www.zexnocs.top/img/avatar.jpg" alt="zExNocs" title="zExNocs" class="tile-thumb" decoding="async">
+    <img src="https://www.zexnocs.top/img/avatar.jpg" alt="zExNocs" title="zExNocs" class="tile-thumb" loading="lazy" decoding="async">
     <div class="tile-content">
       <h1>
         <span class="full-title">茶会大猫猫 ———— 蒟蒻zExNocs's Blog</span>
@@ -355,7 +376,7 @@ link.addEventListener('keydown', (e) => {
   <br>
   <div class="tiles">
   <a class="tile tile-strip-new" href="https://zhuge-tom.github.io/" target="_blank" rel="noopener noreferrer" style="--tile-color: rgba(225,51,51,0.3);">
-    <img src="/images/amis/朱歌的博客.webp" alt="朱歌" title="朱歌" class="tile-thumb" decoding="async">
+    <img src="/images/amis/朱歌的博客.webp" alt="朱歌" title="朱歌" class="tile-thumb" loading="lazy" decoding="async">
     <div class="tile-content">
       <h1>
         <span class="full-title">黑猫诺瓦 ———— Zhuge's Blog</span>
@@ -367,7 +388,7 @@ link.addEventListener('keydown', (e) => {
   <br>
   <div class="tiles">
   <a class="tile tile-strip-new" href="https://blog.qingchenyou.asia/" target="_blank" rel="noopener noreferrer" style="--tile-color: rgba(0,47,167,0.3);">
-    <img src="https://qingchenyou-1301914189.cos.ap-beijing.myqcloud.com/oc%E5%A4%B4%E5%83%8Fv2-%E8%BD%AC%E6%8D%A2%E8%87%AA-png.webp" alt="轻尘呦" title="轻尘呦" class="tile-thumb" decoding="async">
+    <img src="https://qingchenyou-1301914189.cos.ap-beijing.myqcloud.com/oc%E5%A4%B4%E5%83%8Fv2-%E8%BD%AC%E6%8D%A2%E8%87%AA-png.webp" alt="轻尘呦" title="轻尘呦" class="tile-thumb" loading="lazy" decoding="async">
     <div class="tile-content">
       <h1>
         <span class="full-title">NeuroEcho 文学社寄术员 ———— 轻尘呦's Blog</span>
