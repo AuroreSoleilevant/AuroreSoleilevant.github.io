@@ -6,7 +6,6 @@
   --pg2-radius: 14px;
   --pg2-btn-size: 60px; /* 按钮尺寸 */
   --pg2-current-height: 56px;
-  --pg2-jump-height: 180px;
 
   --pg2-bg: #fcf1ba; /* 背景色 */
   --pg2-main: #99ffc3; /* 主色 */
@@ -23,15 +22,6 @@
   --pg2-active-translate: -3px;
 
   --pg2-sheen-opacity: 0.08;
-  --pg2-sheen-size: 120%;
-
-  --pg2-pagination-width: 0px;
-}
-
-/* 保证主内容留白 */
-.site-content {
-  padding-right: var(--pg2-pagination-width, 0);
-  transition: padding-right 220ms ease;
 }
 
 /* 容器 */
@@ -345,11 +335,6 @@
   .pg2-btn svg {
     width: 20px;
     height: 20px;
-  }
-
-  /* 确保主内容在手机上边距正确 */
-  .site-content {
-    padding-right: 0 !important; /* 提高优先级 */
   }
 
   /* 调整按钮的hover效果，在手机上稍微减弱 */

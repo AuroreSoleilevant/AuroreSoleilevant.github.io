@@ -177,6 +177,8 @@ HHXLOYDCS HTML（special/common-head-peur.js）
 
 正文水平尺寸由 `style.css` 的 `--content-gutter` 与 `--reading-gutter` 流式变量统一提供：前者用于 `main` 水平 padding，后者用于正文、标题、列表与直接阅读块的水平对齐。`tuile.css` 以流式 `clamp(12px, 1.5vw, 20px)` gap 与普通卡片的 `clamp(240px, 22vw, 300px)` flex basis 处理 480px 以上的换行与间距；480px 以下紧凑三格、方形卡片和长条卡片的结构断点保持独立。`morceau.css` 以 `--mt-grid-gap`、`--mt-container-gutter`、`--mt-pagination-reserve` 和 `--mt-tile-basis` 处理目录、标签和首页推荐列表：固定定位分页器保留流式右侧空间，普通卡片维持三列/平板两列/手机单列的结构。它们不改变字体、颜色、动画或垂直间距；移动端仍保留既有的 header/footer 等结构断点。超宽屏约束继续以 `min-width: 2000px` 的独立覆盖规则处理：`style.css` 限制 `main` 的直接正文元素至 1280px；`tuile.css` 限制 `.tiles` 至 1856px；`morceau.css` 限制 `.mt-container` 至 1856px。三者均居中，不约束 header、footer、吉祥物或章节侧栏。
 
+分页器由 `page-number.js` 仅在目录与标签分页 URL 上创建，并固定于视口右侧；其尺寸与右侧偏移由 `page-number.css` 的断点变量管理。列表内容的避让空间只由 `morceau.css` 的 `--mt-pagination-reserve` 提供；`page-number.css` 不再保留没有匹配节点或写入者的通用内容 padding。
+
 禁止做法：
 
 - 不要把仅一个页面、一个组件或一个特殊主题的规则继续堆入 `style.css`。
