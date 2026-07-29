@@ -188,7 +188,7 @@
   cursor: pointer; /* 手型光标 */
 }
 
-/* 星空装饰：四组不同时序的固定星野 */
+/* 星空装饰：两层静态微星与两层低频呼吸亮星 */
 .header-sky,
 .header-stars {
   position: absolute;
@@ -209,165 +209,229 @@
 
 .header-stars {
   background-repeat: no-repeat;
+}
+
+.header-stars--near,
+.header-stars--accent {
   animation: header-star-breathe var(--star-duration) ease-in-out infinite;
   animation-delay: var(--star-delay);
 }
 
 .header-stars--far {
-  --star-duration: 10.8s;
-  --star-delay: -3.7s;
-  --star-opacity-high: 0.78;
-  --star-opacity-mid: 0.65;
-  --star-opacity-low: 0.48;
   background-image:
     radial-gradient(
       circle at 1.8% 19%,
-      var(--header-star-faint) 0 0.45px,
-      transparent 1px
+      var(--header-star-faint) 0 0.6px,
+      transparent 1.2px
     ),
     radial-gradient(
       circle at 6.7% 73%,
-      var(--header-star-cool) 0 0.55px,
-      transparent 1.15px
-    ),
-    radial-gradient(
-      circle at 11.4% 42%,
-      var(--header-star-blue) 0 0.5px,
-      transparent 1.05px
-    ),
-    radial-gradient(
-      circle at 19.9% 86%,
-      var(--header-star-faint) 0 0.45px,
-      transparent 1px
-    ),
-    radial-gradient(
-      circle at 23.1% 28%,
-      var(--header-star-warm) 0 0.5px,
-      transparent 1.1px
-    ),
-    radial-gradient(
-      circle at 31.6% 58%,
-      var(--header-star-faint) 0 0.4px,
-      transparent 0.95px
-    ),
-    radial-gradient(
-      circle at 38.8% 13%,
-      var(--header-star-blue) 0 0.55px,
-      transparent 1.15px
-    ),
-    radial-gradient(
-      circle at 43.7% 79%,
-      var(--header-star-cool) 0 0.45px,
-      transparent 1px
-    ),
-    radial-gradient(
-      circle at 50.4% 36%,
-      var(--header-star-faint) 0 0.5px,
-      transparent 1.05px
-    ),
-    radial-gradient(
-      circle at 58.9% 69%,
-      var(--header-star-warm) 0 0.45px,
-      transparent 1px
-    ),
-    radial-gradient(
-      circle at 66.1% 22%,
-      var(--header-star-faint) 0 0.4px,
-      transparent 0.95px
-    ),
-    radial-gradient(
-      circle at 74.8% 91%,
-      var(--header-star-blue) 0 0.5px,
-      transparent 1.05px
-    ),
-    radial-gradient(
-      circle at 82.3% 48%,
-      var(--header-star-cool) 0 0.55px,
-      transparent 1.15px
-    ),
-    radial-gradient(
-      circle at 91.7% 16%,
-      var(--header-star-faint) 0 0.45px,
-      transparent 1px
-    ),
-    radial-gradient(
-      circle at 97.6% 76%,
-      var(--header-star-warm) 0 0.5px,
-      transparent 1.05px
-    );
-}
-
-.header-stars--soft {
-  --star-duration: 8.6s;
-  --star-delay: -6.1s;
-  --star-opacity-high: 0.88;
-  --star-opacity-mid: 0.72;
-  --star-opacity-low: 0.54;
-  background-image:
-    radial-gradient(
-      circle at 4.1% 51%,
-      var(--header-star-blue) 0 0.65px,
-      transparent 1.3px
-    ),
-    radial-gradient(
-      circle at 13.8% 11%,
       var(--header-star-cool) 0 0.7px,
       transparent 1.35px
     ),
     radial-gradient(
-      circle at 16.2% 82%,
-      var(--header-star-gold) 0 0.65px,
-      transparent 1.3px
-    ),
-    radial-gradient(
-      circle at 27.4% 44%,
-      var(--header-star-warm) 0 0.7px,
-      transparent 1.4px
-    ),
-    radial-gradient(
-      circle at 35.1% 88%,
-      var(--header-star-blue) 0 0.6px,
+      circle at 11.4% 42%,
+      var(--header-star-blue) 0 0.65px,
       transparent 1.25px
     ),
     radial-gradient(
-      circle at 40.6% 26%,
-      var(--header-star-cool) 0 0.75px,
-      transparent 1.45px
+      circle at 19.9% 86%,
+      var(--header-star-faint) 0 0.6px,
+      transparent 1.2px
     ),
     radial-gradient(
-      circle at 47.8% 63%,
-      var(--header-star-faint) 0 0.65px,
-      transparent 1.3px
-    ),
-    radial-gradient(
-      circle at 55.2% 17%,
+      circle at 23.1% 28%,
       var(--header-star-warm) 0 0.65px,
       transparent 1.3px
     ),
     radial-gradient(
-      circle at 62.7% 81%,
-      var(--header-star-cool) 0 0.7px,
-      transparent 1.4px
+      circle at 31.6% 58%,
+      var(--header-star-faint) 0 0.55px,
+      transparent 1.1px
     ),
     radial-gradient(
-      circle at 69.3% 39%,
-      var(--header-star-blue) 0 0.65px,
+      circle at 38.8% 13%,
+      var(--header-star-blue) 0 0.7px,
       transparent 1.35px
     ),
     radial-gradient(
-      circle at 79.8% 67%,
-      var(--header-star-warm) 0 0.75px,
-      transparent 1.45px
+      circle at 43.7% 79%,
+      var(--header-star-cool) 0 0.6px,
+      transparent 1.2px
     ),
     radial-gradient(
-      circle at 86.4% 27%,
-      var(--header-star-faint) 0 0.6px,
+      circle at 50.4% 36%,
+      var(--header-star-faint) 0 0.65px,
       transparent 1.25px
     ),
     radial-gradient(
+      circle at 58.9% 69%,
+      var(--header-star-warm) 0 0.6px,
+      transparent 1.2px
+    ),
+    radial-gradient(
+      circle at 66.1% 22%,
+      var(--header-star-faint) 0 0.55px,
+      transparent 1.1px
+    ),
+    radial-gradient(
+      circle at 74.8% 91%,
+      var(--header-star-blue) 0 0.65px,
+      transparent 1.25px
+    ),
+    radial-gradient(
+      circle at 82.3% 48%,
+      var(--header-star-cool) 0 0.7px,
+      transparent 1.35px
+    ),
+    radial-gradient(
+      circle at 91.7% 16%,
+      var(--header-star-faint) 0 0.6px,
+      transparent 1.2px
+    ),
+    radial-gradient(
+      circle at 97.6% 76%,
+      var(--header-star-warm) 0 0.65px,
+      transparent 1.25px
+    ),
+    radial-gradient(
+      circle at 9.2% 94%,
+      var(--header-star-faint) 0 0.5px,
+      transparent 1.05px
+    ),
+    radial-gradient(
+      circle at 15.8% 61%,
+      var(--header-star-blue) 0 0.55px,
+      transparent 1.1px
+    ),
+    radial-gradient(
+      circle at 27.2% 6%,
+      var(--header-star-faint) 0 0.5px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 34.4% 41%,
+      var(--header-star-cool) 0 0.55px,
+      transparent 1.1px
+    ),
+    radial-gradient(
+      circle at 46.2% 95%,
+      var(--header-star-faint) 0 0.5px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 63.8% 53%,
+      var(--header-star-warm) 0 0.55px,
+      transparent 1.1px
+    ),
+    radial-gradient(
+      circle at 78.4% 7%,
+      var(--header-star-faint) 0 0.5px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 88.2% 74%,
+      var(--header-star-blue) 0 0.55px,
+      transparent 1.1px
+    );
+}
+
+.header-stars--soft {
+  background-image:
+    radial-gradient(
+      circle at 4.1% 51%,
+      var(--header-star-blue) 0 0.85px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 13.8% 11%,
+      var(--header-star-cool) 0 0.9px,
+      transparent 1.6px
+    ),
+    radial-gradient(
+      circle at 16.2% 82%,
+      var(--header-star-gold) 0 0.85px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 27.4% 44%,
+      var(--header-star-warm) 0 0.9px,
+      transparent 1.6px
+    ),
+    radial-gradient(
+      circle at 35.1% 88%,
+      var(--header-star-blue) 0 0.8px,
+      transparent 1.45px
+    ),
+    radial-gradient(
+      circle at 40.6% 26%,
+      var(--header-star-cool) 0 1px,
+      transparent 1.75px
+    ),
+    radial-gradient(
+      circle at 47.8% 63%,
+      var(--header-star-faint) 0 0.85px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 55.2% 17%,
+      var(--header-star-warm) 0 0.85px,
+      transparent 1.5px
+    ),
+    radial-gradient(
+      circle at 62.7% 81%,
+      var(--header-star-cool) 0 0.9px,
+      transparent 1.6px
+    ),
+    radial-gradient(
+      circle at 69.3% 39%,
+      var(--header-star-blue) 0 0.85px,
+      transparent 1.55px
+    ),
+    radial-gradient(
+      circle at 79.8% 67%,
+      var(--header-star-warm) 0 1px,
+      transparent 1.75px
+    ),
+    radial-gradient(
+      circle at 86.4% 27%,
+      var(--header-star-faint) 0 0.8px,
+      transparent 1.45px
+    ),
+    radial-gradient(
       circle at 93.5% 89%,
-      var(--header-star-blue) 0 0.7px,
-      transparent 1.4px
+      var(--header-star-blue) 0 0.9px,
+      transparent 1.6px
+    ),
+    radial-gradient(
+      circle at 0.9% 84%,
+      var(--header-star-faint) 0 0.55px,
+      transparent 1.1px
+    ),
+    radial-gradient(
+      circle at 24.9% 65%,
+      var(--header-star-cool) 0 0.6px,
+      transparent 1.15px
+    ),
+    radial-gradient(
+      circle at 44.9% 12%,
+      var(--header-star-faint) 0 0.55px,
+      transparent 1.1px
+    ),
+    radial-gradient(
+      circle at 57.1% 95%,
+      var(--header-star-warm) 0 0.6px,
+      transparent 1.15px
+    ),
+    radial-gradient(
+      circle at 73.2% 20%,
+      var(--header-star-faint) 0 0.55px,
+      transparent 1.1px
+    ),
+    radial-gradient(
+      circle at 99.3% 58%,
+      var(--header-star-blue) 0 0.6px,
+      transparent 1.15px
     );
 }
 
@@ -380,58 +444,58 @@
   background-image:
     radial-gradient(
       circle at 8.6% 88%,
-      var(--header-star-warm) 0 0.85px,
-      transparent 1.6px
+      var(--header-star-warm) 0 1.15px,
+      transparent 2px
     ),
     radial-gradient(
       circle at 21.5% 34%,
-      var(--header-star-blue) 0 0.9px,
-      transparent 1.7px
+      var(--header-star-blue) 0 1.25px,
+      transparent 2.1px
     ),
     radial-gradient(
       circle at 29.8% 72%,
-      var(--header-star-cool) 0 0.8px,
-      transparent 1.55px
+      var(--header-star-cool) 0 1.1px,
+      transparent 1.9px
     ),
     radial-gradient(
       circle at 37.2% 8%,
-      var(--header-star-warm) 0 0.85px,
-      transparent 1.65px
+      var(--header-star-warm) 0 1.15px,
+      transparent 2px
     ),
     radial-gradient(
       circle at 45.5% 49%,
-      var(--header-star-blue) 0 0.8px,
-      transparent 1.55px
+      var(--header-star-blue) 0 1.1px,
+      transparent 1.9px
     ),
     radial-gradient(
       circle at 53.9% 84%,
-      var(--header-star-gold) 0 0.9px,
-      transparent 1.7px
+      var(--header-star-gold) 0 1.25px,
+      transparent 2.1px
     ),
     radial-gradient(
       circle at 64.4% 13%,
-      var(--header-star-cool) 0 0.85px,
-      transparent 1.65px
+      var(--header-star-cool) 0 1.15px,
+      transparent 2px
     ),
     radial-gradient(
       circle at 72.1% 57%,
-      var(--header-star-blue) 0 0.8px,
-      transparent 1.55px
+      var(--header-star-blue) 0 1.1px,
+      transparent 1.9px
     ),
     radial-gradient(
       circle at 76.6% 92%,
-      var(--header-star-ember) 0 0.9px,
-      transparent 1.75px
+      var(--header-star-ember) 0 1.25px,
+      transparent 2.15px
     ),
     radial-gradient(
       circle at 89.1% 41%,
-      var(--header-star-warm) 0 0.85px,
-      transparent 1.65px
+      var(--header-star-warm) 0 1.15px,
+      transparent 2px
     ),
     radial-gradient(
       circle at 95.4% 7%,
-      var(--header-star-cool) 0 0.8px,
-      transparent 1.55px
+      var(--header-star-cool) 0 1.1px,
+      transparent 1.9px
     );
 }
 
@@ -444,58 +508,58 @@
   background-image:
     radial-gradient(
       circle at 2.9% 64%,
-      var(--header-star-cool) 0 1.05px,
-      transparent 2px
+      var(--header-star-cool) 0 1.45px,
+      transparent 2.55px
     ),
     radial-gradient(
       circle at 18.6% 16%,
-      var(--header-star-warm) 0 1.15px,
-      transparent 2.15px
+      var(--header-star-warm) 0 1.55px,
+      transparent 2.7px
     ),
     radial-gradient(
       circle at 33.7% 91%,
-      var(--header-star-blue) 0 1px,
-      transparent 1.9px
-    ),
-    radial-gradient(
-      circle at 49.1% 24%,
-      var(--header-star-cool) 0 1.25px,
+      var(--header-star-blue) 0 1.35px,
       transparent 2.35px
     ),
     radial-gradient(
+      circle at 49.1% 24%,
+      var(--header-star-cool) 0 1.75px,
+      transparent 3px
+    ),
+    radial-gradient(
       circle at 60.2% 67%,
-      var(--header-star-gold) 0 1.1px,
-      transparent 2.1px
+      var(--header-star-gold) 0 1.5px,
+      transparent 2.65px
     ),
     radial-gradient(
       circle at 70.8% 32%,
-      var(--header-star-blue) 0 1px,
-      transparent 1.95px
+      var(--header-star-blue) 0 1.35px,
+      transparent 2.4px
     ),
     radial-gradient(
       circle at 84.5% 83%,
-      var(--header-star-ember) 0 1.15px,
-      transparent 2.2px
+      var(--header-star-ember) 0 1.55px,
+      transparent 2.75px
     ),
     radial-gradient(
       circle at 98.1% 29%,
-      var(--header-star-warm) 0 1.05px,
-      transparent 2px
+      var(--header-star-warm) 0 1.45px,
+      transparent 2.55px
     ),
     radial-gradient(
       circle at 2.9% 64%,
-      var(--header-star-halo) 0 2.8px,
-      transparent 4.8px
+      var(--header-star-halo) 0 3.4px,
+      transparent 5.6px
     ),
     radial-gradient(
       circle at 49.1% 24%,
-      var(--header-star-halo) 0 3.2px,
-      transparent 5.2px
+      var(--header-star-halo) 0 4px,
+      transparent 6.4px
     ),
     radial-gradient(
       circle at 84.5% 83%,
-      var(--header-star-halo) 0 2.6px,
-      transparent 4.6px
+      var(--header-star-halo) 0 3.2px,
+      transparent 5.4px
     );
 }
 
@@ -537,7 +601,7 @@
     var(--header-meteor-tail) 58%,
     var(--header-meteor-head)
   );
-  animation: header-meteor-fall 54s linear infinite;
+  animation: header-meteor-fall 45s linear infinite;
 }
 
 .header-meteor::after {
@@ -554,7 +618,7 @@
 }
 
 .header-meteor--one {
-  animation-delay: -38s;
+  animation-delay: -31s;
 }
 
 .header-meteor--two {
@@ -566,7 +630,7 @@
   top: 4px;
   left: 91%;
   width: 58px;
-  animation-delay: -20s;
+  animation-delay: -16s;
 }
 
 .header-meteor--three {
@@ -578,7 +642,7 @@
   top: 2px;
   left: 42%;
   width: 84px;
-  animation-delay: -2s;
+  animation-delay: -1s;
 }
 
 @keyframes header-meteor-fall {
@@ -1770,9 +1834,10 @@ footer {
 
 /* 对于系统声明prefers-reduced-motion：关闭动画 */
 @media (prefers-reduced-motion: reduce) {
-  .header-stars {
+  .header-stars--near,
+  .header-stars--accent {
     animation: none;
-    opacity: 0.68;
+    opacity: 0.78;
   }
 
   .header-meteor {
