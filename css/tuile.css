@@ -124,6 +124,17 @@
   z-index: 1; /* 在 svg 之上，但在文本之下 */
 }
 
+/* 长条卡片缩略图的静态占位：沿用卡片的星雾配色，图片本身解码后覆盖它。 */
+.tiles > a.tile.tile-strip-new::before,
+.tiles > .tile.tile-strip-new::before {
+  height: 100%;
+  background:
+    radial-gradient(circle at 74% 28%, rgba(223, 235, 255, 0.26) 0 1px, transparent 1.8px) left var(--tile-thumb-offset, 1.5rem) center / var(--tile-thumb-size-responsive) var(--tile-thumb-size-responsive) no-repeat,
+    radial-gradient(circle at 28% 70%, rgba(255, 239, 207, 0.16) 0 1px, transparent 1.7px) left var(--tile-thumb-offset, 1.5rem) center / var(--tile-thumb-size-responsive) var(--tile-thumb-size-responsive) no-repeat,
+    linear-gradient(135deg, rgba(76, 101, 154, 0.24), rgba(109, 78, 139, 0.17) 55%, rgba(72, 132, 142, 0.14)) left var(--tile-thumb-offset, 1.5rem) center / var(--tile-thumb-size-responsive) var(--tile-thumb-size-responsive) no-repeat,
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
+}
+
 /* ---------- 光泽滑动（::after） ---------- */
 .tiles > a.tile::after,
 .tiles > .tile::after {
@@ -227,6 +238,8 @@
   .tiles > .tile,
   .tiles > a.tile .tile-svg,
   .tiles > .tile .tile-svg,
+  .tiles > a.tile .tile-thumb,
+  .tiles > .tile .tile-thumb,
   .tiles > a.tile::after,
   .tiles > .tile::after {
     transition: none !important;
@@ -458,9 +471,22 @@
   background: rgba(255, 255, 255, 0.03);
   z-index: 2;
   pointer-events: none;
-  transition: transform 280ms cubic-bezier(0.2, 0.9, 0.3, 1),
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 220ms ease-out, transform 280ms cubic-bezier(0.2, 0.9, 0.3, 1),
     box-shadow 280ms ease;
   transform-origin: center;
+}
+
+.tiles > a.tile.tile-strip-new .tile-thumb.is-image-ready,
+.tiles > .tile.tile-strip-new .tile-thumb.is-image-ready {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.tiles > a.tile.tile-strip-new .tile-thumb.is-image-failed,
+.tiles > .tile.tile-strip-new .tile-thumb.is-image-failed {
+  opacity: 0;
 }
 
 /* 缩略图 hover / focus 微动效（仅本类） */
@@ -543,6 +569,12 @@
     margin: 0 !important;
   }
 
+  .tiles > a.tile.tile-strip-new,
+  .tiles > .tile.tile-strip-new {
+    --tile-thumb-size-responsive: 50px;
+    --tile-thumb-offset: 1rem;
+  }
+
   .tiles > a.tile.tile-strip-new .tile-content,
   .tiles > .tile.tile-strip-new .tile-content {
     align-items: flex-end !important;
@@ -609,6 +641,12 @@
     --tile-thumb-size-responsive: 36px !important;
   }
 
+  .tiles > a.tile.tile-strip-new,
+  .tiles > .tile.tile-strip-new {
+    --tile-thumb-size-responsive: 36px;
+    --tile-thumb-offset: 0.7rem;
+  }
+
   /* 长条磁贴的内容区域 - 确保左对齐 */
   .tiles > a.tile.tile-strip-new .tile-content,
   .tiles > .tile.tile-strip-new .tile-content {
@@ -660,6 +698,7 @@
     flex-direction: column;
     padding: 0.8rem;
     gap: 8px;
+    --tile-thumb-offset: calc(50% - var(--tile-thumb-size-responsive) / 2);
   }
   .tiles > a.tile.tile-strip-new .tile-thumb,
   .tiles > .tile.tile-strip-new .tile-thumb {

@@ -81,6 +81,7 @@
       img.alt = cover_image_alt || title || "";
       img.decoding = "async";
       img.loading = "lazy";
+      window.SpicaImageLifecycle?.handleImage(img);
       a.appendChild(img);
     }
 

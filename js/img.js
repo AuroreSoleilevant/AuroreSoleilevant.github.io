@@ -39,13 +39,25 @@
       img.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
     } // 否则不主动探测以避免额外网络请求
 
+    const isCardImage = img.matches(".mt-image, .tile-thumb");
+
     // 将图片标记为 loaded：优先使用 decode()，失败则回退到直接添加类
     const markLoaded = () => {
       try {
+        if (isCardImage) img.classList.add("is-image-ready");
         img.classList.add("loaded");
       } catch (e) {
         /* ignore */
       }
+    };
+
+    const markFailed = () => {
+      if (!isCardImage) {
+        markLoaded();
+        return;
+      }
+      img.classList.add("is-image-failed");
+      img.removeAttribute("src");
     };
 
     const tryDecodeThenMark = () => {
@@ -56,17 +68,22 @@
       }
     };
 
-    if (img.complete) {
+    if (img.complete && !img.naturalWidth) {
+      markFailed();
+    } else if (img.complete) {
       // 可能已经在缓存中，尽量 decode() 以获得更平滑渲染
       tryDecodeThenMark();
     } else {
       // 等待 load/error（只监听一次）
       const onLoad = () => tryDecodeThenMark();
-      const onError = () => markLoaded(); // error 也视为“可以显示”，避免没了
+      const onError = () => markFailed();
       img.addEventListener("load", onLoad, { once: true, passive: true });
       img.addEventListener("error", onError, { once: true, passive: true });
     }
   }
+
+  // 供异步生成的列表卡片复用同一解码流程；重复调用由 data 标记安全忽略。
+  window.SpicaImageLifecycle = { handleImage };
 
   // 处理 background-image：避免重复下载，同 src 的只下载一次，并Mark所有相关元素
   function handleBgImages(root = document) {

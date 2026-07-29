@@ -77,6 +77,21 @@
   -webkit-backdrop-filter: none;
 }
 
+/* 列表封面在解码前保留固定区域与低对比度雾光，不占用额外节点。 */
+.mt-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--mt-image-height);
+  border-radius: var(--mt-image-radius) var(--mt-image-radius) 0 0;
+  background:
+    radial-gradient(circle at 74% 28%, rgba(223, 235, 255, 0.26) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 28% 70%, rgba(255, 239, 207, 0.16) 0 1px, transparent 1.7px),
+    linear-gradient(135deg, rgba(76, 101, 154, 0.24), rgba(109, 78, 139, 0.17) 55%, rgba(72, 132, 142, 0.14));
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* 顶部图片 */
 .mt-image {
   width: 100%;
@@ -88,6 +103,20 @@
   /* 优化图片渲染 */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(2px) scale(1.01);
+  transition: opacity 220ms ease-out, transform 280ms ease-out;
+}
+
+.mt-image.is-image-ready {
+  opacity: 1;
+  transform: none;
+}
+
+.mt-image.is-image-failed {
+  opacity: 0;
 }
 
 /* 内容区域 */
@@ -363,6 +392,7 @@
 /* 减少动画偏好 */
 @media (prefers-reduced-motion: reduce) {
   .mt-tile,
+  .mt-image,
   .mt-tile::after {
     transition: none !important;
     animation: none !important;
