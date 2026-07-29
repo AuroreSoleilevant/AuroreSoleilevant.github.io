@@ -1,8 +1,14 @@
-:root {
+/* 容器：单独占一行，居中 */
+.chapter-nav {
   /* 尺寸与视觉参数 */
-  --chapnav-size: 60px;
+  --chapnav-size: clamp(35px, calc(5.6vw - 17px), 60px);
   --chapnav-radius: 12px;
-  --chapnav-gap: 40px;
+  --chapnav-gap: clamp(12px, calc(7.4vw - 61px), 40px);
+  --chapnav-padding-block: clamp(12px, calc(1.75vw - 6px), 18px);
+  --chapnav-font-size: clamp(12px, 1.45vw, 20px);
+  --chapnav-button-min-width: clamp(50px, calc(4vw + 49px), 90px);
+  --chapnav-button-padding: clamp(1px, calc(4.4vw - 30px), 30px);
+  --chapnav-toc-min-width: clamp(70px, calc(2vw + 90px), 110px);
   --chapnav-hover-lift: -3px;
 
   /* 米黄色主题纯色方案 */
@@ -10,17 +16,14 @@
   --chapnav-border: #f0d7a0;
   --chapnav-color: #3b2b12;
   --chapnav-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-}
-
-/* 容器：单独占一行，居中 */
-.chapter-nav {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: var(--chapnav-gap);
   width: 100%;
-  padding: 18px 0;
+  padding-block: var(--chapnav-padding-block);
   box-sizing: border-box;
   pointer-events: auto;
   user-select: none;
@@ -29,10 +32,13 @@
 
 /* 按钮基础样式 */
 .chapter-nav .nav-btn {
+  box-sizing: border-box;
   height: var(--chapnav-size);
-  min-width: 90px;
-  padding: 0 30px; /* 宽度 */
+  min-width: var(--chapnav-button-min-width);
+  max-width: min(100%, 28rem);
+  padding-inline: var(--chapnav-button-padding);
   display: inline-flex;
+  flex: 0 1 auto;
   align-items: center;
   justify-content: center;
   border-radius: var(--chapnav-radius);
@@ -42,8 +48,10 @@
   border: 1px solid var(--chapnav-border);
   box-shadow: var(--chapnav-shadow);
   font-weight: 600;
-  font-size: 20px;
+  font-size: var(--chapnav-font-size);
   line-height: 1;
+  overflow-wrap: anywhere;
+  text-align: center;
   cursor: pointer;
   transition: transform 180ms cubic-bezier(0.2, 0.9, 0.2, 1),
     box-shadow 180ms ease, background 160ms ease;
@@ -53,7 +61,7 @@
 
 /* 中间按钮略宽 */
 .chapter-nav .nav-btn.toc {
-  min-width: 110px;
+  min-width: var(--chapnav-toc-min-width);
   font-weight: 700;
 }
 
@@ -79,52 +87,4 @@
 .chapter-nav .nav-btn:focus:not(:hover) {
   transform: none;
   box-shadow: var(--chapnav-shadow);
-}
-
-/* 小屏优化 */
-
-@media (max-width: 1020px) {
-  :root {
-    --chapnav-size: 40px;
-    --chapnav-gap: 14px;
-  }
-  .chapter-nav {
-    padding: 12px 0;
-  }
-  .chapter-nav .nav-btn {
-    font-size: 15px;
-    padding: 0 15px; /* 宽度 */
-  }
-}
-
-@media (max-width: 520px) {
-  :root {
-    --chapnav-size: 35px;
-    --chapnav-gap: 12px;
-  }
-  .chapter-nav {
-    padding: 12px 0;
-  }
-  .chapter-nav .nav-btn {
-    font-size: 13px;
-    padding: 0 1px; /* 宽度 */
-    min-width: 70px;
-  }
-
-  /* 中间按钮 */
-  .chapter-nav .nav-btn.toc {
-    min-width: 100px;
-  }
-}
-
-@media (max-width: 375px) {
-  .chapter-nav .nav-btn {
-    font-size: 12px;
-    min-width: 50px;
-  }
-
-  /* 中间按钮 */
-  .chapter-nav .nav-btn.toc {
-    min-width: 70px;
-  }
 }
