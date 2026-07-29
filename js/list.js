@@ -250,7 +250,10 @@
       return;
     }
 
-    const opts = Object.assign({ pageSize: 6, onPageChange: null }, options || {});
+    const opts = Object.assign(
+      { pageSize: 6, onPageChange: null, filterEntries: null, emptyMessage: "" },
+      options || {}
+    );
     let page = 1;
     let totalPages = 1;
     let sortedEntries = [];
@@ -278,6 +281,13 @@
       if (updateUrl) updatePageUrl(page, replaceUrl);
 
       const pageSlice = paginate(sortedEntries, page, opts.pageSize);
+      if (!container) {
+        const detail = { page, totalPages, isLast: true, navigate };
+        window.__cataloguePagination = detail;
+        opts.onPageChange?.(detail);
+        document.dispatchEvent(new CustomEvent("catalogue:pagination", { detail }));
+        return;
+      }
       const replaceCards = () => {
         container.replaceChildren();
         pageSlice.forEach((entry, cardIndex) => {
@@ -293,12 +303,13 @@
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (container.children.length && !reduceMotion) {
         container.classList.add("is-page-changing");
-        window.setTimeout(replaceCards, 150);
+        window.setTimeout(replaceCards, 250);
       } else {
         replaceCards();
       }
 
       const detail = { page, totalPages, isLast: page === totalPages, navigate };
+      window.__cataloguePagination = detail;
       opts.onPageChange?.(detail);
       document.dispatchEvent(new CustomEvent("catalogue:pagination", { detail }));
     }
@@ -309,10 +320,20 @@
 
     Promise.all([loadDatabases(dbPath), loadTagMetadata()])
       .then(([allData, nextTagSlugs]) => {
-        sortedEntries = sortEntries(allData || []);
         tagSlugs = nextTagSlugs;
+        const entries = opts.filterEntries
+          ? opts.filterEntries(allData || [], tagSlugs)
+          : allData || [];
+        sortedEntries = sortEntries(entries);
         totalPages = Math.max(1, Math.ceil(sortedEntries.length / opts.pageSize));
         container = ensureContainer(mountEl);
+        if (!sortedEntries.length && opts.emptyMessage) {
+          mountEl.replaceChildren();
+          const message = document.createElement("p");
+          message.textContent = opts.emptyMessage;
+          mountEl.appendChild(message);
+          container = null;
+        }
         render(pageFromLocation());
       })
       .catch((err) => console.error("[CoreList] mountPagedList error:", err));

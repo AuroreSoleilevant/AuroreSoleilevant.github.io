@@ -37,7 +37,7 @@
   max-width: 100%;
   margin: 0 0 0 var(--mt-container-gutter);
   box-sizing: border-box;
-  transition: opacity 150ms ease;
+  transition: opacity 250ms ease;
 }
 
 .mt-container.is-page-changing {
