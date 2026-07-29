@@ -174,8 +174,6 @@
 }
 .site-title {
   text-decoration: none; /* 去掉下划线 */
-  position: relative;
-  z-index: 2;
   display: flex;
   align-items: center; /* 垂直居中于顶栏 */
 }
@@ -199,6 +197,7 @@
 .header-sky {
   z-index: 1;
   overflow: hidden;
+  contain: paint;
   opacity: 1;
   transition: opacity 320ms ease;
 }
@@ -592,7 +591,6 @@
   height: 1px;
   border-radius: 999px;
   opacity: 0;
-  pointer-events: none;
   transform: translate3d(0, 0, 0) rotate(var(--meteor-angle)) scaleX(0.72);
   transform-origin: right center;
   background: linear-gradient(
@@ -684,7 +682,6 @@
   display: flex;
   gap: 65px;
   margin-left: 130px;
-  z-index: 2;
 }
 
 .nav-item {
@@ -713,7 +710,6 @@
   color: #ffffff;
   text-decoration: none;
   z-index: 2;
-  transition: all 0.3s ease;
   border: none;
   background: none;
   cursor: pointer;
@@ -723,7 +719,9 @@
   width: 50px; /* 大小变量 */
   height: 50px;
   filter: brightness(0.8);
-  transition: all 0.3s ease;
+  transition:
+    filter 0.3s ease,
+    transform 0.3s ease;
 }
 
 .search-btn:hover img {
