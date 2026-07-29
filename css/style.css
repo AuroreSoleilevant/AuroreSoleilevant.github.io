@@ -1517,7 +1517,8 @@ footer {
     height: 40px;
   }
 
-  /* 移动端减少持续装饰 */
+  /* 移动端降低星场密度与持续装饰 */
+  .header-stars--soft,
   .header-stars--accent,
   .header-meteor--two,
   .header-meteor--three {
@@ -1657,8 +1658,11 @@ footer {
     right: 5px;
   }
 
-  .header-stars--soft {
-    display: none;
+  /* 小屏沿用桌面比例的虚拟星场，避免固定点数显得过密 */
+  .header-stars--far,
+  .header-stars--near {
+    background-size: 700px 100%;
+    background-position: center;
   }
 
   .IntroNor {
