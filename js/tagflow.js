@@ -1,163 +1,131 @@
-//滚动tag
 (() => {
-class TagFlowManager {
-  constructor() {
-    this.tracks = [];
-    this.init();
-  }
+  const ROOT_SELECTOR = ".category-flow-wrapper";
+  const TRACK_SELECTOR = ".flow-track";
+  const COPY_SELECTOR = "[data-flow-copy]";
+  const RESIZE_DELAY = 150;
 
-  init() {
-    this.setupTracks();
-    this.setupResizeHandler();
-  }
+  class TagFlowManager {
+    constructor(root) {
+      this.root = root;
+      this.tracks = [...root.querySelectorAll(TRACK_SELECTOR)];
+      this.inViewport = true;
+      this.resizeTimer = null;
+      this.motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      this.refresh = this.refresh.bind(this);
+      this.syncPauseState = this.syncPauseState.bind(this);
+    }
 
-  setupTracks() {
-    const tracks = document.querySelectorAll(".flow-track");
+    init() {
+      if (!this.tracks.length) return;
 
-    tracks.forEach((track, index) => {
-      const tags = track.querySelectorAll(".flow-tag");
-      const originalTags = Math.floor(tags.length / 2);
+      document.addEventListener("visibilitychange", this.syncPauseState);
+      window.addEventListener("pageshow", this.refresh);
+      this.motionQuery.addEventListener("change", this.refresh);
+      this.observeVisibility();
+      this.observeSize();
 
-      // 计算精确的移动距离
-      const trackData = {
-        element: track,
-        originalCount: originalTags,
-        totalCount: tags.length,
-        direction: index === 0 ? "right" : "left",
+      if (document.fonts?.ready) {
+        document.fonts.ready.then(this.refresh).catch(() => {});
+      }
+
+      this.refresh();
+    }
+
+    observeVisibility() {
+      if (!("IntersectionObserver" in window)) return;
+
+      this.intersectionObserver = new IntersectionObserver(([entry]) => {
+        this.inViewport = entry.isIntersecting;
+        this.syncPauseState();
+      });
+      this.intersectionObserver.observe(this.root);
+    }
+
+    observeSize() {
+      const scheduleRefresh = () => {
+        clearTimeout(this.resizeTimer);
+        this.resizeTimer = window.setTimeout(this.refresh, RESIZE_DELAY);
       };
 
-      this.tracks.push(trackData);
-      this.setupTrackAnimation(trackData);
-      this.addTagInteractions(track);
-    });
-  }
+      if ("ResizeObserver" in window) {
+        this.resizeObserver = new ResizeObserver(scheduleRefresh);
+        this.resizeObserver.observe(this.root);
+        return;
+      }
 
-  setupTrackAnimation(trackData) {
-    const { element, originalCount, totalCount, direction } = trackData;
-
-    // 移动距离 = (原始标签数量 / 总标签数量) * 100%
-    const movePercentage = (originalCount / totalCount) * 100;
-
-    // 创建动态关键帧
-    const animationName = `scroll${
-      direction.charAt(0).toUpperCase() + direction.slice(1)
-    }_${trackData.element.id}`;
-
-    // 移除已存在的样式
-    const existingStyle = document.getElementById(animationName);
-    if (existingStyle) existingStyle.remove();
-
-    // 创建新的关键帧
-    const style = document.createElement("style");
-    style.id = animationName;
-
-    if (direction === "right") {
-      style.textContent = `
-        @keyframes ${animationName} {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-${movePercentage}%); }
-        }
-      `;
-    } else {
-      style.textContent = `
-        @keyframes ${animationName} {
-          0% { transform: translateX(-${movePercentage}%); }
-          100% { transform: translateX(0); }
-        }
-      `;
+      window.addEventListener("resize", scheduleRefresh, { passive: true });
     }
 
-    document.head.appendChild(style);
+    refresh() {
+      const reducedMotion = this.motionQuery.matches;
 
-    // 应用动画
-    const baseDuration = direction === "right" ? 40 : 45;
-    const adjustedDuration = this.calculateAdjustedDuration(
-      element,
-      baseDuration
-    );
+      this.tracks.forEach((track) => {
+        this.clearCopies(track);
+        track.classList.remove("is-ready");
+        track.style.removeProperty("--flow-distance");
+        track.style.removeProperty("--flow-duration");
 
-    element.style.animation = `${animationName} ${adjustedDuration}s linear infinite`;
-    element.style.willChange = "transform"; // 性能优化
-  }
+        if (reducedMotion) return;
 
-  calculateAdjustedDuration(element, baseDuration) {
-    const container = document.querySelector(".category-flow-wrapper");
-    if (!container) return baseDuration;
+        const source = track.querySelector(".flow-group");
+        const lane = track.closest(".flow-lane");
+        if (!source || !lane) return;
 
-    const containerWidth = container.offsetWidth;
-    const trackWidth = element.scrollWidth / 2;
+        const distance = Math.ceil(source.getBoundingClientRect().width);
+        if (!distance) return;
 
-    // 根据内容长度调整速度
-    const speedFactor = Math.max(
-      0.8,
-      Math.min(1.5, trackWidth / containerWidth)
-    );
+        const copyCount = Math.max(1, Math.ceil(lane.clientWidth / distance));
+        for (let index = 0; index < copyCount; index += 1) {
+          track.appendChild(this.createCopy(source));
+        }
 
-    // 根据屏幕宽度调整速度（移动端更快）
-    let deviceSpeedMultiplier = 1;
-    const screenWidth = window.innerWidth;
-
-    if (screenWidth <= 480) {
-      deviceSpeedMultiplier = 2.5; // 小手机加速60%
-    } else if (screenWidth <= 768) {
-      deviceSpeedMultiplier = 1.9; // 平板/大手机加速40%
-    } else if (screenWidth <= 1024) {
-      deviceSpeedMultiplier = 1.4; // 小桌面加速20%
-    }
-    // PC端保持原速 (1.0)
-
-    return (baseDuration * speedFactor) / deviceSpeedMultiplier;
-  }
-
-  addTagInteractions(track) {
-    const tags = track.querySelectorAll(".flow-tag");
-
-    tags.forEach((tag) => {
-      // 点击效果
-      tag.addEventListener("click", (e) => {
-        e.preventDefault();
-
-        // 简洁的点击反馈
-        const originalBg = tag.style.background;
-        tag.style.background = "#4a5568";
-
-        setTimeout(() => {
-          tag.style.background = originalBg;
-        }, 200);
-
-        console.log("点击分类:", tag.textContent);
+        const pixelsPerSecond =
+          track.dataset.flowDirection === "right" ? 30 : 34;
+        track.style.setProperty("--flow-distance", `-${distance}px`);
+        track.style.setProperty(
+          "--flow-duration",
+          `${Math.max(28, distance / pixelsPerSecond).toFixed(2)}s`
+        );
+        track.classList.add("is-ready");
       });
-    });
+
+      this.syncPauseState();
+    }
+
+    createCopy(source) {
+      const copy = source.cloneNode(true);
+      copy.dataset.flowCopy = "";
+      copy.setAttribute("aria-hidden", "true");
+      copy.querySelectorAll("a").forEach((link) => {
+        link.tabIndex = -1;
+      });
+      return copy;
+    }
+
+    clearCopies(track) {
+      track.querySelectorAll(COPY_SELECTOR).forEach((copy) => copy.remove());
+    }
+
+    syncPauseState() {
+      this.root.classList.toggle(
+        "is-flow-paused",
+        document.hidden || !this.inViewport
+      );
+    }
   }
 
-  setupResizeHandler() {
-    let resizeTimeout;
-    const resizeHandler = () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        this.updateAllAnimations();
-      }, 250); // 防抖处理
-    };
+  const initTagFlow = () => {
+    if (window.__tagFlowManager) return;
+    const root = document.querySelector(ROOT_SELECTOR);
+    if (!root) return;
 
-    window.addEventListener("resize", resizeHandler);
+    window.__tagFlowManager = new TagFlowManager(root);
+    window.__tagFlowManager.init();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTagFlow, { once: true });
+  } else {
+    initTagFlow();
   }
-
-  updateAllAnimations() {
-    this.tracks.forEach((trackData) => {
-      this.setupTrackAnimation(trackData);
-    });
-  }
-
-}
-
-// 初始化
-function initTagFlow() {
-  new TagFlowManager();
-}
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initTagFlow, { once: true });
-} else {
-  initTagFlow();
-}
 })();
