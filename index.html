@@ -96,13 +96,6 @@
   }
   }
 
-  html[data-home-hidden] .shaking-text,
-  html[data-home-hidden] .site-header::after,
-  html[data-home-hidden] .site-header .stars,
-  html[data-home-hidden] .site-header .stars2 {
-    animation-play-state: paused;
-  }
-
   /* 字号标准化*/
  .fsize2{
   font-size: 2rem;
@@ -142,21 +135,6 @@
  
 }
   </style>
-
-  <script>
-  (() => {
-    const syncHomeAnimationState = () => {
-      document.documentElement.toggleAttribute(
-        "data-home-hidden",
-        document.visibilityState === "hidden"
-      );
-    };
-
-    document.addEventListener("visibilitychange", syncHomeAnimationState);
-    window.addEventListener("pageshow", syncHomeAnimationState);
-    syncHomeAnimationState();
-  })();
-  </script>
 
 </head>
 
