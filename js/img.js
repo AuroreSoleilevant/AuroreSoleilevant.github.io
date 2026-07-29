@@ -56,6 +56,14 @@
         markLoaded();
         return;
       }
+      const fallbackSrc = img.dataset.cardFallbackSrc;
+      if (fallbackSrc) {
+        delete img.dataset.cardFallbackSrc;
+        img.dataset._handled = "";
+        img.src = fallbackSrc;
+        handleImage(img);
+        return;
+      }
       img.classList.add("is-image-failed");
       img.removeAttribute("src");
     };

@@ -46,6 +46,20 @@
     return `${dd}/${mm}/${yyyy}`;
   }
 
+  function cardImageSource(coverImage) {
+    const storyPrefix = "/images/histoire/";
+    if (!coverImage || !coverImage.startsWith(storyPrefix)) {
+      return { src: coverImage, fallback: "" };
+    }
+    const relative = coverImage.slice(storyPrefix.length);
+    const extension = relative.lastIndexOf(".");
+    if (extension < 1) return { src: coverImage, fallback: "" };
+    return {
+      src: `${storyPrefix}cards/${relative.slice(0, extension)}.webp`,
+      fallback: coverImage,
+    };
+  }
+
   function createTile(entry, opts) {
     const {
       url = "#",
@@ -76,11 +90,14 @@
 
     if (cover_image) {
       const img = document.createElement("img");
+      const cardImage = cardImageSource(cover_image);
       img.className = "mt-image";
-      img.src = cover_image;
       img.alt = cover_image_alt || title || "";
       img.decoding = "async";
-      img.loading = "lazy";
+      img.loading = opts.cardIndex < 2 ? "eager" : "lazy";
+      if (opts.cardIndex < 2) img.fetchPriority = "high";
+      if (cardImage.fallback) img.dataset.cardFallbackSrc = cardImage.fallback;
+      img.src = cardImage.src;
       window.SpicaImageLifecycle?.handleImage(img);
       a.appendChild(img);
     }
@@ -183,10 +200,11 @@
 
         const container = ensureContainer(mountEl);
 
-        pageSlice.forEach((entry) => {
+        pageSlice.forEach((entry, cardIndex) => {
           try {
             const tile = createTile(entry, {
               autoFormatDisplay: opts.autoFormatDisplay,
+              cardIndex,
             });
             container.appendChild(tile);
           } catch (err) {
