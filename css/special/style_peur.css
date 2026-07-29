@@ -2,16 +2,24 @@
 
 /* ---------- 顶栏：开始 ---------- */
 .site-header {
-  --header-surface: #10281c;
-  --header-surface-scrolled: rgba(11, 34, 23, 0.92);
-  --header-nebula-primary: rgba(104, 176, 91, 0.18);
-  --header-nebula-secondary: rgba(152, 97, 72, 0.12);
-  --header-star-primary: rgba(207, 255, 173, 0.82);
-  --header-star-secondary: rgba(151, 213, 148, 0.66);
-  --header-edge: rgba(176, 222, 148, 0.18);
-  --header-edge-scrolled: rgba(176, 222, 148, 0.13);
+  --header-surface: #0d2519;
+  --header-surface-scrolled: rgba(8, 29, 18, 0.9);
+  --header-nebula-blue: rgba(72, 133, 104, 0.18);
+  --header-nebula-violet: rgba(129, 94, 72, 0.11);
+  --header-nebula-cyan: rgba(83, 151, 112, 0.1);
+  --header-star-faint: rgba(185, 220, 185, 0.42);
+  --header-star-cool: rgba(224, 245, 215, 0.82);
+  --header-star-blue: rgba(187, 226, 204, 0.72);
+  --header-star-warm: rgba(246, 235, 183, 0.8);
+  --header-star-gold: rgba(231, 205, 134, 0.68);
+  --header-star-ember: rgba(224, 166, 130, 0.54);
+  --header-star-halo: rgba(185, 226, 184, 0.12);
+  --header-meteor-tail: rgba(184, 225, 182, 0.5);
+  --header-meteor-head: rgba(238, 252, 225, 0.92);
+  --header-edge: rgba(176, 222, 148, 0.17);
+  --header-edge-scrolled: rgba(176, 222, 148, 0.12);
   --header-text: #ccff99;
-  --header-shadow: rgba(3, 18, 9, 0.42);
+  --header-shadow: rgba(2, 17, 8, 0.42);
 }
 
 /* 网站标题和导航改为黄绿色 */

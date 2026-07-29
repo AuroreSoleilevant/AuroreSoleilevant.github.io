@@ -49,16 +49,24 @@
 /* ---------- 顶栏：开始 ---------- */
 /* 标题块骨架 */
 .site-header {
-  --header-surface: #191d3a;
-  --header-surface-scrolled: rgba(19, 23, 48, 0.9);
-  --header-nebula-primary: rgba(141, 127, 214, 0.22);
-  --header-nebula-secondary: rgba(91, 174, 190, 0.14);
-  --header-star-primary: rgba(255, 248, 218, 0.9);
-  --header-star-secondary: rgba(202, 225, 255, 0.72);
-  --header-edge: rgba(221, 214, 255, 0.2);
-  --header-edge-scrolled: rgba(221, 214, 255, 0.14);
+  --header-surface: #10162f;
+  --header-surface-scrolled: rgba(12, 17, 39, 0.88);
+  --header-nebula-blue: rgba(75, 112, 177, 0.2);
+  --header-nebula-violet: rgba(119, 90, 166, 0.16);
+  --header-nebula-cyan: rgba(67, 142, 155, 0.1);
+  --header-star-faint: rgba(206, 222, 247, 0.48);
+  --header-star-cool: rgba(235, 245, 255, 0.86);
+  --header-star-blue: rgba(194, 220, 255, 0.78);
+  --header-star-warm: rgba(255, 241, 205, 0.84);
+  --header-star-gold: rgba(255, 222, 154, 0.76);
+  --header-star-ember: rgba(255, 186, 153, 0.62);
+  --header-star-halo: rgba(202, 224, 255, 0.15);
+  --header-meteor-tail: rgba(187, 216, 255, 0.56);
+  --header-meteor-head: rgba(250, 253, 255, 0.96);
+  --header-edge: rgba(207, 220, 255, 0.16);
+  --header-edge-scrolled: rgba(207, 220, 255, 0.11);
   --header-text: #e0d7ff;
-  --header-shadow: rgba(8, 10, 28, 0.34);
+  --header-shadow: rgba(3, 7, 24, 0.38);
   background-color: var(--header-surface);
   position: fixed; /* 固定在视口 */
   top: 0;
@@ -74,7 +82,7 @@
   border-bottom: 1px solid var(--header-edge);
   box-shadow:
     0 5px 18px var(--header-shadow),
-    inset 0 -1px rgba(255, 255, 255, 0.05);
+    inset 0 -1px rgba(255, 255, 255, 0.035);
   transition:
     background-color 320ms ease,
     border-color 320ms ease,
@@ -86,8 +94,10 @@
   background-color: var(--header-surface-scrolled);
   border-bottom-color: var(--header-edge-scrolled);
   box-shadow:
-    0 5px 18px rgba(8, 10, 28, 0.26),
-    inset 0 -1px rgba(255, 255, 255, 0.06);
+    0 5px 16px rgba(3, 7, 24, 0.28),
+    inset 0 -1px rgba(255, 255, 255, 0.04);
+  -webkit-backdrop-filter: blur(2px) saturate(108%);
+  backdrop-filter: blur(2px) saturate(108%);
 }
 
 .site-header::before {
@@ -98,31 +108,58 @@
   pointer-events: none;
   background:
     radial-gradient(
-      ellipse 48% 140% at 12% -55%,
-      var(--header-nebula-primary),
+      ellipse 42% 145% at 8% -54%,
+      var(--header-nebula-blue),
       transparent 72%
     ),
     radial-gradient(
-      ellipse 42% 125% at 78% 145%,
-      var(--header-nebula-secondary),
-      transparent 70%
+      ellipse 36% 130% at 70% 154%,
+      var(--header-nebula-violet),
+      transparent 73%
+    ),
+    radial-gradient(
+      ellipse 28% 100% at 96% 8%,
+      var(--header-nebula-cyan),
+      transparent 76%
     ),
     linear-gradient(
-      112deg,
-      rgba(255, 255, 255, 0.045),
-      transparent 38%,
-      rgba(255, 255, 255, 0.025) 72%,
+      108deg,
+      rgba(255, 255, 255, 0.028),
+      transparent 34%,
+      rgba(255, 255, 255, 0.018) 70%,
       transparent
     );
+  opacity: 1;
+  transition: opacity 320ms ease;
 }
 
-/* 确保装饰层不覆盖文字与按钮 */
-.site-header::after,
-.site-header .site-title,
-.site-header .nav-links,
-.site-header .search-btn {
-  position: relative;
+.site-header.scrolled::before {
+  opacity: 0.72;
+}
+
+.site-header::after {
+  content: "";
+  position: absolute;
+  right: 3%;
+  bottom: 0;
+  left: 3%;
   z-index: 1;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(215, 225, 255, 0.14) 24%,
+    rgba(215, 225, 255, 0.05) 76%,
+    transparent
+  );
+}
+
+/* 装饰始终位于站名和导航之后 */
+.site-header .site-title,
+.site-header .nav-links {
+  position: relative;
+  z-index: 2;
 }
 
 /* 网站名伪元素 */
@@ -151,38 +188,431 @@
   cursor: pointer; /* 手型光标 */
 }
 
-/* 稀疏静态微星层：无持续动画与背景位移 */
-.site-header::after {
-  content: "";
+/* 星空装饰：四组不同时序的固定星野 */
+.header-sky,
+.header-stars {
   position: absolute;
   inset: 0;
   pointer-events: none;
+}
+
+.header-sky {
   z-index: 1;
+  overflow: hidden;
+  opacity: 1;
+  transition: opacity 320ms ease;
+}
+
+.site-header.scrolled .header-sky {
+  opacity: 0.78;
+}
+
+.header-stars {
+  background-repeat: no-repeat;
+  animation: header-star-breathe var(--star-duration) ease-in-out infinite;
+  animation-delay: var(--star-delay);
+}
+
+.header-stars--far {
+  --star-duration: 10.8s;
+  --star-delay: -3.7s;
+  --star-opacity-high: 0.78;
+  --star-opacity-mid: 0.65;
+  --star-opacity-low: 0.48;
   background-image:
     radial-gradient(
-      circle,
-      var(--header-star-primary) 0 0.8px,
+      circle at 1.8% 19%,
+      var(--header-star-faint) 0 0.45px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 6.7% 73%,
+      var(--header-star-cool) 0 0.55px,
+      transparent 1.15px
+    ),
+    radial-gradient(
+      circle at 11.4% 42%,
+      var(--header-star-blue) 0 0.5px,
+      transparent 1.05px
+    ),
+    radial-gradient(
+      circle at 19.9% 86%,
+      var(--header-star-faint) 0 0.45px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 23.1% 28%,
+      var(--header-star-warm) 0 0.5px,
+      transparent 1.1px
+    ),
+    radial-gradient(
+      circle at 31.6% 58%,
+      var(--header-star-faint) 0 0.4px,
+      transparent 0.95px
+    ),
+    radial-gradient(
+      circle at 38.8% 13%,
+      var(--header-star-blue) 0 0.55px,
+      transparent 1.15px
+    ),
+    radial-gradient(
+      circle at 43.7% 79%,
+      var(--header-star-cool) 0 0.45px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 50.4% 36%,
+      var(--header-star-faint) 0 0.5px,
+      transparent 1.05px
+    ),
+    radial-gradient(
+      circle at 58.9% 69%,
+      var(--header-star-warm) 0 0.45px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 66.1% 22%,
+      var(--header-star-faint) 0 0.4px,
+      transparent 0.95px
+    ),
+    radial-gradient(
+      circle at 74.8% 91%,
+      var(--header-star-blue) 0 0.5px,
+      transparent 1.05px
+    ),
+    radial-gradient(
+      circle at 82.3% 48%,
+      var(--header-star-cool) 0 0.55px,
+      transparent 1.15px
+    ),
+    radial-gradient(
+      circle at 91.7% 16%,
+      var(--header-star-faint) 0 0.45px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 97.6% 76%,
+      var(--header-star-warm) 0 0.5px,
+      transparent 1.05px
+    );
+}
+
+.header-stars--soft {
+  --star-duration: 8.6s;
+  --star-delay: -6.1s;
+  --star-opacity-high: 0.88;
+  --star-opacity-mid: 0.72;
+  --star-opacity-low: 0.54;
+  background-image:
+    radial-gradient(
+      circle at 4.1% 51%,
+      var(--header-star-blue) 0 0.65px,
+      transparent 1.3px
+    ),
+    radial-gradient(
+      circle at 13.8% 11%,
+      var(--header-star-cool) 0 0.7px,
       transparent 1.35px
     ),
     radial-gradient(
-      circle,
-      var(--header-star-secondary) 0 0.7px,
+      circle at 16.2% 82%,
+      var(--header-star-gold) 0 0.65px,
+      transparent 1.3px
+    ),
+    radial-gradient(
+      circle at 27.4% 44%,
+      var(--header-star-warm) 0 0.7px,
+      transparent 1.4px
+    ),
+    radial-gradient(
+      circle at 35.1% 88%,
+      var(--header-star-blue) 0 0.6px,
       transparent 1.25px
     ),
     radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.48) 0 0.55px,
-      transparent 1px
+      circle at 40.6% 26%,
+      var(--header-star-cool) 0 0.75px,
+      transparent 1.45px
+    ),
+    radial-gradient(
+      circle at 47.8% 63%,
+      var(--header-star-faint) 0 0.65px,
+      transparent 1.3px
+    ),
+    radial-gradient(
+      circle at 55.2% 17%,
+      var(--header-star-warm) 0 0.65px,
+      transparent 1.3px
+    ),
+    radial-gradient(
+      circle at 62.7% 81%,
+      var(--header-star-cool) 0 0.7px,
+      transparent 1.4px
+    ),
+    radial-gradient(
+      circle at 69.3% 39%,
+      var(--header-star-blue) 0 0.65px,
+      transparent 1.35px
+    ),
+    radial-gradient(
+      circle at 79.8% 67%,
+      var(--header-star-warm) 0 0.75px,
+      transparent 1.45px
+    ),
+    radial-gradient(
+      circle at 86.4% 27%,
+      var(--header-star-faint) 0 0.6px,
+      transparent 1.25px
+    ),
+    radial-gradient(
+      circle at 93.5% 89%,
+      var(--header-star-blue) 0 0.7px,
+      transparent 1.4px
     );
-  background-size:
-    173px 83px,
-    257px 109px,
-    97px 67px;
-  background-position:
-    19px 17px,
-    71px 47px,
-    5px 31px;
-  opacity: 0.72;
+}
+
+.header-stars--near {
+  --star-duration: 12.7s;
+  --star-delay: -1.9s;
+  --star-opacity-high: 0.96;
+  --star-opacity-mid: 0.8;
+  --star-opacity-low: 0.62;
+  background-image:
+    radial-gradient(
+      circle at 8.6% 88%,
+      var(--header-star-warm) 0 0.85px,
+      transparent 1.6px
+    ),
+    radial-gradient(
+      circle at 21.5% 34%,
+      var(--header-star-blue) 0 0.9px,
+      transparent 1.7px
+    ),
+    radial-gradient(
+      circle at 29.8% 72%,
+      var(--header-star-cool) 0 0.8px,
+      transparent 1.55px
+    ),
+    radial-gradient(
+      circle at 37.2% 8%,
+      var(--header-star-warm) 0 0.85px,
+      transparent 1.65px
+    ),
+    radial-gradient(
+      circle at 45.5% 49%,
+      var(--header-star-blue) 0 0.8px,
+      transparent 1.55px
+    ),
+    radial-gradient(
+      circle at 53.9% 84%,
+      var(--header-star-gold) 0 0.9px,
+      transparent 1.7px
+    ),
+    radial-gradient(
+      circle at 64.4% 13%,
+      var(--header-star-cool) 0 0.85px,
+      transparent 1.65px
+    ),
+    radial-gradient(
+      circle at 72.1% 57%,
+      var(--header-star-blue) 0 0.8px,
+      transparent 1.55px
+    ),
+    radial-gradient(
+      circle at 76.6% 92%,
+      var(--header-star-ember) 0 0.9px,
+      transparent 1.75px
+    ),
+    radial-gradient(
+      circle at 89.1% 41%,
+      var(--header-star-warm) 0 0.85px,
+      transparent 1.65px
+    ),
+    radial-gradient(
+      circle at 95.4% 7%,
+      var(--header-star-cool) 0 0.8px,
+      transparent 1.55px
+    );
+}
+
+.header-stars--accent {
+  --star-duration: 14.2s;
+  --star-delay: -9.4s;
+  --star-opacity-high: 1;
+  --star-opacity-mid: 0.86;
+  --star-opacity-low: 0.7;
+  background-image:
+    radial-gradient(
+      circle at 2.9% 64%,
+      var(--header-star-cool) 0 1.05px,
+      transparent 2px
+    ),
+    radial-gradient(
+      circle at 18.6% 16%,
+      var(--header-star-warm) 0 1.15px,
+      transparent 2.15px
+    ),
+    radial-gradient(
+      circle at 33.7% 91%,
+      var(--header-star-blue) 0 1px,
+      transparent 1.9px
+    ),
+    radial-gradient(
+      circle at 49.1% 24%,
+      var(--header-star-cool) 0 1.25px,
+      transparent 2.35px
+    ),
+    radial-gradient(
+      circle at 60.2% 67%,
+      var(--header-star-gold) 0 1.1px,
+      transparent 2.1px
+    ),
+    radial-gradient(
+      circle at 70.8% 32%,
+      var(--header-star-blue) 0 1px,
+      transparent 1.95px
+    ),
+    radial-gradient(
+      circle at 84.5% 83%,
+      var(--header-star-ember) 0 1.15px,
+      transparent 2.2px
+    ),
+    radial-gradient(
+      circle at 98.1% 29%,
+      var(--header-star-warm) 0 1.05px,
+      transparent 2px
+    ),
+    radial-gradient(
+      circle at 2.9% 64%,
+      var(--header-star-halo) 0 2.8px,
+      transparent 4.8px
+    ),
+    radial-gradient(
+      circle at 49.1% 24%,
+      var(--header-star-halo) 0 3.2px,
+      transparent 5.2px
+    ),
+    radial-gradient(
+      circle at 84.5% 83%,
+      var(--header-star-halo) 0 2.6px,
+      transparent 4.6px
+    );
+}
+
+@keyframes header-star-breathe {
+  0%,
+  100% {
+    opacity: var(--star-opacity-high);
+  }
+
+  43% {
+    opacity: var(--star-opacity-low);
+  }
+
+  71% {
+    opacity: var(--star-opacity-mid);
+  }
+}
+
+/* 小流星共享长周期，轨迹错开以保留明显空档 */
+.header-meteor {
+  --meteor-angle: 145deg;
+  --meteor-mid-x: -54px;
+  --meteor-mid-y: 34px;
+  --meteor-end-x: -118px;
+  --meteor-end-y: 78px;
+  position: absolute;
+  top: 8px;
+  left: 68%;
+  width: 72px;
+  height: 1px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(0, 0, 0) rotate(var(--meteor-angle)) scaleX(0.72);
+  transform-origin: right center;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--header-meteor-tail) 58%,
+    var(--header-meteor-head)
+  );
+  animation: header-meteor-fall 54s linear infinite;
+}
+
+.header-meteor::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -1px;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--header-meteor-head);
+  box-shadow: 0 0 4px var(--header-meteor-head);
+  transform: translateY(-50%);
+}
+
+.header-meteor--one {
+  animation-delay: -38s;
+}
+
+.header-meteor--two {
+  --meteor-angle: 150deg;
+  --meteor-mid-x: -48px;
+  --meteor-mid-y: 28px;
+  --meteor-end-x: -108px;
+  --meteor-end-y: 68px;
+  top: 4px;
+  left: 91%;
+  width: 58px;
+  animation-delay: -20s;
+}
+
+.header-meteor--three {
+  --meteor-angle: 140deg;
+  --meteor-mid-x: -62px;
+  --meteor-mid-y: 40px;
+  --meteor-end-x: -132px;
+  --meteor-end-y: 88px;
+  top: 2px;
+  left: 42%;
+  width: 84px;
+  animation-delay: -2s;
+}
+
+@keyframes header-meteor-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(var(--meteor-angle)) scaleX(0.72);
+  }
+
+  85.5% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(var(--meteor-angle)) scaleX(0.72);
+  }
+
+  86% {
+    opacity: 0.1;
+  }
+
+  87.1% {
+    opacity: 0.9;
+    transform: translate3d(var(--meteor-mid-x), var(--meteor-mid-y), 0)
+      rotate(var(--meteor-angle)) scaleX(1);
+  }
+
+  88.2% {
+    opacity: 0;
+    transform: translate3d(var(--meteor-end-x), var(--meteor-end-y), 0)
+      rotate(var(--meteor-angle)) scaleX(0.84);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--meteor-end-x), var(--meteor-end-y), 0)
+      rotate(var(--meteor-angle)) scaleX(0.84);
+  }
 }
 
 /* 顶部导航链接容器 */
@@ -1028,6 +1458,13 @@ footer {
     height: 40px;
   }
 
+  /* 移动端减少持续装饰 */
+  .header-stars--accent,
+  .header-meteor--two,
+  .header-meteor--three {
+    display: none;
+  }
+
   /* 主内容区调整 */
   main {
     padding: 90px var(--content-gutter) 16px;
@@ -1159,6 +1596,10 @@ footer {
 
   .search-btn {
     right: 5px;
+  }
+
+  .header-stars--soft {
+    display: none;
   }
 
   .IntroNor {
@@ -1329,6 +1770,15 @@ footer {
 
 /* 对于系统声明prefers-reduced-motion：关闭动画 */
 @media (prefers-reduced-motion: reduce) {
+  .header-stars {
+    animation: none;
+    opacity: 0.68;
+  }
+
+  .header-meteor {
+    display: none;
+  }
+
   .resp-img,
   .bg-image,
   .icon {
