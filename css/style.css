@@ -727,7 +727,6 @@ footer {
   transition:
     opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
     transform 0.48s cubic-bezier(0.2, 0.8, 0.2, 1);
-  will-change: opacity, transform;
 }
 
 /* 图片加载完成后触发弹出动画 */
