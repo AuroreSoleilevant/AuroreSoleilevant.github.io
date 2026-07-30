@@ -215,6 +215,7 @@
     "/js/blink.js", // 顶栏闪烁
     "/js/headtran.js", // 渐变顶栏玻璃
     "/js/mascot.js", // 左下角小马
+    "/js/mirror-notice.js", // 中国大陆镜像提示
   ];
 
   loadFeatureScripts(deferredScripts);
