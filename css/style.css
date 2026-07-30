@@ -29,6 +29,15 @@
 
 /* ---------- 变量集合 ---------- */
 :root {
+  /* 普通页面主题基础色 */
+  --page-background: #f5f5dc;
+  --page-text: #333333;
+  --page-link: #8b6f47;
+  --page-muted: rgba(0, 0, 0, 0.6);
+  --page-date-text: #5c5540;
+  --page-date-bg: rgba(245, 237, 210, 0.6);
+  --page-divider: rgba(160, 130, 90, 0.3);
+
   /* 回到顶部变量 */
   --backtop-size: 64px;
   --backtop-bg: rgba(217, 255, 121, 0.4);
@@ -64,6 +73,7 @@
   --header-edge-scrolled: rgba(207, 220, 255, 0.11);
   --header-text: #e0d7ff;
   --header-shadow: rgba(3, 7, 24, 0.38);
+  color-scheme: only dark;
   background-color: var(--header-surface);
   position: fixed; /* 固定在视口 */
   top: 0;
@@ -748,7 +758,7 @@ body {
 /* body 全局背景 */
 body {
   /* 低对比错位圆点与柔光，保持早期米黄墙纸的温度。 */
-  background-color: #f5f5dc;
+  background-color: var(--page-background);
   background-image:
     radial-gradient(
       circle at 42px 36px,
@@ -803,11 +813,72 @@ body {
     100% 320px;
   background-repeat: repeat;
   font-family: "LXGWWenKai", Georgia, serif; /* 全局字体 */
-  color: #333;
+  color: var(--page-text);
   line-height: 1.6;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+html[data-theme="light"] {
+  color-scheme: only light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: only dark;
+  --page-background: #14192b;
+  --page-text: #dcd8cf;
+  --page-link: #c8b8e8;
+  --page-muted: rgba(220, 216, 207, 0.68);
+  --page-date-text: #c9c3d1;
+  --page-date-bg: rgba(45, 49, 72, 0.68);
+  --page-divider: rgba(160, 155, 190, 0.28);
+  --backtop-bg: rgba(113, 126, 177, 0.48);
+  --backtop-hover: rgba(170, 180, 222, 0.3);
+  --comment-bg: rgba(116, 96, 159, 0.72);
+  --comment-color: #f1edf7;
+}
+
+html[data-theme="dark"] body {
+  /* 深靛蓝墙纸：与浅色主题相同，只使用纯色底与稀疏错位圆点。 */
+  background-color: var(--page-background);
+  background-image:
+    radial-gradient(
+      circle at 42px 36px,
+      rgba(139, 154, 190, 0.16) 0 2.4px,
+      transparent 2.9px
+    ),
+    radial-gradient(
+      circle at 132px 96px,
+      rgba(111, 96, 148, 0.18) 0 3.2px,
+      transparent 3.7px
+    ),
+    radial-gradient(
+      circle at 262px 48px,
+      rgba(158, 166, 191, 0.13) 0 1.7px,
+      transparent 2.2px
+    ),
+    radial-gradient(
+      circle at 382px 122px,
+      rgba(117, 105, 151, 0.16) 0 2.7px,
+      transparent 3.2px
+    );
+  background-size:
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    480px 280px;
+  background-repeat: repeat;
+}
+
+html[data-theme="dark"] ::selection {
+  background: rgba(151, 133, 196, 0.42);
+  color: #f6f2ea;
+}
+
+/* 浅色背景中的隐藏叙事文本，在夜间继续与墙纸底色融合。 */
+html[data-theme="dark"] [style*="color: #f5f5dc"] {
+  color: var(--page-background) !important;
 }
 
 /* Markdown 元素透明背景 */
@@ -906,7 +977,7 @@ html {
 }
 
 main a {
-  color: #8b6f47; /* 普通链接的棕米色调 */
+  color: var(--page-link); /* 普通链接随页面主题变化 */
 }
 
 /* ---------- 主体：结束 ---------- */
@@ -1098,6 +1169,76 @@ footer {
   animation: backtop-pop 320ms cubic-bezier(0.2, 0.9, 0.2, 1);
 }
 
+/* 明暗模式开关：桌面置于顶栏，移动端落入右下浮动按钮区。 */
+.theme-toggle {
+  position: fixed;
+  top: 24px;
+  right: 88px;
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgba(221, 229, 255, 0.22);
+  border-radius: 50%;
+  background: rgba(25, 34, 67, 0.72);
+  color: #eee8cf;
+  box-shadow: 0 4px 12px rgba(3, 7, 24, 0.24);
+  font: inherit;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 1201;
+  visibility: hidden;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.theme-toggle.is-ready {
+  visibility: visible;
+}
+
+.theme-toggle__sun,
+.theme-toggle__moon {
+  display: none;
+  pointer-events: none;
+}
+
+.theme-toggle[data-theme="light"] .theme-toggle__moon,
+.theme-toggle[data-theme="dark"] .theme-toggle__sun {
+  display: block;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .theme-toggle:hover {
+    transform: translateY(-2px);
+    background: rgba(55, 67, 110, 0.88);
+    box-shadow: 0 7px 18px rgba(3, 7, 24, 0.32);
+  }
+}
+
+.theme-toggle:focus-visible {
+  outline: 3px solid rgba(206, 220, 255, 0.72);
+  outline-offset: 3px;
+}
+
+.theme-toggle:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+html[data-theme="light"] .theme-toggle {
+  background: rgba(35, 44, 82, 0.78);
+}
+
+html[data-theme="dark"] .theme-toggle {
+  background: rgba(87, 76, 127, 0.76);
+  color: #f1dca6;
+}
+
 @keyframes backtop-pop {
   0% {
     transform: scale(0.6);
@@ -1142,8 +1283,8 @@ footer {
   margin: 32px 64px;
   background: repeating-linear-gradient(
     to right,
-    rgba(160, 130, 90, 0.3) 0,
-    rgba(160, 130, 90, 0.3) 2px,
+    var(--page-divider) 0,
+    var(--page-divider) 2px,
     transparent 2px,
     transparent 6px
   );
@@ -1156,7 +1297,7 @@ footer {
   margin-left: 20px;
   margin-bottom: 20px;
   font-size: 14px;
-  color: rgba(0, 0, 0, 0.6);
+  color: var(--page-muted);
   opacity: 0;
   transition: opacity 260ms ease;
 }
@@ -1312,7 +1453,7 @@ footer {
   display: block;
   text-align: right;
   font-size: 0.85em; /* 比正文略小 */
-  color: rgba(0, 0, 0, 0.6); /* 更柔和的颜色 */
+  color: var(--page-muted); /* 更柔和的颜色 */
   margin-top: 0.3em;
   font-style: italic;
 }
@@ -1353,8 +1494,8 @@ footer {
 /* 顶部日期 */
 .date-line {
   font-size: 1.2rem;
-  color: #5c5540;
-  background: rgba(245, 237, 210, 0.6);
+  color: var(--page-date-text);
+  background: var(--page-date-bg);
   border-radius: 8px;
   letter-spacing: 0.5px;
   text-align: left;
@@ -1378,6 +1519,42 @@ footer {
 
 .note-ref:hover {
   text-decoration: underline;
+}
+
+html[data-theme="dark"] .sticky-quote {
+  border-color: #656583;
+  box-shadow: 2px 2px 10px rgba(3, 5, 18, 0.28);
+  background:
+    repeating-linear-gradient(
+        to right,
+        rgba(135, 132, 166, 0.42) 0 3px,
+        transparent 3px 6px
+      )
+      right 6px / 70% 2px no-repeat,
+    radial-gradient(
+        circle at 80% 70%,
+        rgba(158, 153, 188, 0.12) 0.6px,
+        transparent 1px
+      )
+      0 0 / 15px 15px repeat,
+    radial-gradient(
+        circle at 20% 30%,
+        rgba(158, 153, 188, 0.12) 0.6px,
+        transparent 1px
+      )
+      0 0 / 15px 15px repeat,
+    repeating-linear-gradient(
+        0deg,
+        rgba(56, 59, 83, 0.48) 0 2px,
+        rgba(46, 49, 72, 0.48) 2px 4px
+      )
+      repeat,
+    linear-gradient(rgba(37, 40, 60, 0.96), rgba(37, 40, 60, 0.96));
+}
+
+html[data-theme="dark"] .sticky-quote::before,
+html[data-theme="dark"] .sticky-quote::after {
+  color: rgba(223, 218, 232, 0.16);
 }
 
 /* 引用导向：指向文本 */
@@ -1508,6 +1685,15 @@ footer {
 
 /* 手机设备 (480px - 768px) */
 @media (max-width: 768px) {
+  .theme-toggle {
+    top: auto;
+    right: 12px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    width: 52px;
+    height: 52px;
+    font-size: 1.65rem;
+  }
+
   /* 顶栏调整 */
   .site-header {
     padding: 0 16px;
@@ -1644,6 +1830,14 @@ footer {
 
 /* 小屏手机 */
 @media (max-width: 480px) {
+  .theme-toggle {
+    right: 8px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: 44px;
+    height: 44px;
+    font-size: 1.45rem;
+  }
+
   /* 顶栏调整 */
   .site-header {
     padding: 0 12px;
@@ -1869,6 +2063,19 @@ footer {
   main,
   main.loaded {
     transition: none !important;
+  }
+
+  .theme-toggle {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .theme-toggle {
+    border: 2px solid ButtonText;
+    background: Canvas;
+    color: ButtonText;
+    box-shadow: none;
   }
 }
 

@@ -360,3 +360,45 @@
     height: 18px;
   }
 }
+
+/* 夜间主题 */
+html[data-theme="dark"] .pg2-paginator {
+  --pg2-bg: #343b57;
+  --pg2-main: #566b80;
+  --pg2-accent: #8798b5;
+  --pg2-disabled: #34394b;
+  --pg2-text: #eeeae2;
+  --pg2btn-elev-color: rgba(0, 0, 0, 0.42);
+  --pg2btn-glow-color: rgba(133, 156, 192, 0.14);
+}
+
+html[data-theme="dark"] .pg2-jump-input {
+  color: var(--pg2-text);
+  background: rgba(37, 43, 62, 0.94);
+}
+
+html[data-theme="dark"] .pg2-jump-input::placeholder {
+  color: rgba(226, 224, 218, 0.48);
+}
+
+html[data-theme="dark"] .pg2-jump-go {
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0.07),
+      rgba(255, 255, 255, 0.015)
+    ),
+    #4c5d78;
+  border-color: var(--pg2-accent);
+}
+
+html[data-theme="dark"] .pg2-btn.pg2-disabled,
+html[data-theme="dark"] .pg2-jump-go.pg2-disabled {
+  color: #898e9d;
+  border-color: #4c5266;
+}

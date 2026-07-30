@@ -162,3 +162,36 @@
     width: min(94%, 1280px);
   }
 }
+
+/* 夜间主题 */
+html[data-theme="dark"] .category-flow-wrapper {
+  background: linear-gradient(135deg, #252b41 0%, #1d2235 100%);
+  border-color: rgba(154, 165, 199, 0.2);
+  box-shadow: 0 10px 30px rgba(5, 8, 18, 0.34);
+}
+
+html[data-theme="dark"] .flow-tag {
+  color: #d8d5df;
+  background: #2c334c;
+  border-color: rgba(174, 184, 213, 0.22);
+  box-shadow: 0 2px 8px rgba(5, 8, 18, 0.24);
+}
+
+html[data-theme="dark"] .flow-tag:hover,
+html[data-theme="dark"] .flow-tag:focus-visible {
+  color: #f2eee7;
+  background: linear-gradient(135deg, #62577c 0%, #4a526e 100%);
+  box-shadow: 0 4px 12px rgba(8, 11, 24, 0.32);
+}
+
+html[data-theme="dark"] .flow-tag:focus-visible {
+  outline-color: #b7acd0;
+}
+
+html[data-theme="dark"] .category-flow-wrapper::before {
+  background: linear-gradient(to right, #252b41 0%, transparent 100%);
+}
+
+html[data-theme="dark"] .category-flow-wrapper::after {
+  background: linear-gradient(to left, #1d2235 0%, transparent 100%);
+}

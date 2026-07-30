@@ -128,3 +128,32 @@
     transition: none;
   }
 }
+
+/* 夜间主题 */
+html[data-theme="dark"] .search-input {
+  color: #e5e2dc;
+  background: rgba(32, 39, 60, 0.92);
+  border-color: rgba(154, 174, 210, 0.3);
+  box-shadow: 0 4px 15px rgba(5, 8, 18, 0.3);
+}
+
+html[data-theme="dark"] .search-input:focus-visible {
+  background: #252d46;
+  outline-color: rgba(154, 174, 210, 0.58);
+  box-shadow: 0 4px 20px rgba(91, 117, 169, 0.24);
+}
+
+html[data-theme="dark"] .search-input::placeholder,
+html[data-theme="dark"] .instructions,
+html[data-theme="dark"] .search-status,
+html[data-theme="dark"] #mt-list > .text-center {
+  color: #aaa9b1;
+}
+
+html[data-theme="dark"] .search-button {
+  background: #657ca8;
+}
+
+html[data-theme="dark"] .search-button:hover {
+  background: #738bb8;
+}

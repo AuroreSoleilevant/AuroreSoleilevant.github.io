@@ -171,3 +171,62 @@
   /* 平滑移动 */
   transition: bottom 200ms cubic-bezier(0.2, 0.9, 0.2, 1);
 }
+
+/* 夜间主题 */
+html[data-theme="dark"] {
+  --chapter-bg: rgba(76, 94, 119, 0.9);
+  --chapter-color: #ece9e2;
+}
+
+html[data-theme="dark"] .chapter-button {
+  border-color: rgba(166, 179, 211, 0.24);
+  box-shadow: 0 6px 18px rgba(3, 6, 16, 0.38);
+}
+
+html[data-theme="dark"] .chapter-button:hover,
+html[data-theme="dark"] .chapter-button:focus-visible {
+  background: rgba(91, 110, 140, 0.96);
+}
+
+html[data-theme="dark"] .chapter-button .backtop-icon {
+  filter: brightness(0) invert(0.9);
+}
+
+html[data-theme="dark"] #chapter-sidebar {
+  color: #d9d7dc;
+  background: rgba(27, 33, 49, 0.6);
+  border-color: rgba(160, 172, 204, 0.3);
+  box-shadow: -18px 6px 50px rgba(2, 4, 12, 0.46);
+}
+
+html[data-theme="dark"] #chapter-sidebar .cs-title,
+html[data-theme="dark"] #chapter-sidebar .chapter-list a {
+  color: #d9d7dc;
+}
+
+html[data-theme="dark"] #chapter-sidebar .cs-close img {
+  filter: brightness(0) invert(0.84);
+}
+
+html[data-theme="dark"] #chapter-sidebar .cs-close:hover {
+  background: rgba(191, 199, 224, 0.1);
+}
+
+html[data-theme="dark"] #chapter-sidebar .chapter-list a:hover {
+  background: rgba(191, 199, 224, 0.08);
+  box-shadow: 0 6px 14px rgba(2, 4, 12, 0.24);
+}
+
+html[data-theme="dark"] #chapter-sidebar .chapter-list a.active {
+  color: #eef0f6;
+  background: linear-gradient(
+    90deg,
+    rgba(102, 126, 176, 0.52),
+    rgba(102, 126, 176, 0.05)
+  );
+  border-left-color: #829aca;
+}
+
+html[data-theme="dark"] #chapter-sidebar + .chapter-overlay {
+  background: rgba(2, 4, 12, 0.48);
+}

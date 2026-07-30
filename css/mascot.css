@@ -158,6 +158,37 @@
   box-shadow: 0 10px 34px rgba(20, 20, 30, 0.18);
 }
 
+/* 夜间主题只调整控制条，不改变吉祥物图像本身。 */
+html[data-theme="dark"] #mw-root .mw-control-btn {
+  background: rgba(38, 44, 65, 0.9);
+  border: 1px solid rgba(173, 183, 214, 0.22);
+  box-shadow: 0 2px 8px rgba(3, 6, 16, 0.34);
+}
+
+html[data-theme="dark"] #mw-root .mw-control-btn:hover,
+html[data-theme="dark"] #mw-root .mw-control-btn:focus-visible {
+  background: rgba(53, 61, 88, 0.96);
+  box-shadow: 0 4px 12px rgba(3, 6, 16, 0.42);
+}
+
+html[data-theme="dark"] #mw-root .mw-control-btn:active {
+  background: rgba(31, 37, 56, 0.96);
+  box-shadow: 0 1px 4px rgba(3, 6, 16, 0.3);
+}
+
+html[data-theme="dark"] #mw-root .mw-control-btn img {
+  filter: brightness(0) invert(0.82);
+}
+
+html[data-theme="dark"] #mw-root .mw-control-btn:hover img,
+html[data-theme="dark"] #mw-root .mw-control-btn:focus-visible img {
+  filter: brightness(0) invert(0.96);
+}
+
+html[data-theme="dark"] #mw-root .mw-visibility-btn::after {
+  background: #d7d2c9;
+}
+
 /* 移动端（宽度小于 1024px，至于方块显示器只有天知道）时隐藏左下角小马 */
 @media (max-width: 1024px) {
   #mw-root {

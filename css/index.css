@@ -61,3 +61,20 @@
     transition: none;
   }
 }
+
+/* 夜间主题 */
+html[data-theme="dark"] .random-btn {
+  color: #f1ece4;
+  background: #7f3650;
+  border-color: rgba(211, 173, 192, 0.42);
+  box-shadow: 0 8px 18px rgba(4, 7, 16, 0.36);
+}
+
+html[data-theme="dark"] .random-btn:hover {
+  background: #91415c;
+  box-shadow: 0 12px 24px rgba(4, 7, 16, 0.44);
+}
+
+html[data-theme="dark"] .random-btn:focus-visible {
+  outline-color: rgba(199, 181, 218, 0.82);
+}

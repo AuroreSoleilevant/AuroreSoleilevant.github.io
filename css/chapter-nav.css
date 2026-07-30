@@ -88,3 +88,21 @@
   transform: none;
   box-shadow: var(--chapnav-shadow);
 }
+
+/* 夜间主题 */
+html[data-theme="dark"] .chapter-nav {
+  --chapnav-bg: #30374f;
+  --chapnav-border: rgba(165, 177, 211, 0.28);
+  --chapnav-color: #e9e5dd;
+  --chapnav-shadow: 0 6px 20px rgba(3, 6, 16, 0.36);
+}
+
+html[data-theme="dark"] .chapter-nav .nav-btn:hover {
+  background: #3c4663;
+  box-shadow: 0 12px 30px rgba(3, 6, 16, 0.46);
+}
+
+html[data-theme="dark"] .chapter-nav .nav-btn:active {
+  background: #272e44;
+  box-shadow: 0 4px 12px rgba(3, 6, 16, 0.34);
+}

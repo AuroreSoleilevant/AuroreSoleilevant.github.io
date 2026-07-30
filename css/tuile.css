@@ -754,3 +754,8 @@
     font-size: 0.9rem;
   }
 }
+
+html[data-theme="dark"] .tiles {
+  --tile-elev-color: rgba(0, 0, 0, 0.42);
+  --tile-glow-color: rgba(151, 164, 204, 0.1);
+}

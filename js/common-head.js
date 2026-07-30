@@ -1,6 +1,28 @@
 (() => {
   const head = document.head;
-  const version1 = "290726.1"; // style.css 版本号
+  const version1 = "300726.2"; // style.css 版本号
+  const THEME_STORAGE_KEY = "spica-theme-choice";
+
+  // 在基础样式请求前确定主题，避免普通页面冷启动时先闪出错误底色。
+  function applyInitialTheme() {
+    let storedTheme = null;
+    try {
+      const value = sessionStorage.getItem(THEME_STORAGE_KEY);
+      if (value === "light" || value === "dark") storedTheme = value;
+    } catch (e) {
+      /* sessionStorage 不可用时继续跟随系统 */
+    }
+
+    const systemDark =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const theme = storedTheme || (systemDark ? "dark" : "light");
+    const root = document.documentElement;
+    root.dataset.theme = theme;
+    root.style.colorScheme = `only ${theme}`;
+  }
+
+  applyInitialTheme();
 
   function installMainVisibilityFallback() {
     if (window.__mainVisibilityFallbackInstalled) return;
@@ -183,6 +205,7 @@
   // 普通加载区
   // ================================
   const deferredScripts = [
+    "/js/theme.js", // 普通页面明暗主题
     "/js/mots.js", // 字数统计
     "/js/backtop.js", // 回到顶部按钮
     "/js/blink.js", // 顶栏闪烁
