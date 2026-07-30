@@ -49,6 +49,21 @@
     return response.json();
   }
 
+  async function resolveStoryEntry(entries, id) {
+    const directEntry = entries.find((item) => item && item.id === id);
+    if (directEntry) return { entry: directEntry, title: directEntry.title };
+
+    const pageTagData = await loadJson("/json/page-tags.json");
+    const fallback = pageTagData?.histoire?.[id];
+    if (fallback?.kind === "taxonomy-source") {
+      const sourceEntry = entries.find(
+        (item) => item && item.id === fallback.sourceId
+      );
+      return sourceEntry ? { entry: sourceEntry, title: sourceEntry.title } : null;
+    }
+    return fallback?.title ? { entry: null, title: fallback.title, fallback } : null;
+  }
+
   async function renderTaxonomyTags(heading, context) {
     const databasePath =
       context.type === "story" ? "/json/histoire.json" : "/json/article.json";
@@ -58,17 +73,23 @@
     ]);
     let entry = entries.find((item) => item && item.id === context.id);
     if (!entry && context.type === "story") {
-      const pageTagData = await loadJson("/json/page-tags.json");
-      const fallback = pageTagData?.histoire?.[context.id];
-      if (fallback?.kind === "parent" && fallback.label && fallback.href) {
+      const resolved = await resolveStoryEntry(entries, context.id);
+      if (
+        resolved?.fallback?.kind === "parent" &&
+        resolved.fallback.label &&
+        resolved.fallback.href
+      ) {
         const container = createContainer("parent");
-        appendTag(container, fallback.label, fallback.href, "parent");
+        appendTag(
+          container,
+          resolved.fallback.label,
+          resolved.fallback.href,
+          "parent"
+        );
         heading.appendChild(container);
         return;
       }
-      if (fallback?.kind === "taxonomy-source") {
-        entry = entries.find((item) => item && item.id === fallback.sourceId);
-      }
+      entry = resolved?.entry;
     }
     if (!entry || !Array.isArray(entry.tags)) return;
 
@@ -86,9 +107,18 @@
     if (container.childElementCount) heading.appendChild(container);
   }
 
-  function renderParentLink(heading, id) {
+  async function renderParentLink(heading, id) {
+    const entries = await loadJson("/json/histoire.json");
+    const resolved = await resolveStoryEntry(entries, id);
+    if (!resolved?.title) return;
+
     const container = createContainer("parent");
-    appendTag(container, "返回作品首页", `/histoire/${encodeURIComponent(id)}/`, "parent");
+    appendTag(
+      container,
+      resolved.title,
+      `/histoire/${encodeURIComponent(id)}/`,
+      "parent"
+    );
     heading.appendChild(container);
   }
 
@@ -98,7 +128,11 @@
     if (!context || !heading || heading.querySelector(".tag-container")) return;
 
     if (context.type === "chapter") {
-      renderParentLink(heading, context.id);
+      try {
+        await renderParentLink(heading, context.id);
+      } catch (error) {
+        console.error("[PageTags] 作品数据加载失败：", error);
+      }
       return;
     }
 

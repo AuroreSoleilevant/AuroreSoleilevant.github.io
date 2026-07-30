@@ -2,11 +2,13 @@
   "histoire": {
     "HKZM": {
       "kind": "parent",
+      "title": "坑中马",
       "label": "弃坑",
       "href": "/histoire/HTK/"
     },
     "HMFZMDWS": {
       "kind": "parent",
+      "title": "魔法之末的往事",
       "label": "弃坑",
       "href": "/histoire/HTK/"
     },
@@ -16,6 +18,7 @@
     },
     "HTTHFZS": {
       "kind": "parent",
+      "title": "听听海风之声",
       "label": "弃坑",
       "href": "/histoire/HTK/"
     }
