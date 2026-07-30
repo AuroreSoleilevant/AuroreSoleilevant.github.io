@@ -3,6 +3,11 @@
   const TRACK_SELECTOR = ".flow-track";
   const COPY_SELECTOR = "[data-flow-copy]";
   const RESIZE_DELAY = 150;
+  const TAG_METADATA_PATH = "/json/tag.json";
+  const SECTION_DATA_PATHS = {
+    article: "/json/article.json",
+    histoire: "/json/histoire.json",
+  };
 
   class TagFlowManager {
     constructor(root) {
@@ -18,7 +23,11 @@
     }
 
     async init() {
-      if (!(await this.hydrateSource())) return;
+      const [tagsReady] = await Promise.all([
+        this.hydrateSource(),
+        this.updateSectionDates(),
+      ]);
+      if (!tagsReady) return;
       if (!this.buildTracks()) return;
 
       document.addEventListener("visibilitychange", this.syncPauseState);
@@ -36,37 +45,89 @@
 
     async hydrateSource() {
       if (!this.source) return false;
-      const labels = [...this.source.querySelectorAll(".flow-tag")];
-      if (!labels.length) return false;
 
       try {
         const metadata = await (
           window.__tagMetadataRequest ||
-          (window.__tagMetadataRequest = fetch("/json/tag.json", {
+          (window.__tagMetadataRequest = fetch(TAG_METADATA_PATH, {
             cache: "force-cache",
           }).then((response) => {
             if (!response.ok) throw new Error(`tag metadata: ${response.status}`);
             return response.json();
           }))
         );
-        const slugs = new Map(
-          metadata.map(({ fr, zh }) => [zh, fr]).filter(([, fr]) => typeof fr === "string")
-        );
 
-        for (const label of labels) {
-          const slug = slugs.get(label.textContent.trim());
-          if (!slug) throw new Error(`missing tag metadata: ${label.textContent}`);
+        if (!Array.isArray(metadata)) throw new Error("tag metadata is not an array");
+
+        const fragment = document.createDocumentFragment();
+        for (const { fr, zh } of metadata) {
+          if (typeof fr !== "string" || typeof zh !== "string" || !zh.trim()) continue;
           const link = document.createElement("a");
-          link.className = label.className;
-          link.href = `/tag/${slug}/`;
-          link.textContent = label.textContent;
-          label.replaceWith(link);
+          link.className = "flow-tag";
+          link.href = `/tag/${fr}/`;
+          link.textContent = zh;
+          fragment.appendChild(link);
+        }
+
+        this.source.replaceChildren(fragment);
+        if (!this.source.querySelector(".flow-tag")) {
+          throw new Error("tag metadata has no usable tags");
         }
         return true;
       } catch (error) {
         console.error("[tagflow] metadata unavailable:", error);
         return false;
       }
+    }
+
+    async updateSectionDates() {
+      const sections = Object.entries(SECTION_DATA_PATHS);
+      await Promise.all(
+        sections.map(async ([section, path]) => {
+          try {
+            const response = await fetch(path, { cache: "force-cache" });
+            if (!response.ok) throw new Error(`section data: ${response.status}`);
+            const entries = await response.json();
+            const latest = this.getLatestDate(entries);
+            if (!latest) return;
+
+            const desktop = this.formatDate(latest, true);
+            const mobile = this.formatDate(latest, false);
+            document
+              .querySelectorAll(`[data-section-updated="${section}"]`)
+              .forEach((element) => {
+                const desktopNode = element.querySelector(".section-updated-date-desktop");
+                const mobileNode = element.querySelector(".section-updated-date-mobile");
+                if (desktopNode) desktopNode.textContent = desktop;
+                if (mobileNode) mobileNode.textContent = mobile;
+              });
+          } catch (error) {
+            console.warn(`[tagflow] ${section} update date unavailable:`, error);
+          }
+        })
+      );
+    }
+
+    getLatestDate(entries) {
+      if (!Array.isArray(entries)) return null;
+
+      const latestTime = entries.reduce((latest, entry) => {
+        const timestamps = [entry?.created_at, entry?.updated_at];
+        return timestamps.reduce((currentLatest, timestamp) => {
+          const time = Date.parse(timestamp);
+          return Number.isFinite(time) ? Math.max(currentLatest, time) : currentLatest;
+        }, latest);
+      }, Number.NEGATIVE_INFINITY);
+
+      return Number.isFinite(latestTime) ? new Date(latestTime) : null;
+    }
+
+    formatDate(date, includeYear) {
+      const day = String(date.getUTCDate()).padStart(2, "0");
+      const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+      return includeYear
+        ? `${day}/${month}/${date.getUTCFullYear()}`
+        : `${date.getUTCDate()}/${date.getUTCMonth() + 1}`;
     }
 
     buildTracks() {

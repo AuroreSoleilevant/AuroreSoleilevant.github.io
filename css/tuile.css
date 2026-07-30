@@ -58,6 +58,10 @@
   margin-top: 0px;
 }
 
+.section-updated-date-mobile {
+  display: none;
+}
+
 /* 支持 a.tile 或 任意元素 .tile （防止被全局 a 规则影响） */
 .tiles > a.tile,
 .tiles > .tile {
@@ -133,6 +137,17 @@
     radial-gradient(circle at 28% 70%, rgba(255, 239, 207, 0.16) 0 1px, transparent 1.7px) left var(--tile-thumb-offset, 1.5rem) center / var(--tile-thumb-size-responsive) var(--tile-thumb-size-responsive) no-repeat,
     linear-gradient(135deg, rgba(76, 101, 154, 0.24), rgba(109, 78, 139, 0.17) 55%, rgba(72, 132, 142, 0.14)) left var(--tile-thumb-offset, 1.5rem) center / var(--tile-thumb-size-responsive) var(--tile-thumb-size-responsive) no-repeat,
     linear-gradient(to bottom, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
+}
+
+/* 缩略图解码后仅保留卡片原有的顶部高光，避免方形占位透出圆角图片边缘。 */
+.tiles > a.tile.tile-strip-new:has(.tile-thumb.is-image-ready)::before,
+.tiles > .tile.tile-strip-new:has(.tile-thumb.is-image-ready)::before {
+  height: 20%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0)
+  );
 }
 
 /* ---------- 光泽滑动（::after） ---------- */
@@ -275,6 +290,14 @@
 
 /* =========== 手机响应 =========== */
 @media (max-width: 480px) {
+  .section-updated-date-desktop {
+    display: none;
+  }
+
+  .section-updated-date-mobile {
+    display: inline;
+  }
+
   .tiles {
     flex-direction: row;
     flex-wrap: nowrap;
