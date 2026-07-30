@@ -747,56 +747,15 @@ body {
 
 /* body 全局背景 */
 body {
-  /* 静态纸纹与小花纹：保持米黄墙纸的温度，不增加运行时绘制。 */
-  background-color: #f2e7d0;
+  /* 本地低对比等高线纹理，保持米黄墙纸的温度。 */
+  background-color: #f5f5dc;
   background-image:
-    radial-gradient(
-      ellipse 4px 10px at 50% 30%,
-      rgba(165, 125, 82, 0.24) 0 72%,
-      transparent 77%
-    ),
-    radial-gradient(
-      ellipse 10px 4px at 70% 50%,
-      rgba(165, 125, 82, 0.24) 0 72%,
-      transparent 77%
-    ),
-    radial-gradient(
-      ellipse 4px 10px at 50% 70%,
-      rgba(165, 125, 82, 0.24) 0 72%,
-      transparent 77%
-    ),
-    radial-gradient(
-      ellipse 10px 4px at 30% 50%,
-      rgba(165, 125, 82, 0.24) 0 72%,
-      transparent 77%
-    ),
-    radial-gradient(
-      circle at 50% 50%,
-      rgba(137, 98, 62, 0.3) 0 2px,
-      rgba(255, 248, 228, 0.42) 2.5px 4px,
-      transparent 4.5px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 3px,
-      rgba(117, 82, 51, 0.035) 4px,
-      transparent 5px
-    ),
+    url("/icons/background-topography.svg"),
     linear-gradient(115deg, rgba(255, 252, 237, 0.5), transparent 52%);
   background-size:
-    96px 96px,
-    96px 96px,
-    96px 96px,
-    96px 96px,
-    96px 96px,
-    5px 5px,
+    600px 600px,
     100% 320px;
   background-position:
-    0 0,
-    0 0,
-    0 0,
-    0 0,
-    0 0,
     0 0,
     0 0;
   background-repeat: repeat;

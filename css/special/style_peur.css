@@ -30,55 +30,15 @@
 
 /* ---------- 主体：开始 ---------- */
 body {
-  /* 与普通页面共享复古墙纸语言，但压低为旧酒红与暗褐色。 */
+  /* 与普通页面共享等高线墙纸语言，但压低为旧酒红与暗褐色。 */
   background-color: #250d10;
-  background-image: radial-gradient(
-      ellipse 4px 10px at 50% 30%,
-      rgba(157, 72, 65, 0.3) 0 72%,
-      transparent 77%
-    ),
-    radial-gradient(
-      ellipse 10px 4px at 70% 50%,
-      rgba(157, 72, 65, 0.3) 0 72%,
-      transparent 77%
-    ),
-    radial-gradient(
-      ellipse 4px 10px at 50% 70%,
-      rgba(157, 72, 65, 0.3) 0 72%,
-      transparent 77%
-    ),
-    radial-gradient(
-      ellipse 10px 4px at 30% 50%,
-      rgba(157, 72, 65, 0.3) 0 72%,
-      transparent 77%
-    ),
-    radial-gradient(
-      circle at 50% 50%,
-      rgba(91, 28, 31, 0.7) 0 2px,
-      rgba(191, 107, 91, 0.2) 2.5px 4px,
-      transparent 4.5px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 3px,
-      rgba(224, 146, 122, 0.04) 4px,
-      transparent 5px
-    ),
+  background-image:
+    url("/icons/background-topography-peur.svg"),
     linear-gradient(115deg, rgba(86, 22, 26, 0.35), transparent 52%);
   background-size:
-    104px 104px,
-    104px 104px,
-    104px 104px,
-    104px 104px,
-    104px 104px,
-    5px 5px,
+    600px 600px,
     100% 320px;
   background-position:
-    0 0,
-    0 0,
-    0 0,
-    0 0,
-    0 0,
     0 0,
     0 0;
   background-repeat: repeat;
