@@ -1342,6 +1342,14 @@ footer {
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
 }
 
+/* 前言图同时使用加载淡入时，保留 resp-img 原有的入场节奏。 */
+.IntroNor.resp-img {
+  transition:
+    opacity 0.36s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.48s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.3s ease;
+}
+
 /* 顶部日期 */
 .date-line {
   font-size: 1.2rem;
