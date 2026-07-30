@@ -2103,3 +2103,47 @@ a,
   outline: none;
   touch-action: manipulation;
 }
+
+/* 键盘焦点必须始终可见；不影响鼠标悬停和普通页面外观。 */
+body :is(a, button, input, select, textarea, [role="button"]):not(.mirror-notice__close):focus-visible {
+  outline: 3px solid #5570a8 !important;
+  outline-offset: 3px;
+}
+
+html[data-theme="dark"] body :is(a, button, input, select, textarea, [role="button"]):not(.mirror-notice__close):focus-visible {
+  outline-color: #c5b2e6 !important;
+}
+
+/* 只在键盘聚焦时出现，避免影响既有页眉视觉。 */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  z-index: 100100;
+  padding: 10px 16px;
+  border: 1px solid rgba(235, 216, 177, 0.9);
+  border-radius: 0 0 10px 10px;
+  color: #3b2b12;
+  background: #fff8eb;
+  box-shadow: 0 5px 16px rgba(30, 24, 45, 0.2);
+  text-decoration: none;
+  transform: translate(-50%, -120%);
+  transition: transform 160ms ease;
+}
+
+.skip-link:focus-visible {
+  transform: translate(-50%, 0);
+}
+
+html[data-theme="dark"] .skip-link {
+  border-color: rgba(160, 172, 204, 0.38);
+  color: #eee9df;
+  background: #30374f;
+  box-shadow: 0 5px 16px rgba(2, 4, 12, 0.46);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}

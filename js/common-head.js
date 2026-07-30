@@ -216,6 +216,7 @@
     "/js/headtran.js", // 渐变顶栏玻璃
     "/js/mascot.js", // 左下角小马
     "/js/mirror-notice.js", // 中国大陆镜像提示
+    "/js/skip-link.js", // 键盘跳至正文
   ];
 
   loadFeatureScripts(deferredScripts);
