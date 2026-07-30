@@ -757,7 +757,7 @@ body {
 
 /* body 全局背景 */
 body {
-  /* 低对比错位圆点与柔光，保持早期米黄墙纸的温度。 */
+  /* 低对比错位圆点，保持早期米黄墙纸的温度。 */
   background-color: var(--page-background);
   background-image:
     radial-gradient(
@@ -799,8 +799,7 @@ body {
       circle at 454px 198px,
       rgba(210, 180, 140, 0.44) 0 2.9px,
       transparent 3.4px
-    ),
-    linear-gradient(115deg, rgba(255, 252, 237, 0.5), transparent 52%);
+    );
   background-size:
     480px 280px,
     480px 280px,
@@ -809,8 +808,7 @@ body {
     480px 280px,
     480px 280px,
     480px 280px,
-    480px 280px,
-    100% 320px;
+    480px 280px;
   background-repeat: repeat;
   font-family: "LXGWWenKai", Georgia, serif; /* 全局字体 */
   color: var(--page-text);

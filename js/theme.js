@@ -5,6 +5,7 @@
 
   const STORAGE_KEY = "spica-theme-choice";
   const DARK_QUERY = "(prefers-color-scheme: dark)";
+  const MOBILE_QUERY = "(max-width: 768px)";
   const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
   const TRANSITION_FALLBACK_MS = 480;
   const colorSchemeMedia =
@@ -15,10 +16,15 @@
     typeof window.matchMedia === "function"
       ? window.matchMedia(REDUCED_MOTION_QUERY)
       : null;
+  const mobileLayoutMedia =
+    typeof window.matchMedia === "function"
+      ? window.matchMedia(MOBILE_QUERY)
+      : null;
   let button = null;
   let transitionCleanup = null;
   let transitionActive = false;
   let restoreButtonFocus = false;
+  let baseStyleReady = false;
 
   function readStoredTheme() {
     try {
@@ -47,6 +53,12 @@
 
   function systemTheme() {
     return colorSchemeMedia && colorSchemeMedia.matches ? "dark" : "light";
+  }
+
+  function usesMainFade() {
+    return mobileLayoutMedia
+      ? mobileLayoutMedia.matches
+      : window.innerWidth <= 768;
   }
 
   function updateButton(theme) {
@@ -162,10 +174,37 @@
     commitTheme(nextTheme);
   }
 
-  function revealButtonWithHeader() {
-    if (button && document.querySelector(".site-header")) {
+  function revealButtonWhenReady() {
+    const layoutAnchor = usesMainFade()
+      ? document.querySelector("main")
+      : document.querySelector(".site-header");
+    if (
+      button &&
+      baseStyleReady &&
+      layoutAnchor
+    ) {
       button.classList.add("is-ready");
+      button.style.removeProperty("position");
+      button.style.removeProperty("visibility");
     }
+  }
+
+  function watchBaseStyle() {
+    const stylesheet = document.getElementById("spica-base-style");
+    if (!stylesheet) return;
+    if (stylesheet.sheet) {
+      baseStyleReady = true;
+      revealButtonWhenReady();
+      return;
+    }
+    stylesheet.addEventListener(
+      "load",
+      () => {
+        baseStyleReady = true;
+        revealButtonWhenReady();
+      },
+      { once: true }
+    );
   }
 
   function createButton() {
@@ -174,6 +213,9 @@
     button.id = "theme-toggle";
     button.className = "theme-toggle";
     button.type = "button";
+    /* CSS 尚未加载时也保持不可见且脱离正文流，防止原生按钮闪现。 */
+    button.style.position = "fixed";
+    button.style.visibility = "hidden";
     button.innerHTML =
       '<span class="theme-toggle__moon" aria-hidden="true">☾</span>' +
       '<span class="theme-toggle__sun" aria-hidden="true">☀</span>';
@@ -187,11 +229,14 @@
       applyTheme(nextTheme, true);
     });
 
-    document.body.appendChild(button);
+    const host = usesMainFade()
+      ? document.querySelector("main") || document.body
+      : document.body;
+    host.appendChild(button);
     updateButton(
       document.documentElement.dataset.theme === "dark" ? "dark" : "light"
     );
-    revealButtonWithHeader();
+    revealButtonWhenReady();
     return button;
   }
 
@@ -214,9 +259,10 @@
   }
 
   window.addEventListener("pageshow", syncFromPreference);
-  document.addEventListener("header:inserted", revealButtonWithHeader, {
+  document.addEventListener("header:inserted", revealButtonWhenReady, {
     once: true,
   });
+  watchBaseStyle();
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", createButton, { once: true });
   } else {
