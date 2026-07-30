@@ -140,9 +140,9 @@
 
 /* hover 抬起 */
 .pg2-btn:not(.pg2-disabled):hover,
-.pg2-btn:not(.pg2-disabled):focus-within,
+.pg2-btn:not(.pg2-disabled):focus-visible,
 .pg2-jump-go:not(.pg2-disabled):hover,
-.pg2-jump-go:not(.pg2-disabled):focus-within {
+.pg2-jump-go:not(.pg2-disabled):focus-visible {
   transform: translateY(var(--pg2-hover-translate));
   box-shadow: 0 calc(var(--pg2btn-elev-y) * 2)
       calc(var(--pg2btn-elev-blur) + 10px) rgba(0, 0, 0, 0.35),

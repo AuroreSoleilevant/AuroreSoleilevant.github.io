@@ -1080,7 +1080,7 @@ footer {
 
 /* hover / focus 效果 */
 .back-to-top:hover,
-.back-to-top:focus {
+.back-to-top:focus-visible {
   background: var(--backtop-hover);
   transform: scale(1.03);
   outline: none;
