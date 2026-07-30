@@ -30,50 +30,57 @@
 
 /* ---------- 主体：开始 ---------- */
 body {
-  background-color: #2a0f0f;
+  /* 与普通页面共享复古墙纸语言，但压低为旧酒红与暗褐色。 */
+  background-color: #250d10;
   background-image: radial-gradient(
-      circle at 30px 40px,
-      rgba(139, 0, 0, 0.35) 0px,
-      rgba(139, 0, 0, 0.35) 3px,
-      transparent 3px
+      ellipse 4px 10px at 50% 30%,
+      rgba(157, 72, 65, 0.3) 0 72%,
+      transparent 77%
     ),
     radial-gradient(
-      circle at 90px 110px,
-      rgba(120, 0, 0, 0.4) 0px,
-      rgba(120, 0, 0, 0.4) 2.5px,
-      transparent 2.5px
+      ellipse 10px 4px at 70% 50%,
+      rgba(157, 72, 65, 0.3) 0 72%,
+      transparent 77%
     ),
     radial-gradient(
-      circle at 160px 70px,
-      rgba(160, 20, 20, 0.3) 0px,
-      rgba(160, 20, 20, 0.3) 3.5px,
-      transparent 3.5px
+      ellipse 4px 10px at 50% 70%,
+      rgba(157, 72, 65, 0.3) 0 72%,
+      transparent 77%
     ),
     radial-gradient(
-      circle at 230px 130px,
-      rgba(100, 0, 0, 0.45) 0px,
-      rgba(100, 0, 0, 0.45) 2.8px,
-      transparent 2.8px
+      ellipse 10px 4px at 30% 50%,
+      rgba(157, 72, 65, 0.3) 0 72%,
+      transparent 77%
     ),
     radial-gradient(
-      circle at 320px 60px,
-      rgba(139, 0, 0, 0.32) 0px,
-      rgba(139, 0, 0, 0.32) 4px,
-      transparent 4px
+      circle at 50% 50%,
+      rgba(91, 28, 31, 0.7) 0 2px,
+      rgba(191, 107, 91, 0.2) 2.5px 4px,
+      transparent 4.5px
     ),
-    radial-gradient(
-      circle at 200px 180px,
-      rgba(80, 0, 0, 0.5) 0px,
-      rgba(80, 0, 0, 0.5) 2.2px,
-      transparent 2.2px
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(224, 146, 122, 0.04) 4px,
+      transparent 5px
     ),
-    radial-gradient(
-      circle at 350px 170px,
-      rgba(150, 10, 10, 0.38) 0px,
-      rgba(150, 10, 10, 0.38) 3px,
-      transparent 3px
-    );
-  background-size: 400px 200px;
+    linear-gradient(115deg, rgba(86, 22, 26, 0.35), transparent 52%);
+  background-size:
+    104px 104px,
+    104px 104px,
+    104px 104px,
+    104px 104px,
+    104px 104px,
+    5px 5px,
+    100% 320px;
+  background-position:
+    0 0,
+    0 0,
+    0 0,
+    0 0,
+    0 0,
+    0 0,
+    0 0;
   background-repeat: repeat;
 
   /* 覆盖文字颜色为浅色 */
