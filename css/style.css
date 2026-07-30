@@ -747,17 +747,67 @@ body {
 
 /* body 全局背景 */
 body {
-  /* 本地低对比等高线纹理，保持米黄墙纸的温度。 */
+  /* 低对比纸纹与错位圆点，保持早期米黄墙纸的温度。 */
   background-color: #f5f5dc;
   background-image:
-    url("/icons/background-topography.svg"),
+    radial-gradient(
+      circle at 42px 36px,
+      rgba(238, 221, 204, 0.54) 0 2.4px,
+      transparent 2.9px
+    ),
+    radial-gradient(
+      circle at 132px 96px,
+      rgba(210, 180, 140, 0.43) 0 3.2px,
+      transparent 3.7px
+    ),
+    radial-gradient(
+      circle at 262px 48px,
+      rgba(238, 221, 204, 0.5) 0 1.7px,
+      transparent 2.2px
+    ),
+    radial-gradient(
+      circle at 382px 122px,
+      rgba(210, 180, 140, 0.46) 0 2.7px,
+      transparent 3.2px
+    ),
+    radial-gradient(
+      circle at 86px 216px,
+      rgba(238, 221, 204, 0.52) 0 2.6px,
+      transparent 3.1px
+    ),
+    radial-gradient(
+      circle at 222px 184px,
+      rgba(210, 180, 140, 0.4) 0 3.7px,
+      transparent 4.2px
+    ),
+    radial-gradient(
+      circle at 332px 246px,
+      rgba(238, 221, 204, 0.48) 0 1.8px,
+      transparent 2.3px
+    ),
+    radial-gradient(
+      circle at 454px 198px,
+      rgba(210, 180, 140, 0.44) 0 2.9px,
+      transparent 3.4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(117, 82, 51, 0.035) 4px,
+      transparent 5px
+    ),
     linear-gradient(115deg, rgba(255, 252, 237, 0.5), transparent 52%);
   background-size:
-    600px 600px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    5px 5px,
     100% 320px;
-  background-position:
-    0 0,
-    0 0;
   background-repeat: repeat;
   font-family: "LXGWWenKai", Georgia, serif; /* 全局字体 */
   color: #333;

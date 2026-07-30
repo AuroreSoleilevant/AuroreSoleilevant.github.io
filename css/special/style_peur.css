@@ -30,17 +30,66 @@
 
 /* ---------- 主体：开始 ---------- */
 body {
-  /* 与普通页面共享等高线墙纸语言，但压低为旧酒红与暗褐色。 */
-  background-color: #250d10;
-  background-image:
-    url("/icons/background-topography-peur.svg"),
+  /* 与普通页面共享错位圆点墙纸语言，但压低为旧酒红与暗褐色。 */
+  background-color: #2a0f0f;
+  background-image: radial-gradient(
+      circle at 42px 36px,
+      rgba(139, 0, 0, 0.34) 0 2.4px,
+      transparent 2.9px
+    ),
+    radial-gradient(
+      circle at 132px 96px,
+      rgba(120, 0, 0, 0.39) 0 3.2px,
+      transparent 3.7px
+    ),
+    radial-gradient(
+      circle at 262px 48px,
+      rgba(160, 20, 20, 0.29) 0 1.7px,
+      transparent 2.2px
+    ),
+    radial-gradient(
+      circle at 382px 122px,
+      rgba(100, 0, 0, 0.43) 0 2.7px,
+      transparent 3.2px
+    ),
+    radial-gradient(
+      circle at 86px 216px,
+      rgba(139, 0, 0, 0.31) 0 2.6px,
+      transparent 3.1px
+    ),
+    radial-gradient(
+      circle at 222px 184px,
+      rgba(80, 0, 0, 0.47) 0 3.7px,
+      transparent 4.2px
+    ),
+    radial-gradient(
+      circle at 332px 246px,
+      rgba(160, 20, 20, 0.28) 0 1.8px,
+      transparent 2.3px
+    ),
+    radial-gradient(
+      circle at 454px 198px,
+      rgba(150, 10, 10, 0.36) 0 2.9px,
+      transparent 3.4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 3px,
+      rgba(224, 146, 122, 0.04) 4px,
+      transparent 5px
+    ),
     linear-gradient(115deg, rgba(86, 22, 26, 0.35), transparent 52%);
   background-size:
-    600px 600px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    480px 280px,
+    5px 5px,
     100% 320px;
-  background-position:
-    0 0,
-    0 0;
   background-repeat: repeat;
 
   /* 覆盖文字颜色为浅色 */
