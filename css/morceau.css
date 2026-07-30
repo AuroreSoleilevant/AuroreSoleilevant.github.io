@@ -433,13 +433,9 @@
   }
 }
 
-/* 夜间主题：保留每张卡片的强调色，同时以深蓝灰作为稳定底色。 */
-html[data-theme="dark"] {
+html[data-theme="dark"] .mt-tile {
   --mt-elev-color: rgba(0, 0, 0, 0.42);
   --mt-glow-color: rgba(151, 164, 204, 0.1);
-}
-
-html[data-theme="dark"] .mt-tile {
   background:
     radial-gradient(
       circle at 30% 20%,

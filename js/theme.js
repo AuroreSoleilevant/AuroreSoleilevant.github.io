@@ -7,7 +7,7 @@
   const DARK_QUERY = "(prefers-color-scheme: dark)";
   const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
   const TRANSITION_FALLBACK_MS = 480;
-  const media =
+  const colorSchemeMedia =
     typeof window.matchMedia === "function"
       ? window.matchMedia(DARK_QUERY)
       : null;
@@ -17,6 +17,7 @@
       : null;
   let button = null;
   let transitionCleanup = null;
+  let transitionActive = false;
   let restoreButtonFocus = false;
 
   function readStoredTheme() {
@@ -45,11 +46,11 @@
   }
 
   function systemTheme() {
-    return media && media.matches ? "dark" : "light";
+    return colorSchemeMedia && colorSchemeMedia.matches ? "dark" : "light";
   }
 
   function updateButton(theme) {
-    if (!button) return;
+    if (!button || button.dataset.theme === theme) return;
     const isDark = theme === "dark";
     const action = isDark ? "切换为日间模式" : "切换为夜间模式";
     button.setAttribute("aria-label", action);
@@ -69,6 +70,9 @@
   }
 
   function clearTransitionState() {
+    if (!transitionActive) return;
+    transitionActive = false;
+
     const root = document.documentElement;
     const shouldRestoreFocus = restoreButtonFocus;
     restoreButtonFocus = false;
@@ -90,8 +94,11 @@
 
   function commitTheme(nextTheme) {
     const root = document.documentElement;
-    root.dataset.theme = nextTheme;
-    root.style.colorScheme = `only ${nextTheme}`;
+    const colorScheme = `only ${nextTheme}`;
+    if (root.dataset.theme !== nextTheme) root.dataset.theme = nextTheme;
+    if (root.style.colorScheme !== colorScheme) {
+      root.style.colorScheme = colorScheme;
+    }
     updateButton(nextTheme);
     document.dispatchEvent(
       new CustomEvent("theme:changed", {
@@ -100,7 +107,7 @@
     );
   }
 
-  function applyTheme(theme, animate) {
+  function applyTheme(theme, animate = false) {
     const nextTheme = theme === "dark" ? "dark" : "light";
     const root = document.documentElement;
     const currentTheme = root.dataset.theme === "dark" ? "dark" : "light";
@@ -117,6 +124,7 @@
     }
 
     const body = document.body;
+    transitionActive = true;
     root.classList.add("is-theme-transitioning");
     restoreButtonFocus = button === document.activeElement;
     setButtonBusy(true);
@@ -197,16 +205,18 @@
     applyTheme(systemTheme(), true);
   }
 
-  if (media) {
-    if (typeof media.addEventListener === "function") {
-      media.addEventListener("change", onSystemThemeChange);
-    } else if (typeof media.addListener === "function") {
-      media.addListener(onSystemThemeChange);
+  if (colorSchemeMedia) {
+    if (typeof colorSchemeMedia.addEventListener === "function") {
+      colorSchemeMedia.addEventListener("change", onSystemThemeChange);
+    } else if (typeof colorSchemeMedia.addListener === "function") {
+      colorSchemeMedia.addListener(onSystemThemeChange);
     }
   }
 
   window.addEventListener("pageshow", syncFromPreference);
-  document.addEventListener("header:inserted", revealButtonWithHeader);
+  document.addEventListener("header:inserted", revealButtonWithHeader, {
+    once: true,
+  });
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", createButton, { once: true });
   } else {

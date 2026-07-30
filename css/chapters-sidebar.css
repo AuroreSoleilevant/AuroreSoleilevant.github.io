@@ -148,19 +148,6 @@
   pointer-events: auto;
 }
 
-/* 侧栏为深色主题时的变体 */
-#chapter-sidebar.dark {
-  background: rgba(18, 18, 20, 0.95);
-  color: #ddd;
-}
-#chapter-sidebar.dark .chapter-list a {
-  color: #ddd;
-}
-#chapter-sidebar.dark .chapter-list a.active {
-  color: #fff;
-  border-left-color: #66a7ff;
-}
-
 .back-to-top.chapter-button {
   /* 计算位置 */
   bottom: calc(
@@ -173,12 +160,9 @@
 }
 
 /* 夜间主题 */
-html[data-theme="dark"] {
+html[data-theme="dark"] .chapter-button {
   --chapter-bg: rgba(76, 94, 119, 0.9);
   --chapter-color: #ece9e2;
-}
-
-html[data-theme="dark"] .chapter-button {
   border-color: rgba(166, 179, 211, 0.24);
   box-shadow: 0 6px 18px rgba(3, 6, 16, 0.38);
 }
@@ -193,6 +177,7 @@ html[data-theme="dark"] .chapter-button .backtop-icon {
 }
 
 html[data-theme="dark"] #chapter-sidebar {
+  --chapter-bg: rgba(76, 94, 119, 0.9);
   color: #d9d7dc;
   background: rgba(27, 33, 49, 0.6);
   border-color: rgba(160, 172, 204, 0.3);
