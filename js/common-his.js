@@ -4,6 +4,7 @@
 (function () {
   const modules = [
     { type: "css", href: "/css/intro.css" },
+    { type: "js", src: "/js/page-tags.js" },
     { type: "css", href: "/css/chapters-sidebar.css" },
     { type: "js", src: "/js/chapters-sidebar.js" },
     { type: "css", href: "/css/chapter-nav.css" },

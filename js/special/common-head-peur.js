@@ -183,6 +183,7 @@
   // 普通加载区
   // ================================
   const deferredScripts = [
+    "/js/page-tags.js", // 正文标签 / 返回作品入口
     "/js/mots.js", // 字数统计
     "/js/backtop.js", // 回到顶部按钮
     "/js/blink.js", // 顶栏闪烁

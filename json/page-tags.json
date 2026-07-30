@@ -1,0 +1,23 @@
+{
+  "histoire": {
+    "HKZM": {
+      "kind": "parent",
+      "label": "弃坑",
+      "href": "/histoire/HTK/"
+    },
+    "HMFZMDWS": {
+      "kind": "parent",
+      "label": "弃坑",
+      "href": "/histoire/HTK/"
+    },
+    "HPM_SP": {
+      "kind": "taxonomy-source",
+      "sourceId": "HPM"
+    },
+    "HTTHFZS": {
+      "kind": "parent",
+      "label": "弃坑",
+      "href": "/histoire/HTK/"
+    }
+  }
+}
