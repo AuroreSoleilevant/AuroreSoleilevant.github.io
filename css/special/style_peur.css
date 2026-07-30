@@ -72,12 +72,6 @@ body {
       rgba(150, 10, 10, 0.36) 0 2.9px,
       transparent 3.4px
     ),
-    repeating-linear-gradient(
-      0deg,
-      transparent 0 3px,
-      rgba(224, 146, 122, 0.04) 4px,
-      transparent 5px
-    ),
     linear-gradient(115deg, rgba(86, 22, 26, 0.35), transparent 52%);
   background-size:
     480px 280px,
@@ -88,7 +82,6 @@ body {
     480px 280px,
     480px 280px,
     480px 280px,
-    5px 5px,
     100% 320px;
   background-repeat: repeat;
 
