@@ -232,10 +232,10 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
       // 图片加载完成后再安全挂载内部结构
       root.innerHTML = `
       <div class="mw-controls" aria-label="吉祥物控制">
-        <button class="mw-control-btn mw-visibility-btn" type="button" title="隐藏吉祥物" aria-label="隐藏吉祥物" aria-pressed="false">
-          <img src="/icons/icon-eye.svg" alt="" loading="lazy" decoding="async">
+        <button class="mw-control-btn mw-visibility-btn" type="button" title="隐藏小可爱" aria-label="隐藏小可爱" aria-pressed="false">
+          <img src="/icons/mascot-cat.svg" alt="" loading="lazy" decoding="async">
         </button>
-        <button class="mw-control-btn mw-outfit-changer-btn" type="button" title="切换吉祥物角色" aria-label="切换吉祥物角色">
+        <button class="mw-control-btn mw-outfit-changer-btn" type="button" title="换套衣服" aria-label="换套衣服">
           <img src="/icons/icon-changer.svg" alt="" loading="lazy" decoding="async">
         </button>
       </div>
@@ -550,11 +550,6 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
           console.warn("Mascot: background reload failed:", err);
         });
 
-      // 简单点击反馈
-      changerBtn.classList.add("mw-outfit-changer-btn-active");
-      setTimeout(() => {
-        changerBtn.classList.remove("mw-outfit-changer-btn-active");
-      }, 200);
       changerBtn.disabled = false;
     });
   }
@@ -566,8 +561,8 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     const visibilityBtn = $(".mw-visibility-btn", root);
     if (visibilityBtn) {
       visibilityBtn.setAttribute("aria-pressed", String(hidden));
-      visibilityBtn.setAttribute("aria-label", hidden ? "显示吉祥物" : "隐藏吉祥物");
-      visibilityBtn.title = hidden ? "显示吉祥物" : "隐藏吉祥物";
+      visibilityBtn.setAttribute("aria-label", hidden ? "显示小可爱" : "隐藏小可爱");
+      visibilityBtn.title = hidden ? "显示小可爱" : "隐藏小可爱";
     }
 
     if (hidden) hideDialog(root);
