@@ -79,6 +79,7 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
   // ---------- 换装逻辑 ----------
   let currentOutfitIndex = 0;
   const STORAGE_KEY = "mascot-outfit-id";
+  const VISIBILITY_STORAGE_KEY = "mascot-hidden";
 
   function getSavedOutfitId() {
     try {
@@ -90,6 +91,22 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
   function saveOutfitId(id) {
     try {
       localStorage.setItem(STORAGE_KEY, id);
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  function isMascotHidden() {
+    try {
+      return localStorage.getItem(VISIBILITY_STORAGE_KEY) === "true";
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function saveMascotVisibility(hidden) {
+    try {
+      localStorage.setItem(VISIBILITY_STORAGE_KEY, String(hidden));
     } catch (e) {
       // ignore
     }
@@ -143,31 +160,49 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     }
   }
 
-  function updateMascotImage(outfit) {
+  function preloadOutfitImage(outfit) {
+    return new Promise((resolve, reject) => {
+      const nextImage = new Image();
+      nextImage.decoding = "async";
+      nextImage.onload = () => {
+        if (typeof nextImage.decode !== "function") {
+          resolve();
+          return;
+        }
+        nextImage.decode().then(resolve).catch(resolve);
+      };
+      nextImage.onerror = reject;
+      nextImage.src = outfit.image;
+    });
+  }
+
+  async function updateMascotImage(outfit) {
     const img = document.querySelector("#" + ID + " .mw-mascot-btn img");
-    if (img && outfit) {
-      // 淡出效果
-      img.style.transition = "opacity 0.3s ease";
-      img.style.opacity = "0";
+    if (!img || !outfit) return false;
 
-      // 等待淡出完成后切换图片并淡入
-      setTimeout(() => {
-        try {
-          if (!img.src || img.src.indexOf(outfit.image) === -1) {
-            img.src = outfit.image;
-            img.alt = `左下角的${outfit.label}`;
-          }
-          // 淡入效果
+    try {
+      // 冷缓存下先完成加载与解码，避免旧图在 opacity 恢复后闪回。
+      await preloadOutfitImage(outfit);
+    } catch (e) {
+      return false;
+    }
+
+    img.style.transition = "opacity 0.3s ease";
+    img.style.opacity = "0";
+    return new Promise((resolve) => {
+      window.setTimeout(() => {
+        img.src = outfit.image;
+        img.alt = `左下角的${outfit.label}`;
+        requestAnimationFrame(() => {
           img.style.opacity = "1";
-        } catch (e) {}
-
-        // 过渡完成后移除内联样式，让CSS接管
-        setTimeout(() => {
+        });
+        window.setTimeout(() => {
           img.style.transition = "";
           img.style.opacity = "";
+          resolve(true);
         }, 300);
       }, 300);
-    }
+    });
   }
 
   // ---------------- DOM 创建 ----------------
@@ -196,9 +231,12 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     img.onload = () => {
       // 图片加载完成后再安全挂载内部结构
       root.innerHTML = `
-      <div class="mw-outfit-changer-container">
-        <button class="mw-outfit-changer-btn" type="button" title="换套衣服">
-          <img src="/icons/icon-changer.svg" alt="换套衣服" loading="lazy" decoding="async">
+      <div class="mw-controls" aria-label="吉祥物控制">
+        <button class="mw-control-btn mw-visibility-btn" type="button" title="隐藏吉祥物" aria-label="隐藏吉祥物" aria-pressed="false">
+          <img src="/icons/icon-eye.svg" alt="" loading="lazy" decoding="async">
+        </button>
+        <button class="mw-control-btn mw-outfit-changer-btn" type="button" title="切换吉祥物角色" aria-label="切换吉祥物角色">
+          <img src="/icons/icon-changer.svg" alt="" loading="lazy" decoding="async">
         </button>
       </div>
       <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
@@ -211,6 +249,8 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
 
       applyOutfitStyle(currentOutfit);
       setupOutfitChangerLogic(root);
+      setupVisibilityLogic(root);
+      setMascotVisibility(root, isMascotHidden());
 
       // 稳定一帧后淡入
       requestAnimationFrame(() => {
@@ -481,15 +521,22 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     const changerBtn = $(".mw-outfit-changer-btn", root);
     if (!changerBtn) return;
 
-    changerBtn.addEventListener("click", (ev) => {
+    changerBtn.addEventListener("click", async (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
 
+      if (changerBtn.disabled) return;
+      changerBtn.disabled = true;
+
       const newOutfit = switchToNextOutfit();
 
-      // 立即更新样式
+      const imageUpdated = await updateMascotImage(newOutfit);
+      if (!imageUpdated) {
+        changerBtn.disabled = false;
+        return;
+      }
+
       applyOutfitStyle(newOutfit);
-      updateMascotImage(newOutfit);
 
       // 后台加载句子
       reloadCurrentOutfitSentences()
@@ -508,6 +555,37 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
       setTimeout(() => {
         changerBtn.classList.remove("mw-outfit-changer-btn-active");
       }, 200);
+      changerBtn.disabled = false;
+    });
+  }
+
+  function setMascotVisibility(root, hidden) {
+    root.classList.toggle("mw-is-hidden", hidden);
+    root.setAttribute("data-mascot-hidden", String(hidden));
+
+    const visibilityBtn = $(".mw-visibility-btn", root);
+    if (visibilityBtn) {
+      visibilityBtn.setAttribute("aria-pressed", String(hidden));
+      visibilityBtn.setAttribute("aria-label", hidden ? "显示吉祥物" : "隐藏吉祥物");
+      visibilityBtn.title = hidden ? "显示吉祥物" : "隐藏吉祥物";
+    }
+
+    if (hidden) hideDialog(root);
+    const mascotBtn = $(".mw-mascot-btn", root);
+    const outfitBtn = $(".mw-outfit-changer-btn", root);
+    if (mascotBtn) mascotBtn.tabIndex = hidden ? -1 : 0;
+    if (outfitBtn) outfitBtn.disabled = hidden;
+    saveMascotVisibility(hidden);
+  }
+
+  function setupVisibilityLogic(root) {
+    const visibilityBtn = $(".mw-visibility-btn", root);
+    if (!visibilityBtn) return;
+
+    visibilityBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      setMascotVisibility(root, !root.classList.contains("mw-is-hidden"));
     });
   }
 
@@ -553,8 +631,8 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
       forceNext: (id) => (STATE.forcedNextId = id),
       switchOutfit: async () => {
         const newOutfit = switchToNextOutfit();
-        updateMascotImage(newOutfit);
-        applyOutfitStyle(newOutfit);
+        const imageUpdated = await updateMascotImage(newOutfit);
+        if (imageUpdated) applyOutfitStyle(newOutfit);
         await reloadCurrentOutfitSentences();
         return newOutfit;
       },
