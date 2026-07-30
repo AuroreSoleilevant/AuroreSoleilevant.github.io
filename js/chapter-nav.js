@@ -3,7 +3,33 @@
   const ROOT_ID = "chapter-nav-root";
   const JSON_BASE = "/json/histoire/"; // JSON 存放目录
   const SHARED_CHAPTER_JSON_CACHE = "__chapterJsonRequests";
+  const READING_PROGRESS_KEY = "spica-reading-progress-v1";
   let chaptersCache = {}; // 缓存 per workName
+
+  function getStoredChapter(workName) {
+    try {
+      const progress = JSON.parse(localStorage.getItem(READING_PROGRESS_KEY));
+      const chapterId = Number(progress && progress[workName]);
+      return Number.isInteger(chapterId) && chapterId > 0 ? chapterId : null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function storeCurrentChapter(workName, chapterId, idSet) {
+    if (!Number.isInteger(chapterId) || chapterId <= 0 || !idSet.has(chapterId)) {
+      return;
+    }
+
+    try {
+      const progress = JSON.parse(localStorage.getItem(READING_PROGRESS_KEY)) || {};
+      if (progress[workName] === chapterId) return;
+      progress[workName] = chapterId;
+      localStorage.setItem(READING_PROGRESS_KEY, JSON.stringify(progress));
+    } catch (err) {
+      // 隐私模式或被禁用的本地存储不应影响章节导航。
+    }
+  }
 
   // 解析 URL 得到 workName 与 currentId（若无 /n 则视为首页 = 0）
   function getWorkInfoFromURL() {
@@ -118,11 +144,27 @@
     const cur = info.currentId;
 
     if (cur !== null && cur !== 0) {
+      storeCurrentChapter(info.workName, cur, idSet);
+    }
+
+    if (cur !== null && cur !== 0) {
       const prevId = cur - 1;
       const prevHref =
         prevId === 0 ? info.basePath : `${info.basePath}/${prevId}`;
       const prevBtn = makeLinkBtn("上一章", prevHref, "prev");
       container.appendChild(prevBtn);
+    }
+
+    if (cur === 0) {
+      const savedChapter = getStoredChapter(info.workName);
+      if (savedChapter !== null && idSet.has(savedChapter)) {
+        const resumeBtn = makeLinkBtn(
+          "继续阅读",
+          `${info.basePath}/${savedChapter}`,
+          "resume"
+        );
+        container.appendChild(resumeBtn);
+      }
     }
 
     const tocBtn = makeButton("章节目录", "toc");

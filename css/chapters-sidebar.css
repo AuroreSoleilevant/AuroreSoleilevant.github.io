@@ -133,6 +133,22 @@
   color: #0b3a66;
 }
 
+/* 仅作品首页：已记录的最近阅读章节 */
+#chapter-sidebar .chapter-list a.last-read::after {
+  content: "上次阅读";
+  display: inline-block;
+  margin-inline-start: 0.55em;
+  padding: 0.16em 0.46em;
+  border: 1px solid rgba(33, 105, 125, 0.22);
+  border-radius: 999px;
+  color: #21697d;
+  background: rgba(214, 245, 239, 0.58);
+  font-size: 0.7em;
+  font-weight: 600;
+  line-height: 1;
+  vertical-align: 0.08em;
+}
+
 /* 点击遮罩 */
 #chapter-sidebar + .chapter-overlay {
   position: fixed;
@@ -210,6 +226,12 @@ html[data-theme="dark"] #chapter-sidebar .chapter-list a.active {
     rgba(102, 126, 176, 0.05)
   );
   border-left-color: #829aca;
+}
+
+html[data-theme="dark"] #chapter-sidebar .chapter-list a.last-read::after {
+  border-color: rgba(147, 203, 209, 0.3);
+  color: #b9e0df;
+  background: rgba(62, 104, 119, 0.42);
 }
 
 html[data-theme="dark"] #chapter-sidebar + .chapter-overlay {

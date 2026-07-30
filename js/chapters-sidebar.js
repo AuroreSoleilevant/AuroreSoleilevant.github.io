@@ -6,10 +6,21 @@
   const VISIBLE_CLASS = "visible";
   const POP_CLASS = "pop";
   const SHARED_CHAPTER_JSON_CACHE = "__chapterJsonRequests";
+  const READING_PROGRESS_KEY = "spica-reading-progress-v1";
 
   let toggleBtn = null;
   let sidebar = null;
   let overlay = null;
+
+  function getStoredChapter(workName) {
+    try {
+      const progress = JSON.parse(localStorage.getItem(READING_PROGRESS_KEY));
+      const chapterId = Number(progress && progress[workName]);
+      return Number.isInteger(chapterId) && chapterId > 0 ? chapterId : null;
+    } catch (err) {
+      return null;
+    }
+  }
 
   /* ---------- 解析当前 URL 得到作品名与当前章节 id ---------- */
   function getWorkInfo() {
@@ -280,6 +291,7 @@
 
     // 当前页面章节 id（0 表示作品主页）
     const currentId = info.currentId;
+    const savedChapter = currentId === 0 ? getStoredChapter(info.workName) : null;
 
     list.forEach((item) => {
       const id = Number(item.id);
@@ -312,6 +324,11 @@
         id === currentId
       ) {
         a.classList.add("active");
+      }
+
+      if (savedChapter === id) {
+        a.classList.add("last-read");
+        a.setAttribute("aria-label", `${a.textContent}（上次阅读）`);
       }
 
       li.appendChild(a);
