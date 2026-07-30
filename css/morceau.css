@@ -285,6 +285,7 @@
     max-width: 100%;
     min-width: auto;
     margin-left: 20px; /* 磁贴整体右移，避开左侧边缘 */
+    --mt-image-height: 120px;
 
     /* 移动端简化效果 */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -316,10 +317,6 @@
     font-size: 1.3rem;
   }
 
-  .mt-image {
-    height: 120px;
-  }
-
   .mt-description {
     font-size: 0.9rem;
   }
@@ -347,6 +344,7 @@
 
   .mt-tile {
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    --mt-image-height: 100px;
   }
 
   /* 移动端完全禁用悬停抬起效果 */
@@ -358,10 +356,6 @@
   .mt-tile:active {
     transform: scale(0.99);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .mt-image {
-    height: 100px;
   }
 
   .mt-content {
