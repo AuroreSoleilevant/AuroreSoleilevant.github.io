@@ -8,8 +8,12 @@
   const ROUTE_TO_DB = {
     "/article": "/json/article.json",
     "/histoire": "/json/histoire.json",
-    "/": "/json/index.json",
   };
+  const SECTION_DATABASES = {
+    article: "/json/article.json",
+    histoire: "/json/histoire.json",
+  };
+  const HOME_INDEX_PATH = "/json/index.json";
 
   const mountSelector = "#mt-list";
   const pageSize = 6; // 每页显示条目数
@@ -43,6 +47,47 @@
     if (message) message.textContent = isLast ? "没有更多了 QAQ" : "用右侧的按钮翻页哦~";
   }
 
+  function mountHomeList(mountEl) {
+    Promise.all([
+      window.CoreList._fetchJsonArray(HOME_INDEX_PATH),
+      window.CoreList._loadTagMetadata(),
+    ])
+      .then(([references, tagSlugs]) => {
+        const sections = [
+          ...new Set(
+            references
+              .map(({ section }) => section)
+              .filter((section) => SECTION_DATABASES[section])
+          ),
+        ];
+        return Promise.all(
+          sections.map((section) =>
+            window.CoreList._fetchJsonArray(SECTION_DATABASES[section]).then((entries) => [section, entries])
+          )
+        ).then((databases) => ({ references, tagSlugs, databases }));
+      })
+      .then(({ references, tagSlugs, databases }) => {
+        const entriesBySection = new Map(
+          databases.map(([section, entries]) => [
+            section,
+            new Map(entries.map((entry) => [entry.id, entry])),
+          ])
+        );
+        const entries = references
+          .map(({ section, id }) => entriesBySection.get(section)?.get(id))
+          .filter(Boolean);
+
+        mountEl.replaceChildren();
+        const container = document.createElement("div");
+        container.className = "mt-container";
+        entries.forEach((entry, cardIndex) =>
+          container.appendChild(window.CoreList._createTile(entry, { cardIndex, tagSlugs }))
+        );
+        mountEl.appendChild(container);
+      })
+      .catch((error) => console.error("[list] 首页推荐加载失败：", error));
+  }
+
   // 启动
   document.addEventListener("DOMContentLoaded", () => {
     if (!window.CoreList || typeof window.CoreList.mountList !== "function") {
@@ -61,8 +106,12 @@
       const dbPath = mountEl.dataset.json;
       window.CoreList.mountList(dbPath, mountEl, {
         pageSize,
-        autoFormatDisplay,
       });
+      return;
+    }
+
+    if (pathname === "/") {
+      mountHomeList(mountEl);
       return;
     }
 
