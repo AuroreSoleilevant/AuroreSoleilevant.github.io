@@ -871,6 +871,13 @@ html[data-theme="dark"] body {
   background-repeat: repeat;
 }
 
+/* 只在实际主题切换期间启用，避免首次载入和站内跳转出现过渡。 */
+html.is-theme-transitioning body {
+  transition:
+    background-color 360ms ease,
+    color 280ms ease;
+}
+
 html[data-theme="dark"] ::selection {
   background: rgba(151, 133, 196, 0.42);
   color: #f6f2ea;
@@ -1214,7 +1221,7 @@ footer {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .theme-toggle:hover {
+  .theme-toggle:not(:disabled):hover {
     transform: translateY(-2px);
     background: rgba(55, 67, 110, 0.88);
     box-shadow: 0 7px 18px rgba(3, 7, 24, 0.32);
@@ -1226,8 +1233,14 @@ footer {
   outline-offset: 3px;
 }
 
-.theme-toggle:active {
+.theme-toggle:not(:disabled):active {
   transform: translateY(1px) scale(0.98);
+}
+
+.theme-toggle:disabled {
+  cursor: wait;
+  opacity: 0.84;
+  pointer-events: none;
 }
 
 html[data-theme="light"] .theme-toggle {
@@ -2042,6 +2055,10 @@ html[data-theme="dark"] .sticky-quote::after {
 
 /* 对于系统声明prefers-reduced-motion：关闭动画 */
 @media (prefers-reduced-motion: reduce) {
+  html.is-theme-transitioning body {
+    transition: none;
+  }
+
   .header-stars--near,
   .header-stars--accent {
     animation: none;

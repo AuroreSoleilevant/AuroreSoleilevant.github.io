@@ -5,11 +5,19 @@
 
   const STORAGE_KEY = "spica-theme-choice";
   const DARK_QUERY = "(prefers-color-scheme: dark)";
+  const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+  const TRANSITION_FALLBACK_MS = 480;
   const media =
     typeof window.matchMedia === "function"
       ? window.matchMedia(DARK_QUERY)
       : null;
+  const reducedMotionMedia =
+    typeof window.matchMedia === "function"
+      ? window.matchMedia(REDUCED_MOTION_QUERY)
+      : null;
   let button = null;
+  let transitionCleanup = null;
+  let restoreButtonFocus = false;
 
   function readStoredTheme() {
     try {
@@ -50,8 +58,37 @@
     button.dataset.theme = theme;
   }
 
-  function applyTheme(theme) {
-    const nextTheme = theme === "dark" ? "dark" : "light";
+  function setButtonBusy(busy) {
+    if (!button) return;
+    button.disabled = busy;
+    if (busy) {
+      button.setAttribute("aria-busy", "true");
+    } else {
+      button.removeAttribute("aria-busy");
+    }
+  }
+
+  function clearTransitionState() {
+    const root = document.documentElement;
+    const shouldRestoreFocus = restoreButtonFocus;
+    restoreButtonFocus = false;
+    if (transitionCleanup) {
+      const cleanup = transitionCleanup;
+      transitionCleanup = null;
+      cleanup();
+    }
+    root.classList.remove("is-theme-transitioning");
+    setButtonBusy(false);
+    if (shouldRestoreFocus && button && button.isConnected) {
+      try {
+        button.focus({ preventScroll: true });
+      } catch (e) {
+        button.focus();
+      }
+    }
+  }
+
+  function commitTheme(nextTheme) {
     const root = document.documentElement;
     root.dataset.theme = nextTheme;
     root.style.colorScheme = `only ${nextTheme}`;
@@ -61,6 +98,60 @@
         detail: { theme: nextTheme },
       })
     );
+  }
+
+  function applyTheme(theme, animate) {
+    const nextTheme = theme === "dark" ? "dark" : "light";
+    const root = document.documentElement;
+    const currentTheme = root.dataset.theme === "dark" ? "dark" : "light";
+    const shouldAnimate =
+      animate === true &&
+      currentTheme !== nextTheme &&
+      document.body &&
+      !(reducedMotionMedia && reducedMotionMedia.matches);
+
+    clearTransitionState();
+    if (!shouldAnimate) {
+      commitTheme(nextTheme);
+      return;
+    }
+
+    const body = document.body;
+    root.classList.add("is-theme-transitioning");
+    restoreButtonFocus = button === document.activeElement;
+    setButtonBusy(true);
+
+    /* 先让浏览器建立旧主题的过渡起点，再提交新主题颜色。 */
+    void body.offsetWidth;
+
+    let finished = false;
+    let fallbackTimer = null;
+
+    function finishTransition() {
+      if (finished) return;
+      finished = true;
+      clearTransitionState();
+    }
+
+    function onTransitionDone(event) {
+      if (event.target === body && event.propertyName === "background-color") {
+        finishTransition();
+      }
+    }
+
+    body.addEventListener("transitionend", onTransitionDone);
+    body.addEventListener("transitioncancel", onTransitionDone);
+    fallbackTimer = window.setTimeout(
+      finishTransition,
+      TRANSITION_FALLBACK_MS
+    );
+    transitionCleanup = () => {
+      body.removeEventListener("transitionend", onTransitionDone);
+      body.removeEventListener("transitioncancel", onTransitionDone);
+      if (fallbackTimer !== null) window.clearTimeout(fallbackTimer);
+    };
+
+    commitTheme(nextTheme);
   }
 
   function revealButtonWithHeader() {
@@ -84,8 +175,8 @@
         document.documentElement.dataset.theme === "dark" ? "dark" : "light";
       const nextTheme = current === "dark" ? "light" : "dark";
       storeTheme(nextTheme);
-      applyTheme(nextTheme);
       if (event.detail > 0) button.blur();
+      applyTheme(nextTheme, true);
     });
 
     document.body.appendChild(button);
@@ -97,13 +188,13 @@
   }
 
   function syncFromPreference() {
-    applyTheme(readStoredTheme() || systemTheme());
+    applyTheme(readStoredTheme() || systemTheme(), false);
   }
 
   function onSystemThemeChange() {
     // 用户主动改变系统主题时，以新的系统选择为准，并恢复自动跟随。
     clearStoredTheme();
-    applyTheme(systemTheme());
+    applyTheme(systemTheme(), true);
   }
 
   if (media) {
