@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="/css/index.css">
   <script src="/js/tagflow.js"></script>
   <script src="/js/random-page.js" defer></script>
+  <script src="/js/json-tiles.js" defer></script>
   <!-- 对谷歌的抗议 -->
   <script>
   document.addEventListener("DOMContentLoaded", function () {
@@ -113,7 +114,7 @@
   <img class="tile-svg" src="/icons/icon-article.svg" alt="" aria-hidden="true" decoding="async">
   <h1 class="text-center">文章</h1>
   <p class="text-center">我们总是会经历很多事情，然后分享在其中得到的一切，这不是快乐么？</p>
-  <p class="text-center show-mobile">一共有2篇文章</p>
+  <p class="text-center show-mobile">一共有<span data-json-count="/json/article.json">加载中</span>篇文章</p>
   <p class="text-center show-mobile show-mobileBBB" data-section-updated="article">上次更新：<span class="section-updated-date section-updated-date-desktop">加载中</span><span class="section-updated-date section-updated-date-mobile">加载中</span></p>
   </a>
 
@@ -121,7 +122,7 @@
   <img class="tile-svg" src="/icons/icon-histoire.svg" alt="" aria-hidden="true" decoding="async">
   <h1 class="text-center">故事</h1>
   <p class="text-center">既然经历许多，那必定思绪也会溢出来不少，何尝不换作故事与果汁呢？</p>
-  <p class="text-center show-mobile">一共有29篇故事</p>
+  <p class="text-center show-mobile">一共有<span data-json-count="/json/histoire.json">加载中</span>篇故事</p>
   <p class="text-center show-mobile show-mobileBBB" data-section-updated="histoire">上次更新：<span class="section-updated-date section-updated-date-desktop">加载中</span><span class="section-updated-date section-updated-date-mobile">加载中</span></p>
   </a>
 
@@ -129,7 +130,7 @@
   <img class="tile-svg" src="/icons/icon-laboratoire.svg" alt="" aria-hidden="true" decoding="async">
   <h1 class="text-center">实验室</h1>
   <p class="text-center">一个好的功能总需要点火焰、噪音和爆炸，不是么？</p>
-  <p class="text-center show-mobile">一共有2个实验</p>
+  <p class="text-center show-mobile">一共有<span data-json-count="/json/laboratoire.json">加载中</span>个实验</p>
   <p class="text-center show-mobile show-mobileBBB">上次更新：<span class="section-updated-date section-updated-date-desktop">07/30/2026</span><span class="section-updated-date section-updated-date-mobile">07/30</span></p>
   </a>
   </div>
@@ -150,42 +151,7 @@
   <div class="dishaut"></div>
   <p class="text-center fsize2p5"><b>友情链接，友谊就是魔法<span class="mobile-break"></span> (・∀・)</b></p>
 
-  <div class="tiles">
-  <a class="tile tile-strip-new" href="https://www.zexnocs.top/" target="_blank" rel="noopener noreferrer" style="--tile-color: rgba(40,140,134,0.3);">
-    <img src="https://www.zexnocs.top/img/avatar.jpg" alt="zExNocs" title="zExNocs" class="tile-thumb" loading="lazy" decoding="async">
-    <div class="tile-content">
-      <h1>
-        <span class="full-title">茶会大猫猫 ———— 蒟蒻zExNocs's Blog</span>
-        <span class="short-title">蒟蒻zExNocs's Blog</span>
-      </h1>
-    </div>
-  </a>
-  </div>
-  <br>
-  <div class="tiles">
-  <a class="tile tile-strip-new" href="https://zhuge-tom.github.io/" target="_blank" rel="noopener noreferrer" style="--tile-color: rgba(225,51,51,0.3);">
-    <img src="/images/amis/朱歌的博客.webp" alt="朱歌" title="朱歌" class="tile-thumb" loading="lazy" decoding="async">
-    <div class="tile-content">
-      <h1>
-        <span class="full-title">黑猫诺瓦 ———— Zhuge's Blog</span>
-        <span class="short-title">Zhuge's Blog</span>
-      </h1>
-    </div>
-  </a>
-  </div>
-  <br>
-  <div class="tiles">
-  <a class="tile tile-strip-new" href="https://blog.qingchenyou.asia/" target="_blank" rel="noopener noreferrer" style="--tile-color: rgba(0,47,167,0.3);">
-    <img src="https://qingchenyou-1301914189.cos.ap-beijing.myqcloud.com/oc%E5%A4%B4%E5%83%8Fv2-%E8%BD%AC%E6%8D%A2%E8%87%AA-png.webp" alt="轻尘呦" title="轻尘呦" class="tile-thumb" loading="lazy" decoding="async">
-    <div class="tile-content">
-      <h1>
-        <span class="full-title">NeuroEcho 文学社寄术员 ———— 轻尘呦's Blog</span>
-        <span class="short-title">轻尘呦's Blog</span>
-      </h1>
-    </div>
-  </a>
-  </div>
-  <br>
+  <div data-json-tiles="/json/amis.json"></div>
   <!-- 对谷歌的抗议 -->
   <div id="kao-banner"></div>
 </main>

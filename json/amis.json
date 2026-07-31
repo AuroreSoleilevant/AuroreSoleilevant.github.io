@@ -1,0 +1,23 @@
+[
+  {
+    "color": "rgba(40, 140, 134, 0.3)",
+    "name": "蒟蒻zExNocs's Blog",
+    "code": "茶会大猫猫",
+    "image": "https://www.zexnocs.top/img/avatar.jpg",
+    "url": "https://www.zexnocs.top/"
+  },
+  {
+    "color": "rgba(225, 51, 51, 0.3)",
+    "name": "Zhuge's Blog",
+    "code": "黑猫诺瓦",
+    "image": "/images/amis/朱歌的博客.webp",
+    "url": "https://zhuge-tom.github.io/"
+  },
+  {
+    "color": "rgba(0, 47, 167, 0.3)",
+    "name": "轻尘呦's Blog",
+    "code": "NeuroEcho 文学社寄术员",
+    "image": "https://qingchenyou-1301914189.cos.ap-beijing.myqcloud.com/oc%E5%A4%B4%E5%83%8Fv2-%E8%BD%AC%E6%8D%A2%E8%87%AA-png.webp",
+    "url": "https://blog.qingchenyou.asia/"
+  }
+]

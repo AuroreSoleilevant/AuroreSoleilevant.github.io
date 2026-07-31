@@ -7,6 +7,7 @@
   <!-- 调用列表 -->
   <script src="/js/common-head.js" fetchpriority="high"></script>
   <link rel="stylesheet" href="/css/tuile.css">
+  <script src="/js/json-tiles.js" defer></script>
   
 </head>
 
@@ -20,17 +21,7 @@
   <h1 class="shaking-text">
   实验室
   </h1>
-  <div class="tiles">
-  <a class="tile tile-strip-new" href="/NELC_site/" target="_blank" rel="noopener noreferrer" style="--tile-color: rgba(184, 0, 0, 0.3);">
-    <img src="https://avatars.githubusercontent.com/u/236293014?v=4" alt="NELC" title="NELC" class="tile-thumb" decoding="async">
-    <div class="tile-content">
-      <h1>
-        <span class="full-title">SP_NELC ———— 牛肉测试</span>
-        <span class="short-title">牛肉测试</span>
-      </h1>
-    </div>
-  </a>
-  </div>
+  <div data-json-tiles="/json/laboratoire.json"></div>
   <h1 class="text-center">
   更多实验筹备中<span class="mobile-break"></span> ᕕ( ᐛ )ᕗ
   </h1>
