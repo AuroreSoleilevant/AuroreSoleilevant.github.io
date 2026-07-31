@@ -77,15 +77,24 @@
   }
 
   function cardImageSource(coverImage) {
-    const storyPrefix = "/images/histoire/";
-    if (!coverImage || !coverImage.startsWith(storyPrefix)) {
+    const imagePrefix = "/images/";
+    if (
+      !coverImage ||
+      !coverImage.startsWith(imagePrefix) ||
+      coverImage.includes("/cards/")
+    ) {
       return { src: coverImage, fallback: "" };
     }
-    const relative = coverImage.slice(storyPrefix.length);
+    const relative = coverImage.slice(imagePrefix.length);
     const extension = relative.lastIndexOf(".");
-    if (extension < 1) return { src: coverImage, fallback: "" };
+    const slash = relative.indexOf("/");
+    if (slash < 1 || extension <= slash + 1) {
+      return { src: coverImage, fallback: "" };
+    }
+    const section = relative.slice(0, slash);
+    const filename = relative.slice(slash + 1, extension);
     return {
-      src: `${storyPrefix}cards/${relative.slice(0, extension)}.webp`,
+      src: `${imagePrefix}${section}/cards/${filename}.webp`,
       fallback: coverImage,
     };
   }
