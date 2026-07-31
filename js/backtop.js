@@ -5,7 +5,11 @@
   const VISIBLE_CLASS = "visible";
   const POP_CLASS = "pop";
   const SHOW_THRESHOLD = 120; // 向下滚动多少像素后才显示的变量
+  const MOBILE_IDLE_CLASS = "mobile-controls-idle";
+  const MOBILE_IDLE_DELAY = 1600;
+  const MOBILE_QUERY = "(max-width: 768px)";
   let btn = null;
+  let mobileIdleTimer = null;
 
   // 评论按钮相关
   let commentBtn = null;
@@ -136,6 +140,34 @@
     }
   }
 
+  // 移动端阅读时，浮动控制在停止滚动后暂时淡出；下一次滚动会立即恢复。
+  // 状态挂在根元素上，稍后创建的章节按钮也会自动遵循，不需要额外监听。
+  function refreshMobileControlsIdle() {
+    const root = document.documentElement;
+    if (!window.matchMedia(MOBILE_QUERY).matches) {
+      root.classList.remove(MOBILE_IDLE_CLASS);
+      if (mobileIdleTimer) {
+        clearTimeout(mobileIdleTimer);
+        mobileIdleTimer = null;
+      }
+      return;
+    }
+
+    root.classList.remove(MOBILE_IDLE_CLASS);
+    if (mobileIdleTimer) clearTimeout(mobileIdleTimer);
+    mobileIdleTimer = setTimeout(() => {
+      mobileIdleTimer = null;
+      const controls = [
+        document.getElementById(ID),
+        document.getElementById(COMMENT_ID),
+        document.getElementById("chapter-toggle"),
+      ];
+      if (!controls.some((control) => control === document.activeElement)) {
+        root.classList.add(MOBILE_IDLE_CLASS);
+      }
+    }, MOBILE_IDLE_DELAY);
+  }
+
   // 键盘可访问性（Enter/Space 激活）
   function onKey(e) {
     const key = e.key;
@@ -157,6 +189,7 @@
         requestAnimationFrame(() => {
           checkVisibility();
           if (commentHandlersInstalled) checkCommentBtnVisibilitySimple();
+          refreshMobileControlsIdle();
           ticking = false;
         });
       }
@@ -172,11 +205,13 @@
       btn = createButton();
       updateBottomOffset();
       checkVisibility();
+      refreshMobileControlsIdle();
       return; // 直接返回，不装评论按钮
     }
     btn = createButton();
     updateBottomOffset();
     checkVisibility();
+    refreshMobileControlsIdle();
 
     installScrollHandler();
 
@@ -190,6 +225,7 @@
           updateCommentOffset();
           checkCommentBtnVisibilitySimple();
         }
+        refreshMobileControlsIdle();
       },
       { passive: true }
     );
@@ -202,6 +238,7 @@
         updateCommentOffset();
         checkCommentBtnVisibilitySimple();
       }
+      refreshMobileControlsIdle();
     });
 
     // 触摸处理

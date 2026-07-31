@@ -1169,6 +1169,24 @@ footer {
   pointer-events: auto;
 }
 
+/* 移动端阅读时，滚动停止后暂时收起右侧的回顶与评论控制。 */
+@media (max-width: 768px) {
+  html.mobile-controls-idle #back-to-top.visible,
+  html.mobile-controls-idle #jump-to-comments.visible {
+    transform: scale(0.92);
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  html.mobile-controls-idle #back-to-top.visible,
+  html.mobile-controls-idle #jump-to-comments.visible {
+    transition: none;
+    transform: none;
+  }
+}
+
 /* 出现时附带一次 pop 动画（聚拢 -> 放大 -> 回到正常） */
 .back-to-top.pop {
   animation: backtop-pop 320ms cubic-bezier(0.2, 0.9, 0.2, 1);
