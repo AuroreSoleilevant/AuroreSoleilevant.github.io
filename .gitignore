@@ -1,6 +1,6 @@
 .venv-font/
 __pycache__/
-font-audit/
+font-audit/candidates/
 tools/*
 !tools/generate_story_card_thumbnails.py
 docs/
