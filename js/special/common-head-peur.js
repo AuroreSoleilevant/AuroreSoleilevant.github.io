@@ -1,6 +1,6 @@
 (() => {
   const head = document.head;
-  const version1 = "290726.1"; // style.css 版本号
+  const version1 = "010826.1"; // style.css 版本号
 
   function installMainVisibilityFallback() {
     if (window.__mainVisibilityFallbackInstalled) return;
