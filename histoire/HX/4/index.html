@@ -164,7 +164,7 @@
     now - Number(marker.time || 0) < 15000 &&
     marker.target === normalize(location.href);
   const shouldPlay =
-    (!navigationType || navigationType === "navigate") &&
+    (!navigationType || navigationType === "navigate" || navigationType === "reload") &&
     !sameOriginReferrer &&
     !markerMatches;
 
@@ -204,14 +204,7 @@
   );
 
   const criticalStyle = document.getElementById("spica-entry-critical");
-  const state = {
-    active: shouldPlay,
-    milestones: new Set(),
-    required: new Set(["styles", "dom", "main", "header"]),
-    startedAt: performance.now(),
-    released: false,
-    reason: "",
-  };
+  const state = { active: shouldPlay };
   window.__spicaEntryTransition = state;
 
   if (!shouldPlay) {
@@ -221,9 +214,14 @@
 
   const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
   const minimumVisible = reducedMotion ? 120 : 650;
+  const milestoneBits = { styles: 1, dom: 2, main: 4, header: 8 };
+  const allMilestones = 15;
+  let milestoneMask = 0;
+  let milestoneCount = 0;
+  let visibleAt = document.visibilityState === "visible" ? performance.now() : null;
+  let released = false;
   const screen = document.createElement("div");
   screen.id = "spica-entry-screen";
-  screen.dataset.stage = "0";
   screen.setAttribute("aria-hidden", "true");
   for (let index = 0; index < 12; index += 1) {
     const star = document.createElement("span");
@@ -236,11 +234,12 @@
   root.appendChild(screen);
 
   let hardTimeout = null;
+  let releaseTimeout = null;
   let removalTimeout = null;
   const cleanupListeners = () => {
     document.removeEventListener("main:visible", onMainVisible);
-    document.removeEventListener("header:inserted", onHeaderInserted);
     document.removeEventListener("DOMContentLoaded", onDOMReady);
+    document.removeEventListener("visibilitychange", onVisibilityChange);
   };
   const finishRemoval = () => {
     screen.remove();
@@ -248,15 +247,19 @@
     delete root.dataset.spicaEntry;
     root.removeAttribute("aria-busy");
     state.active = false;
+    state.mark = undefined;
+    if (releaseTimeout !== null) window.clearTimeout(releaseTimeout);
+    releaseTimeout = null;
     if (removalTimeout !== null) window.clearTimeout(removalTimeout);
     removalTimeout = null;
   };
-  const beginExit = (reason) => {
-    if (state.released) return;
-    state.released = true;
-    state.reason = reason;
+  const beginExit = () => {
+    if (released) return;
+    released = true;
     if (hardTimeout !== null) window.clearTimeout(hardTimeout);
     hardTimeout = null;
+    if (releaseTimeout !== null) window.clearTimeout(releaseTimeout);
+    releaseTimeout = null;
     cleanupListeners();
     root.dataset.spicaEntry = "leaving";
     root.removeAttribute("aria-busy");
@@ -274,17 +277,23 @@
     removalTimeout = window.setTimeout(finishRemoval, reducedMotion ? 260 : 700);
   };
   const requestRelease = () => {
-    if (state.released || state.milestones.size < state.required.size) return;
-    const wait = Math.max(0, minimumVisible - (performance.now() - state.startedAt));
-    window.setTimeout(() => beginExit("ready"), wait);
+    if (released || milestoneMask !== allMilestones) return;
+    if (document.visibilityState !== "visible" || visibleAt === null) return;
+    if (releaseTimeout !== null) return;
+    const wait = Math.max(0, minimumVisible - (performance.now() - visibleAt));
+    releaseTimeout = window.setTimeout(() => {
+      releaseTimeout = null;
+      if (document.visibilityState === "visible") beginExit();
+    }, wait);
   };
   state.mark = (name) => {
-    if (!state.active || state.released || !state.required.has(name)) return;
-    state.milestones.add(name);
-    screen.dataset.stage = String(state.milestones.size);
+    const bit = milestoneBits[name];
+    if (!state.active || released || !bit || (milestoneMask & bit)) return;
+    milestoneMask |= bit;
+    milestoneCount += 1;
+    screen.dataset.stage = String(milestoneCount);
     requestRelease();
   };
-  state.release = (reason = "forced") => beginExit(reason);
 
   const waitForStyles = () => {
     const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).filter((link) => {
@@ -295,29 +304,39 @@
         return false;
       }
     });
-    if (!links.length) return;
+    if (!links.length) {
+      state.mark("styles");
+      return;
+    }
 
     Promise.all(
       links.map(
         (link) =>
           new Promise((resolve) => {
             if (link.sheet) {
-              resolve(true);
+              resolve();
               return;
             }
-            link.addEventListener("load", () => resolve(true), { once: true });
-            link.addEventListener("error", () => resolve(false), { once: true });
+            const settle = () => {
+              link.removeEventListener("load", settle);
+              link.removeEventListener("error", settle);
+              resolve();
+            };
+            link.addEventListener("load", settle, { once: true });
+            link.addEventListener("error", settle, { once: true });
+            if (link.sheet) settle();
           })
       )
-    ).then((results) => {
-      if (results.every(Boolean)) state.mark("styles");
-    });
+    ).then(() => state.mark("styles"));
+  };
+  const armHardTimeout = () => {
+    if (hardTimeout !== null) window.clearTimeout(hardTimeout);
+    hardTimeout = null;
+    if (document.visibilityState !== "visible") return;
+    hardTimeout = window.setTimeout(beginExit, 30000);
   };
   function onMainVisible() {
     state.mark("main");
-  }
-  function onHeaderInserted() {
-    if (document.querySelector(".site-header")) state.mark("header");
   }
   function onDOMReady() {
     state.mark("dom");
@@ -325,16 +344,29 @@
     if (document.querySelector("main.loaded")) state.mark("main");
     if (document.querySelector(".site-header")) state.mark("header");
   }
+  function onVisibilityChange() {
+    if (document.visibilityState !== "visible") {
+      visibleAt = null;
+      if (releaseTimeout !== null) window.clearTimeout(releaseTimeout);
+      releaseTimeout = null;
+      if (hardTimeout !== null) window.clearTimeout(hardTimeout);
+      hardTimeout = null;
+      return;
+    }
+    visibleAt = performance.now();
+    armHardTimeout();
+    requestRelease();
+  }
 
   document.addEventListener("main:visible", onMainVisible);
-  document.addEventListener("header:inserted", onHeaderInserted);
+  document.addEventListener("visibilitychange", onVisibilityChange);
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", onDOMReady, { once: true });
   } else {
     onDOMReady();
   }
 
-  hardTimeout = window.setTimeout(() => beginExit("timeout"), 8000);
+  armHardTimeout();
 })();
 </script>
 <!-- spica-entry-transition:end -->

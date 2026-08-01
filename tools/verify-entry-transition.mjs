@@ -5,11 +5,12 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const snippetPath = path.join(root, "outil", "entry-transition.inc");
 const snippet = (await readFile(snippetPath, "utf8")).trim();
+const normalizedSnippet = snippet.replaceAll("\r\n", "\n");
 const loaderPattern = /<script\s+src="\/js\/(?:common-head\.js|special\/common-head-peur\.js)"[^>]*><\/script>/;
 const errors = [];
 let publicPages = 0;
 
-const inlineScript = snippet.match(/<script\s+data-spica-entry-bootstrap>([\s\S]*?)<\/script>/)?.[1];
+const inlineScript = normalizedSnippet.match(/<script\s+data-spica-entry-bootstrap>([\s\S]*?)<\/script>/)?.[1];
 if (!inlineScript) {
   errors.push("标准入站片段缺少启动脚本。");
 } else {
@@ -28,22 +29,25 @@ async function walk(directory) {
       await walk(absolute);
       continue;
     }
-    if (!entry.isFile() || entry.name !== "index.html") continue;
+    if (!entry.isFile() || path.extname(entry.name) !== ".html") continue;
 
     const source = await readFile(absolute, "utf8");
-    const loaderMatch = source.match(loaderPattern);
+    const normalizedSource = source.replaceAll("\r\n", "\n");
+    const loaderMatch = normalizedSource.match(loaderPattern);
     if (!loaderMatch) continue;
     publicPages += 1;
     const relative = path.relative(root, absolute).replaceAll("\\", "/");
-    const snippetIndex = source.indexOf(snippet);
-    const loaderIndex = source.indexOf(loaderMatch[0]);
+    const snippetIndex = normalizedSource.indexOf(normalizedSnippet);
+    const loaderIndex = normalizedSource.indexOf(loaderMatch[0]);
     if (snippetIndex === -1) {
       errors.push(`${relative}：缺少或偏离标准入站启动片段。`);
     } else if (snippetIndex > loaderIndex) {
       errors.push(`${relative}：入站启动片段必须位于 Loader 之前。`);
     }
-    if ((source.match(/spica-entry-transition:start/g) || []).length !== 1) {
-      errors.push(`${relative}：入站启动片段标记数量不是 1。`);
+    const startMarkers = (source.match(/spica-entry-transition:start/g) || []).length;
+    const endMarkers = (source.match(/spica-entry-transition:end/g) || []).length;
+    if (startMarkers !== 1 || endMarkers !== 1) {
+      errors.push(`${relative}：入站启动片段起止标记数量不是 1。`);
     }
   }
 }

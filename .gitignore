@@ -4,4 +4,5 @@ font-audit/candidates/
 tools/*
 !tools/generate_story_card_thumbnails.py
 !tools/verify-entry-transition.mjs
+!tools/sync-entry-transition.mjs
 docs/
