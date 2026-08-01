@@ -66,18 +66,11 @@
     );
   }
 
-  function markEntryMilestone(name) {
-    const transition = window.__spicaEntryTransition;
-    if (!transition || typeof transition.mark !== "function") return;
-    transition.mark(name);
-  }
-
   function markMainVisible(main) {
     const visibilityState = getMainVisibilityState();
     if (visibilityState.leaving || isTransitioning) return;
     visibilityState.fallbackShown = false;
     main.classList.add(FADE_CLASS);
-    markEntryMilestone("main");
     document.dispatchEvent(new CustomEvent("main:visible"));
   }
 
@@ -407,7 +400,6 @@
       );
       return;
     }
-    markEntryMilestone("header");
     setTimeout(() => {
       document.dispatchEvent(
         new CustomEvent("header:inserted", { detail: { header: headerEl } })
