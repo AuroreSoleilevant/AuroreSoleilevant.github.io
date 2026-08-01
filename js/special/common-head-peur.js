@@ -1,6 +1,6 @@
 (() => {
   const head = document.head;
-  const version1 = "010826.1"; // style.css 版本号
+  const version1 = "0816cc7fce11"; // style.css 版本号
 
   function installMainVisibilityFallback() {
     if (window.__mainVisibilityFallbackInstalled) return;
@@ -154,7 +154,7 @@
   if (location.pathname !== "/" && location.pathname !== "/index.html") {
     fontPreloads.push({
       rel: "preload",
-      href: "/fonts/LXGWWenKai-cjk-site-extra.woff2",
+      href: "/fonts/LXGWWenKai-cjk-site-extra.woff2?v=e4e4b870846c",
       as: "font",
       type: "font/woff2",
       crossorigin: true,

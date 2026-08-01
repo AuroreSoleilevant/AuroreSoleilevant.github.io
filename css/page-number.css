@@ -86,6 +86,13 @@
   cursor: pointer;
 }
 
+/* 将高光限制在各自按钮内，避免伪元素以分页容器为定位基准而从两侧露出。 */
+.pg2-btn,
+.pg2-jump-go {
+  position: relative;
+  overflow: hidden;
+}
+
 /* svg inside */
 .pg2-btn svg {
   width: 28px;
@@ -94,7 +101,6 @@
 
 /* 按钮高光与光泽 */
 .pg2-btn::before,
-.pg2-paginator::before,
 .pg2-jump-go::before {
   content: "";
   position: absolute;
@@ -112,7 +118,6 @@
   z-index: 1;
 }
 .pg2-btn::after,
-.pg2-paginator::after,
 .pg2-jump-go::after {
   content: "";
   position: absolute;
@@ -132,7 +137,6 @@
   will-change: transform, opacity;
 }
 .pg2-btn:not(.pg2-disabled):hover::after,
-.pg2-paginator:hover::after,
 .pg2-jump-go:not(.pg2-disabled):hover::after {
   opacity: 1;
   transform: translateX(120%) rotate(-12deg);
