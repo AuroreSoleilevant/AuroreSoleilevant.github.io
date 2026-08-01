@@ -5,6 +5,339 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>我的歌单~ | Spica</title>
   <!-- 调用列表 -->
+<!-- spica-entry-transition:start -->
+<style id="spica-entry-critical">
+  html[data-spica-entry="loading"],
+  html[data-spica-entry="leaving"] {
+    background: #10162f;
+    color-scheme: dark;
+  }
+
+  #spica-entry-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    overflow: hidden;
+    pointer-events: auto;
+    contain: strict;
+    isolation: isolate;
+    opacity: 1;
+    background:
+      radial-gradient(circle at 50% 115%, rgba(112, 92, 168, 0.2), transparent 48%),
+      radial-gradient(circle at 12% 8%, rgba(75, 112, 177, 0.18), transparent 34%),
+      linear-gradient(165deg, #10162f 0%, #11182f 52%, #17172d 100%);
+    transition: opacity 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  #spica-entry-screen.is-leaving {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .spica-entry-star {
+    --entry-lit: 0.26;
+    --entry-size: 18px;
+    --entry-duration: 2.8s;
+    --entry-delay: 0s;
+    position: absolute;
+    left: var(--entry-x);
+    top: var(--entry-y);
+    width: var(--entry-size);
+    height: var(--entry-size);
+    color: var(--entry-color, #f7f5ff);
+    opacity: var(--entry-lit);
+    transform: translate3d(-50%, -50%, 0) scale(0.72);
+    will-change: transform, opacity;
+    animation: spica-entry-twinkle var(--entry-duration) ease-in-out var(--entry-delay) infinite;
+  }
+
+  .spica-entry-star::before,
+  .spica-entry-star::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border-radius: 999px;
+    background: currentColor;
+    box-shadow: 0 0 7px color-mix(in srgb, currentColor 62%, transparent);
+    transform: translate(-50%, -50%);
+  }
+
+  .spica-entry-star::before {
+    width: 2px;
+    height: 100%;
+  }
+
+  .spica-entry-star::after {
+    width: 100%;
+    height: 2px;
+  }
+
+  #spica-entry-screen[data-stage="1"] .spica-entry-star:nth-child(-n + 3),
+  #spica-entry-screen[data-stage="2"] .spica-entry-star:nth-child(-n + 6),
+  #spica-entry-screen[data-stage="3"] .spica-entry-star:nth-child(-n + 9),
+  #spica-entry-screen[data-stage="4"] .spica-entry-star {
+    --entry-lit: 0.94;
+  }
+
+  .spica-entry-star:nth-child(1) { --entry-x: 10%; --entry-y: 22%; --entry-size: 12px; --entry-duration: 2.4s; --entry-delay: -0.8s; }
+  .spica-entry-star:nth-child(2) { --entry-x: 26%; --entry-y: 68%; --entry-size: 22px; --entry-duration: 3.1s; --entry-delay: -2.2s; --entry-color: #dce8ff; }
+  .spica-entry-star:nth-child(3) { --entry-x: 47%; --entry-y: 18%; --entry-size: 10px; --entry-duration: 2.7s; --entry-delay: -1.3s; }
+  .spica-entry-star:nth-child(4) { --entry-x: 72%; --entry-y: 30%; --entry-size: 28px; --entry-duration: 3.6s; --entry-delay: -2.8s; --entry-color: #e3dcff; }
+  .spica-entry-star:nth-child(5) { --entry-x: 88%; --entry-y: 72%; --entry-size: 14px; --entry-duration: 2.9s; --entry-delay: -0.4s; }
+  .spica-entry-star:nth-child(6) { --entry-x: 58%; --entry-y: 82%; --entry-size: 18px; --entry-duration: 3.3s; --entry-delay: -1.9s; --entry-color: #fff1d7; }
+  .spica-entry-star:nth-child(7) { --entry-x: 18%; --entry-y: 44%; --entry-size: 7px; --entry-duration: 2.2s; --entry-delay: -1.1s; }
+  .spica-entry-star:nth-child(8) { --entry-x: 38%; --entry-y: 48%; --entry-size: 16px; --entry-duration: 3.5s; --entry-delay: -2.6s; --entry-color: #d7e5ff; }
+  .spica-entry-star:nth-child(9) { --entry-x: 81%; --entry-y: 13%; --entry-size: 9px; --entry-duration: 2.6s; --entry-delay: -1.7s; }
+  .spica-entry-star:nth-child(10) { --entry-x: 66%; --entry-y: 58%; --entry-size: 12px; --entry-duration: 3s; --entry-delay: -0.9s; --entry-color: #e7dcff; }
+  .spica-entry-star:nth-child(11) { --entry-x: 34%; --entry-y: 88%; --entry-size: 8px; --entry-duration: 2.5s; --entry-delay: -2s; }
+  .spica-entry-star:nth-child(12) { --entry-x: 93%; --entry-y: 40%; --entry-size: 20px; --entry-duration: 3.8s; --entry-delay: -3.2s; --entry-color: #fff0d2; }
+
+  @keyframes spica-entry-twinkle {
+    0%, 100% {
+      opacity: calc(var(--entry-lit) * 0.28);
+      transform: translate3d(-50%, -50%, 0) scale(0.68);
+    }
+    50% {
+      opacity: var(--entry-lit);
+      transform: translate3d(-50%, -50%, 0) scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #spica-entry-screen {
+      transition-duration: 140ms;
+    }
+    .spica-entry-star {
+      animation: none;
+      opacity: 0.72;
+      transform: translate3d(-50%, -50%, 0) scale(1);
+    }
+  }
+</style>
+<script data-spica-entry-bootstrap>
+(() => {
+  if (window.__spicaEntryTransition) return;
+
+  const root = document.documentElement;
+  const markerKey = "spica:internal-navigation";
+  const now = Date.now();
+  const normalize = (value) => {
+    try {
+      const url = new URL(value, location.href);
+      return `${url.pathname.replace(/\/+$/, "") || "/"}${url.search}`;
+    } catch (error) {
+      return "";
+    }
+  };
+
+  let marker = null;
+  try {
+    marker = JSON.parse(sessionStorage.getItem(markerKey) || "null");
+    sessionStorage.removeItem(markerKey);
+  } catch (error) {
+    marker = null;
+  }
+
+  const navigation = performance.getEntriesByType?.("navigation")?.[0];
+  let navigationType = navigation?.type || "";
+  if (!navigationType && performance.navigation) {
+    navigationType =
+      performance.navigation.type === 1
+        ? "reload"
+        : performance.navigation.type === 2
+          ? "back_forward"
+          : "navigate";
+  }
+
+  let sameOriginReferrer = false;
+  if (document.referrer) {
+    try {
+      sameOriginReferrer = new URL(document.referrer).origin === location.origin;
+    } catch (error) {
+      sameOriginReferrer = false;
+    }
+  }
+
+  const markerMatches =
+    marker &&
+    now - Number(marker.time || 0) < 15000 &&
+    marker.target === normalize(location.href);
+  const shouldPlay =
+    (!navigationType || navigationType === "navigate") &&
+    !sameOriginReferrer &&
+    !markerMatches;
+
+  document.addEventListener(
+    "click",
+    (event) => {
+      const anchor = event.target.closest?.("a");
+      if (!anchor || anchor.target === "_blank" || anchor.hasAttribute("download")) return;
+      const href = anchor.getAttribute("href");
+      if (!href || /^(#|mailto:|tel:|javascript:)/i.test(href)) return;
+
+      let target;
+      try {
+        target = new URL(href, location.href);
+      } catch (error) {
+        return;
+      }
+      if (target.origin !== location.origin) return;
+      if (target.pathname === location.pathname && target.search === location.search && target.hash) return;
+
+      const value = { target: normalize(target.href), time: Date.now() };
+      try {
+        sessionStorage.setItem(markerKey, JSON.stringify(value));
+        window.setTimeout(() => {
+          try {
+            const current = JSON.parse(sessionStorage.getItem(markerKey) || "null");
+            if (current?.time === value.time) sessionStorage.removeItem(markerKey);
+          } catch (error) {
+            /* sessionStorage 不可用时无需清理 */
+          }
+        }, 2000);
+      } catch (error) {
+        /* sessionStorage 不可用时仍可依靠 referrer */
+      }
+    },
+    true
+  );
+
+  const criticalStyle = document.getElementById("spica-entry-critical");
+  const state = {
+    active: shouldPlay,
+    milestones: new Set(),
+    required: new Set(["styles", "dom", "main", "header"]),
+    startedAt: performance.now(),
+    released: false,
+    reason: "",
+  };
+  window.__spicaEntryTransition = state;
+
+  if (!shouldPlay) {
+    criticalStyle?.remove();
+    return;
+  }
+
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+  const minimumVisible = reducedMotion ? 120 : 650;
+  const screen = document.createElement("div");
+  screen.id = "spica-entry-screen";
+  screen.dataset.stage = "0";
+  screen.setAttribute("aria-hidden", "true");
+  for (let index = 0; index < 12; index += 1) {
+    const star = document.createElement("span");
+    star.className = "spica-entry-star";
+    screen.appendChild(star);
+  }
+
+  root.dataset.spicaEntry = "loading";
+  root.setAttribute("aria-busy", "true");
+  root.appendChild(screen);
+
+  let hardTimeout = null;
+  let removalTimeout = null;
+  const cleanupListeners = () => {
+    document.removeEventListener("main:visible", onMainVisible);
+    document.removeEventListener("header:inserted", onHeaderInserted);
+    document.removeEventListener("DOMContentLoaded", onDOMReady);
+  };
+  const finishRemoval = () => {
+    screen.remove();
+    criticalStyle?.remove();
+    delete root.dataset.spicaEntry;
+    root.removeAttribute("aria-busy");
+    state.active = false;
+    if (removalTimeout !== null) window.clearTimeout(removalTimeout);
+    removalTimeout = null;
+  };
+  const beginExit = (reason) => {
+    if (state.released) return;
+    state.released = true;
+    state.reason = reason;
+    if (hardTimeout !== null) window.clearTimeout(hardTimeout);
+    hardTimeout = null;
+    cleanupListeners();
+    root.dataset.spicaEntry = "leaving";
+    root.removeAttribute("aria-busy");
+    screen.dataset.stage = "4";
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => screen.classList.add("is-leaving"));
+    });
+    screen.addEventListener(
+      "transitionend",
+      (event) => {
+        if (event.target === screen && event.propertyName === "opacity") finishRemoval();
+      },
+      { once: true }
+    );
+    removalTimeout = window.setTimeout(finishRemoval, reducedMotion ? 260 : 700);
+  };
+  const requestRelease = () => {
+    if (state.released || state.milestones.size < state.required.size) return;
+    const wait = Math.max(0, minimumVisible - (performance.now() - state.startedAt));
+    window.setTimeout(() => beginExit("ready"), wait);
+  };
+  state.mark = (name) => {
+    if (!state.active || state.released || !state.required.has(name)) return;
+    state.milestones.add(name);
+    screen.dataset.stage = String(state.milestones.size);
+    requestRelease();
+  };
+  state.release = (reason = "forced") => beginExit(reason);
+
+  const waitForStyles = () => {
+    const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).filter((link) => {
+      if (link.disabled) return false;
+      try {
+        return new URL(link.href, location.href).origin === location.origin;
+      } catch (error) {
+        return false;
+      }
+    });
+    if (!links.length) return;
+
+    Promise.all(
+      links.map(
+        (link) =>
+          new Promise((resolve) => {
+            if (link.sheet) {
+              resolve(true);
+              return;
+            }
+            link.addEventListener("load", () => resolve(true), { once: true });
+            link.addEventListener("error", () => resolve(false), { once: true });
+          })
+      )
+    ).then((results) => {
+      if (results.every(Boolean)) state.mark("styles");
+    });
+  };
+  function onMainVisible() {
+    state.mark("main");
+  }
+  function onHeaderInserted() {
+    if (document.querySelector(".site-header")) state.mark("header");
+  }
+  function onDOMReady() {
+    state.mark("dom");
+    waitForStyles();
+    if (document.querySelector("main.loaded")) state.mark("main");
+    if (document.querySelector(".site-header")) state.mark("header");
+  }
+
+  document.addEventListener("main:visible", onMainVisible);
+  document.addEventListener("header:inserted", onHeaderInserted);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", onDOMReady, { once: true });
+  } else {
+    onDOMReady();
+  }
+
+  hardTimeout = window.setTimeout(() => beginExit("timeout"), 8000);
+})();
+</script>
+<!-- spica-entry-transition:end -->
   <script src="/js/common-head.js" fetchpriority="high"></script>
   <link rel="stylesheet" href="/css/intro.css">
   

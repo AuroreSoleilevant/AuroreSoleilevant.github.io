@@ -163,7 +163,11 @@
 
   const links = [
     ...fontPreloads,
-    { rel: "stylesheet", href: `/css/style.css?v=${version1}` }, // 全局样式表
+    {
+      rel: "stylesheet",
+      href: `/css/style.css?v=${version1}`,
+      id: "spica-base-style",
+    }, // 全局样式表
     { rel: "stylesheet", href: `/css/special/style_peur.css` }, // 恐怖覆盖
     { rel: "icon", href: "/icons/logo.png", type: "image/x-icon" },
   ];
