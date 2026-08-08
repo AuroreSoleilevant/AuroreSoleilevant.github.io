@@ -1639,6 +1639,10 @@ html[data-theme="dark"] .sticky-quote::after {
 
 /* 平板设备 */
 @media (max-width: 1024px) {
+  .theme-toggle {
+    top: 16px;
+  }
+
   /* 顶栏调整 */
   .site-header {
     padding: 0 24px;
@@ -2064,6 +2068,13 @@ html[data-theme="dark"] .sticky-quote::after {
 
   main {
     padding-top: 70px;
+  }
+}
+
+/* 平板横屏仍把按钮放在顶栏时，按 60px 顶栏高度重新居中。 */
+@media (min-width: 769px) and (max-height: 500px) and (orientation: landscape) {
+  .theme-toggle {
+    top: 6px;
   }
 }
 

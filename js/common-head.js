@@ -1,6 +1,6 @@
 (() => {
   const head = document.head;
-  const version1 = "080826.scrollbar.2"; // style.css 版本号
+  const version1 = "080826.header-toggle.1"; // style.css 版本号
   const THEME_STORAGE_KEY = "spica-theme-choice";
   const HEADER_CACHE_KEY = "spica-header-fragment";
 
