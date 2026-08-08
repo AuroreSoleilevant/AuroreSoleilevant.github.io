@@ -37,6 +37,8 @@
   --page-date-text: #5c5540;
   --page-date-bg: rgba(245, 237, 210, 0.6);
   --page-divider: rgba(160, 130, 90, 0.3);
+  --page-scrollbar-track: #ded6c7;
+  --page-scrollbar-thumb: #777389;
 
   /* 回到顶部变量 */
   --backtop-size: 64px;
@@ -831,6 +833,8 @@ html[data-theme="dark"] {
   --page-date-text: #c9c3d1;
   --page-date-bg: rgba(45, 49, 72, 0.68);
   --page-divider: rgba(160, 155, 190, 0.28);
+  --page-scrollbar-track: #252b43;
+  --page-scrollbar-thumb: #949bbb;
   --backtop-bg: rgba(113, 126, 177, 0.48);
   --backtop-hover: rgba(170, 180, 222, 0.3);
   --comment-bg: rgba(116, 96, 159, 0.72);
@@ -970,7 +974,19 @@ h1.shaking-text {
 }
 
 html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--page-scrollbar-thumb) var(--page-scrollbar-track);
   scroll-behavior: smooth;
+}
+
+html.has-overlay-scrollbar {
+  scrollbar-color: transparent transparent;
+}
+
+html.has-overlay-scrollbar.is-scrollbar-active {
+  scrollbar-color: var(--page-scrollbar-thumb) transparent;
 }
 
 .mobile-break {
@@ -2104,6 +2120,12 @@ html[data-theme="dark"] .sticky-quote::after {
 }
 
 @media (forced-colors: active) {
+  html,
+  html.has-overlay-scrollbar,
+  html.has-overlay-scrollbar.is-scrollbar-active {
+    scrollbar-color: auto;
+  }
+
   .theme-toggle {
     border: 2px solid ButtonText;
     background: Canvas;

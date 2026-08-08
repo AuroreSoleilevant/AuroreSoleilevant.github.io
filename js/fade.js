@@ -7,6 +7,8 @@
   const HEADER_URL = new URL("/outil/header.inc/index.html", document.baseURI)
     .href;
   const PLACEHOLDER_ID_HEADER = "header-placeholder";
+  const HEADER_CACHE_KEY =
+    window.__SPICA_HEADER_CACHE_KEY || "spica-header-fragment";
 
   // ----- 状态 & 配置 -----
   let isTransitioning = false;
@@ -407,6 +409,30 @@
     }, 0);
   }
 
+  function cacheHeaderFragment(html) {
+    if (!html || !html.trim()) return;
+    try {
+      sessionStorage.setItem(HEADER_CACHE_KEY, html);
+    } catch (e) {
+      /* 存储不可用或额度不足时继续使用原有异步插入流程 */
+    }
+  }
+
+  function refreshHeaderCache() {
+    fetch(HEADER_URL)
+      .then((res) => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.text();
+      })
+      .then((html) => {
+        if (!html || !html.trim()) throw new Error("header 返回内容为空");
+        cacheHeaderFragment(html);
+      })
+      .catch(() => {
+        // 当前页已经有可用顶栏；后台刷新失败不应触发替换或重试闪烁。
+      });
+  }
+
   function fetchAndInsertHeader() {
     const placeholder = document.getElementById(PLACEHOLDER_ID_HEADER);
     if (!placeholder) return;
@@ -414,6 +440,7 @@
     const existing = placeholder.querySelector(".site-header");
     if (existing) {
       notifyHeaderInserted(existing);
+      refreshHeaderCache();
       return;
     }
 
@@ -424,6 +451,7 @@
       })
       .then((html) => {
         if (!html || !html.trim()) throw new Error("header 返回内容为空");
+        cacheHeaderFragment(html);
         const currPlaceholder = document.getElementById(PLACEHOLDER_ID_HEADER);
         if (!currPlaceholder) return;
         if (currPlaceholder.querySelector(".site-header")) {
@@ -432,6 +460,7 @@
         }
 
         currPlaceholder.innerHTML = html;
+        currPlaceholder.dataset.headerSource = "network";
         const headerEl = currPlaceholder.querySelector(".site-header");
         notifyHeaderInserted(headerEl);
 

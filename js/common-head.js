@@ -1,7 +1,17 @@
 (() => {
   const head = document.head;
-  const version1 = "0816cc7fce11"; // style.css 版本号
+  const version1 = "080826.scrollbar.2"; // style.css 版本号
   const THEME_STORAGE_KEY = "spica-theme-choice";
+  const HEADER_CACHE_KEY = "spica-header-fragment";
+
+  // 暴露给 fade.js，确保读写使用同一个会话缓存键。
+  window.__SPICA_HEADER_CACHE_KEY = HEADER_CACHE_KEY;
+
+  // 目录页会在 JSON 列表到达后才变成长页。首帧就预留原生滚动槽，
+  // 避免滚动条稍后出现时把整个布局向左顶回去。
+  const root = document.documentElement;
+  root.style.overflowY = "scroll";
+  root.style.scrollbarGutter = "stable";
 
   // 在基础样式请求前确定主题，避免普通页面冷启动时先闪出错误底色。
   function applyInitialTheme() {
@@ -17,12 +27,114 @@
       typeof window.matchMedia === "function" &&
       window.matchMedia("(prefers-color-scheme: dark)").matches;
     const theme = storedTheme || (systemDark ? "dark" : "light");
-    const root = document.documentElement;
     root.dataset.theme = theme;
     root.style.colorScheme = `only ${theme}`;
   }
 
   applyInitialTheme();
+
+  // 实测滚动槽是否占位：只有真正的 overlay 滚动条才自动隐藏。
+  function installScrollbarActivity() {
+    if (window.__SPICA_SCROLLBAR_ACTIVITY_INSTALLED) return;
+    window.__SPICA_SCROLLBAR_ACTIVITY_INSTALLED = true;
+
+    let hideTimer = null;
+    let resizeTimer = null;
+
+    const clearActivity = () => {
+      if (hideTimer !== null) clearTimeout(hideTimer);
+      hideTimer = null;
+      root.classList.remove("is-scrollbar-active");
+    };
+
+    const detectScrollbarMode = () => {
+      const gutterWidth = Math.max(
+        0,
+        Math.round(window.innerWidth - root.clientWidth)
+      );
+      const usesOverlay = gutterWidth === 0;
+      root.classList.toggle("has-overlay-scrollbar", usesOverlay);
+      root.classList.toggle("has-classic-scrollbar", !usesOverlay);
+      if (!usesOverlay) clearActivity();
+    };
+
+    const reveal = () => {
+      if (!root.classList.contains("has-overlay-scrollbar")) return;
+      root.classList.add("is-scrollbar-active");
+      if (hideTimer !== null) clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(() => {
+        root.classList.remove("is-scrollbar-active");
+        hideTimer = null;
+      }, 700);
+    };
+
+    window.addEventListener("scroll", reveal, { passive: true });
+    window.addEventListener(
+      "pointermove",
+      (event) => {
+        if (event.clientX >= window.innerWidth - 18) reveal();
+      },
+      { passive: true }
+    );
+    window.addEventListener(
+      "resize",
+      () => {
+        if (resizeTimer !== null) clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(detectScrollbarMode, 120);
+      },
+      { passive: true }
+    );
+
+    if (document.readyState === "loading") {
+      document.addEventListener(
+        "DOMContentLoaded",
+        () => requestAnimationFrame(detectScrollbarMode),
+        { once: true }
+      );
+    } else {
+      requestAnimationFrame(detectScrollbarMode);
+    }
+  }
+
+  installScrollbarActivity();
+
+  // 站内完整页面跳转会销毁旧 DOM，而顶栏片段原本要等 DOMContentLoaded
+  // 之后再次请求。优先恢复上一页保存的真实片段，避免新文档短暂没有顶栏。
+  function restoreCachedHeader() {
+    const placeholder = document.getElementById("header-placeholder");
+    if (!placeholder || placeholder.querySelector(".site-header")) return;
+
+    let cachedHTML = "";
+    try {
+      cachedHTML = sessionStorage.getItem(HEADER_CACHE_KEY) || "";
+    } catch (e) {
+      return;
+    }
+    if (!cachedHTML.trim()) return;
+
+    placeholder.innerHTML = cachedHTML;
+    if (placeholder.querySelector(".site-header")) {
+      placeholder.dataset.headerSource = "session-cache";
+      return;
+    }
+
+    // 缓存异常时不留下无效内容，交回 fade.js 的正常请求流程。
+    placeholder.textContent = "";
+    delete placeholder.dataset.headerSource;
+    try {
+      sessionStorage.removeItem(HEADER_CACHE_KEY);
+    } catch (e) {
+      /* sessionStorage 不可用时无需额外处理 */
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", restoreCachedHeader, {
+      once: true,
+    });
+  } else {
+    restoreCachedHeader();
+  }
 
   function installMainVisibilityFallback() {
     if (window.__mainVisibilityFallbackInstalled) return;
