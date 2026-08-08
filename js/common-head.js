@@ -1,8 +1,9 @@
 (() => {
   const head = document.head;
-  const version1 = "080826.header-toggle.1"; // style.css 版本号
+  const SHARED_UI_VERSION = "080826.header-toggle.1";
   const THEME_STORAGE_KEY = "spica-theme-choice";
-  const HEADER_CACHE_KEY = "spica-header-fragment";
+  // 资源版本变化时自动失效，避免当前标签页长期复用旧顶栏片段。
+  const HEADER_CACHE_KEY = `spica-header-fragment:${SHARED_UI_VERSION}`;
 
   // 暴露给 fade.js，确保读写使用同一个会话缓存键。
   window.__SPICA_HEADER_CACHE_KEY = HEADER_CACHE_KEY;
@@ -40,11 +41,40 @@
 
     let hideTimer = null;
     let resizeTimer = null;
+    let activityListenersInstalled = false;
 
     const clearActivity = () => {
       if (hideTimer !== null) clearTimeout(hideTimer);
       hideTimer = null;
       root.classList.remove("is-scrollbar-active");
+    };
+
+    const reveal = () => {
+      root.classList.add("is-scrollbar-active");
+      if (hideTimer !== null) clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(() => {
+        root.classList.remove("is-scrollbar-active");
+        hideTimer = null;
+      }, 700);
+    };
+
+    const onPointerMove = (event) => {
+      if (event.clientX >= window.innerWidth - 18) reveal();
+    };
+
+    const setActivityListeners = (shouldInstall) => {
+      if (shouldInstall === activityListenersInstalled) return;
+      if (shouldInstall) {
+        window.addEventListener("scroll", reveal, { passive: true });
+        window.addEventListener("pointermove", onPointerMove, {
+          passive: true,
+        });
+      } else {
+        window.removeEventListener("scroll", reveal);
+        window.removeEventListener("pointermove", onPointerMove);
+        clearActivity();
+      }
+      activityListenersInstalled = shouldInstall;
     };
 
     const detectScrollbarMode = () => {
@@ -54,33 +84,17 @@
       );
       const usesOverlay = gutterWidth === 0;
       root.classList.toggle("has-overlay-scrollbar", usesOverlay);
-      root.classList.toggle("has-classic-scrollbar", !usesOverlay);
-      if (!usesOverlay) clearActivity();
+      setActivityListeners(usesOverlay);
     };
 
-    const reveal = () => {
-      if (!root.classList.contains("has-overlay-scrollbar")) return;
-      root.classList.add("is-scrollbar-active");
-      if (hideTimer !== null) clearTimeout(hideTimer);
-      hideTimer = window.setTimeout(() => {
-        root.classList.remove("is-scrollbar-active");
-        hideTimer = null;
-      }, 700);
-    };
-
-    window.addEventListener("scroll", reveal, { passive: true });
-    window.addEventListener(
-      "pointermove",
-      (event) => {
-        if (event.clientX >= window.innerWidth - 18) reveal();
-      },
-      { passive: true }
-    );
     window.addEventListener(
       "resize",
       () => {
         if (resizeTimer !== null) clearTimeout(resizeTimer);
-        resizeTimer = window.setTimeout(detectScrollbarMode, 120);
+        resizeTimer = window.setTimeout(() => {
+          resizeTimer = null;
+          detectScrollbarMode();
+        }, 120);
       },
       { passive: true }
     );
@@ -113,14 +127,10 @@
     if (!cachedHTML.trim()) return;
 
     placeholder.innerHTML = cachedHTML;
-    if (placeholder.querySelector(".site-header")) {
-      placeholder.dataset.headerSource = "session-cache";
-      return;
-    }
+    if (placeholder.querySelector(".site-header")) return;
 
     // 缓存异常时不留下无效内容，交回 fade.js 的正常请求流程。
     placeholder.textContent = "";
-    delete placeholder.dataset.headerSource;
     try {
       sessionStorage.removeItem(HEADER_CACHE_KEY);
     } catch (e) {
@@ -299,7 +309,7 @@
     ...fontPreloads,
     {
       rel: "stylesheet",
-      href: `/css/style.css?v=${version1}`,
+      href: `/css/style.css?v=${SHARED_UI_VERSION}`,
       id: "spica-base-style",
     }, // 全局样式表
     { rel: "stylesheet", href: `/css/mascot.css` }, // 左下角小马

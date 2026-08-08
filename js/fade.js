@@ -418,21 +418,6 @@
     }
   }
 
-  function refreshHeaderCache() {
-    fetch(HEADER_URL)
-      .then((res) => {
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        return res.text();
-      })
-      .then((html) => {
-        if (!html || !html.trim()) throw new Error("header 返回内容为空");
-        cacheHeaderFragment(html);
-      })
-      .catch(() => {
-        // 当前页已经有可用顶栏；后台刷新失败不应触发替换或重试闪烁。
-      });
-  }
-
   function fetchAndInsertHeader() {
     const placeholder = document.getElementById(PLACEHOLDER_ID_HEADER);
     if (!placeholder) return;
@@ -440,7 +425,6 @@
     const existing = placeholder.querySelector(".site-header");
     if (existing) {
       notifyHeaderInserted(existing);
-      refreshHeaderCache();
       return;
     }
 
@@ -460,7 +444,6 @@
         }
 
         currPlaceholder.innerHTML = html;
-        currPlaceholder.dataset.headerSource = "network";
         const headerEl = currPlaceholder.querySelector(".site-header");
         notifyHeaderInserted(headerEl);
 
