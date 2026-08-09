@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>测试 | Spica</title>
+  <title>{{ page_title }} | Spica</title>
   <!-- 调用列表 -->
   <script src="/js/common-head.js" fetchpriority="high"></script>
   <script src="/js/common-his.js"></script>
@@ -19,9 +19,9 @@
 <p data-progress-start></p>
   <!-- 大标题 -->
   <h1 class="shaking-text" style="position:relative;">
-  测试
+  {{ page_title }}
   </h1>
-  <p class="date-line">连载开始：31/07/2026　上次更新：31/07/2026</p>
+  <p class="date-line">连载开始：{{ serialized_date }}　上次更新：{{ end_date }}</p>
 
   <!-- SPICA:BEGIN:MARKDOWN_BODY -->
   <!-- SPICA:END:MARKDOWN_BODY -->
@@ -30,7 +30,7 @@
   <p>
   本作品按照 <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a> 许可证发布，您可以自由地转载、下载、分享或是使用本作品做任何事而不需要询问作者，只要在不进行商业使用且标注出文章作者的前提下。关于详细内容，您可以点击链接查看协议。
 <br>
-测试 © 2026 by 晨曦初阳 is licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a> 
+{{ page_title }} © {{ year }} by 晨曦初阳 is licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a> 
  </p>
 <p data-progress-end></p>
   <hr class="section-divider">
@@ -41,7 +41,7 @@
 
   <!-- 左下角日期 -->
   <div class="page-dates">
-  发布：31/07/2026　修改：31/07/2026　字数：<span id="count"></span>
+  发布：{{ create_date }}　修改：{{ updated_date }}　字数：<span id="count"></span>
   </div>
 
   <!-- 底栏，需带着 -->
