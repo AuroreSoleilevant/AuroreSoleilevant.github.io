@@ -1,4 +1,5 @@
 .venv-font/
 __pycache__/
+.spica-cache/
 font-audit/candidates/
 docs/
