@@ -50,6 +50,17 @@ REQUIRED_FILES = (
     "template/chapter.json",
     "requirements.txt",
 )
+FONT_REQUIRED_FILES = (
+    "fonts/LXGWWenKai.ttf",
+    "fonts/LXGWWenKai-latin-symbols.woff2",
+    "fonts/LXGWWenKai-cjk-core.woff2",
+    "fonts/LXGWWenKai-cjk-site-extra.woff2",
+    "css/style.css",
+    "js/common-head.js",
+    "js/special/common-head-peur.js",
+    "json/index.json",
+    "json/amis.json",
+)
 
 
 class UserCancelled(Exception):
@@ -92,6 +103,11 @@ def ask_path(prompt: str, *, optional: bool = False) -> Path | None:
 
 def preflight(paths: ProjectPaths) -> None:
     missing_files = [str(paths.tools / item) for item in REQUIRED_FILES if not (paths.tools / item).is_file()]
+    missing_files.extend(
+        str(paths.root / item)
+        for item in FONT_REQUIRED_FILES
+        if not (paths.root / item).is_file()
+    )
     if missing_files:
         details = "\n  - ".join(missing_files)
         raise SpicaError(f"脚本库或模板不完整，缺少：\n  - {details}")
@@ -105,7 +121,14 @@ def preflight(paths: ProjectPaths) -> None:
     if module_errors:
         raise SpicaError("部分内部模块无法载入：\n  - " + "\n  - ".join(module_errors))
 
-    missing_dependencies = require_dependencies({"PIL": "Pillow", "jinja2": "Jinja2"})
+    missing_dependencies = require_dependencies(
+        {
+            "PIL": "Pillow",
+            "jinja2": "Jinja2",
+            "fontTools": "FontTools",
+            "brotli": "Brotli（WOFF2 压缩支持）",
+        }
+    )
     if missing_dependencies:
         raise SpicaError(
             "缺少 Python 依赖："
@@ -345,12 +368,20 @@ def word_count_flow(paths: ProjectPaths) -> None:
     finalize(changes, "manual_word_count", run_hooks=False)
 
 
-def show_unimplemented(module_name: str, feature_name: str) -> None:
-    module = importlib.import_module(module_name)
-    if not getattr(module, "IMPLEMENTED", False):
-        print(f"{feature_name}尚未实现；适配接口已经就绪，将在下一轮启用。")
+def font_patch_flow(paths: ProjectPaths) -> None:
+    from font_patch import process
+
+    print(
+        "将扫描全站 HTML、JSON 与前端脚本中的实际可渲染文字，跳过注释、代码语法"
+        "以及母版中不存在的字符。\n首页与全局界面字符进入 Core，其余内容进入 Extra；"
+        "离线母版 LXGWWenKai.ttf 不会被修改或在线引用。"
+    )
+    changes = ChangeSet(paths.root)
+    process(changes, {"operation": "manual_font_patch"})
+    if not changes.writes:
+        print("字体覆盖已经完整，不需要修改。")
         return
-    print(f"{feature_name}模块已启用，但当前总入口尚未配置独立运行参数。")
+    finalize(changes, "manual_font_patch", run_hooks=False)
 
 
 def main() -> int:
@@ -373,7 +404,7 @@ def main() -> int:
                 "\n  2. 创建多章故事"
                 "\n  3. 为多章故事添加章节"
                 "\n  4. 立刻进行字数统计"
-                "\n  5. 立刻进行字体修补（下一轮）"
+                "\n  5. 立刻进行全站字体修补"
                 "\n  0. 退出"
             )
             choice = ask("请选择功能：")
@@ -390,7 +421,7 @@ def main() -> int:
                 elif choice == "4":
                     word_count_flow(paths)
                 elif choice == "5":
-                    show_unimplemented("font_patch", "字体修补")
+                    font_patch_flow(paths)
                 else:
                     print("无效选择，请输入 0 到 5。")
             except UserCancelled:

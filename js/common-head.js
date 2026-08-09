@@ -289,7 +289,7 @@
     },
     {
       rel: "preload",
-      href: "/fonts/LXGWWenKai-cjk-core.woff2",
+      href: "/fonts/LXGWWenKai-cjk-core.woff2?v=f7945d2b35bd",
       as: "font",
       type: "font/woff2",
       crossorigin: true,
@@ -298,7 +298,7 @@
   if (location.pathname !== "/" && location.pathname !== "/index.html") {
     fontPreloads.push({
       rel: "preload",
-      href: "/fonts/LXGWWenKai-cjk-site-extra.woff2?v=e4e4b870846c",
+      href: "/fonts/LXGWWenKai-cjk-site-extra.woff2?v=8162980f0361",
       as: "font",
       type: "font/woff2",
       crossorigin: true,

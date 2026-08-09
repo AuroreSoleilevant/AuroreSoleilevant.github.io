@@ -1,5 +1,47 @@
-.venv-font/
+# Python 字节码与解释器缓存
 __pycache__/
+*.py[cod]
+*$py.class
+
+# 测试、检查与覆盖率缓存
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.cache/
+.ipynb_checkpoints/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+pip-wheel-metadata/
+*.egg-info/
+
+# 本地 Python 虚拟环境
+.venv/
+.venv-*/
+venv/
+env/
+
+# Spica 事务缓存与字体审计临时产物
 .spica-cache/
 font-audit/candidates/
-docs/
+
+# 编辑器与操作系统元数据
+.idea/
+.vscode/
+.DS_Store
+[Tt]humbs.db
+[Dd]esktop.ini
+*.swp
+*.swo
+*~
+
+# 通用临时与备份文件
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+*.log

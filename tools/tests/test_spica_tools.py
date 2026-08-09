@@ -19,6 +19,14 @@ from create_chapters import build_chapters, discover_sources
 from create_serial_story import build_serial_story
 from create_solo import build_solo
 from create_tag import build_tag
+from font_patch import (
+    _font_cmap,
+    _rewrite_font_face,
+    build_subset,
+    extract_code_strings,
+    format_unicode_range,
+    scan_file_text,
+)
 from md_to_html import convert_text
 from spica_core import ChangeSet, OperationClock, ProjectPaths, parse_input_path
 from spica_transaction import commit_changes
@@ -73,6 +81,69 @@ class SpicaToolTests(unittest.TestCase):
         <div>正文外文字</div></body></html>
         """
         self.assertEqual(count_html_text(page), 7)
+
+    def test_font_scanner_excludes_comments_code_and_hidden_text(self) -> None:
+        page = """
+        <!-- 注释韩 -->
+        <main>正文<img alt="图"><input hidden value="隐藏"><p>继续</p></main>
+        <script>
+          // 注释帧
+          const count = 速度 * 2;
+          const label = "昵称";
+          const template = `欢迎${name}`;
+        </script>
+        """
+        visible, core = scan_file_text(Path("article/TEST/index.html"), page)
+        for character in "正文图继续昵称欢迎":
+            self.assertIn(ord(character), visible)
+        for character in "韩帧隐藏速度":
+            self.assertNotIn(ord(character), visible)
+        self.assertFalse(core)
+        _, home_core = scan_file_text(Path("index.html"), page)
+        self.assertTrue({ord(character) for character in "正文图继续昵称欢迎"} <= home_core)
+
+    def test_code_string_extraction_decodes_unicode_and_skips_comments(self) -> None:
+        source = r'''// "注释"
+        const a = "\u6635称";
+        const b = '\x41';
+        /* `帧` */
+        '''
+        self.assertEqual(
+            extract_code_strings(source, javascript=True),
+            ["昵称", "A"],
+        )
+
+    def test_code_string_extraction_ignores_console_and_error_messages(self) -> None:
+        source = '''
+        console.error("仅控制台");
+        throw new Error("仅异常");
+        element.textContent = "页面可见";
+        '''
+        self.assertEqual(extract_code_strings(source, javascript=True), ["页面可见"])
+
+    def test_font_face_rewrite_is_limited_to_matching_block(self) -> None:
+        css = """
+        @font-face { src: url('latin.woff2'); unicode-range: U+0000-00FF; }
+        @font-face { src: url('../fonts/LXGWWenKai-cjk-core.woff2'); unicode-range: U+4E00; }
+        """
+        updated = _rewrite_font_face(
+            css,
+            "LXGWWenKai-cjk-core.woff2",
+            {0x4E00, 0x4E01, 0x4E03},
+            "abc123",
+        )
+        self.assertIn("unicode-range: U+0000-00FF", updated)
+        self.assertIn("LXGWWenKai-cjk-core.woff2?v=abc123", updated)
+        self.assertIn("unicode-range: U+4E00-4E01, U+4E03", updated)
+
+    def test_font_subset_uses_only_requested_supported_characters(self) -> None:
+        master = (PROJECT / "fonts" / "LXGWWenKai.ttf").read_bytes()
+        subset = build_subset(master, {ord("呦"), ord("蒟"), ord("蒻")})
+        self.assertEqual(_font_cmap(subset, "测试子集"), {ord("呦"), ord("蒟"), ord("蒻")})
+        self.assertTrue(subset.startswith(b"wOF2"))
+
+    def test_unicode_range_compacts_adjacent_codepoints(self) -> None:
+        self.assertEqual(format_unicode_range({0x41, 0x42, 0x44}), "U+0041-0042, U+0044")
 
     def test_tag_builder_is_staged_until_commit(self) -> None:
         changes = ChangeSet(self.root)
