@@ -220,10 +220,25 @@ def ask_common_content(changes: ChangeSet, paths: ProjectPaths, clock: Operation
     return {"description": description, "image": image, "color": color, "tags": tags}
 
 
-def finalize(changes: ChangeSet, operation: str) -> None:
+def finalize(
+    changes: ChangeSet,
+    operation: str,
+    *,
+    content_id: str | None = None,
+    story_id: str | None = None,
+    run_hooks: bool = True,
+) -> None:
     from spica_transaction import commit_changes, print_plan
 
-    run_postprocessors(changes, {"operation": operation})
+    if run_hooks:
+        run_postprocessors(
+            changes,
+            {
+                "operation": operation,
+                "content_id": content_id,
+                "story_id": story_id,
+            },
+        )
     print("\n全部输入和检查已经完成。")
     print_plan(changes)
     print("\n在你确认之前，项目文件尚未被修改。")
@@ -263,7 +278,7 @@ def create_solo_flow(paths: ProjectPaths) -> None:
         clock=clock,
         **common,
     )
-    finalize(changes, "create_solo")
+    finalize(changes, "create_solo", content_id=content_id)
 
 
 def create_serial_flow(paths: ProjectPaths) -> None:
@@ -282,7 +297,7 @@ def create_serial_flow(paths: ProjectPaths) -> None:
         clock=clock,
         **common,
     )
-    finalize(changes, "create_serial_story")
+    finalize(changes, "create_serial_story", content_id=content_id)
 
 
 def create_chapters_flow(paths: ProjectPaths) -> None:
@@ -312,7 +327,22 @@ def create_chapters_flow(paths: ProjectPaths) -> None:
         allow_html=allow_html,
         clock=OperationClock.capture(),
     )
-    finalize(changes, "create_chapters")
+    finalize(changes, "create_chapters", story_id=story_id)
+
+
+def word_count_flow(paths: ProjectPaths) -> None:
+    from word_count import FULL_SITE_INPUTS, update_all, update_one
+
+    target = ask(
+        "请输入需要统计的文章/故事 ID。\n"
+        "输入 ALL 或 全站，会重新统计主 JSON 中登记的全部内容。\nID："
+    )
+    changes = ChangeSet(paths.root)
+    if target.casefold() in FULL_SITE_INPUTS:
+        update_all(changes, paths)
+    else:
+        update_one(changes, paths, target)
+    finalize(changes, "manual_word_count", run_hooks=False)
 
 
 def show_unimplemented(module_name: str, feature_name: str) -> None:
@@ -342,7 +372,7 @@ def main() -> int:
                 "\n  1. 创建文章/单页故事"
                 "\n  2. 创建多章故事"
                 "\n  3. 为多章故事添加章节"
-                "\n  4. 立刻进行字数统计（下一轮）"
+                "\n  4. 立刻进行字数统计"
                 "\n  5. 立刻进行字体修补（下一轮）"
                 "\n  0. 退出"
             )
@@ -358,7 +388,7 @@ def main() -> int:
                 elif choice == "3":
                     create_chapters_flow(paths)
                 elif choice == "4":
-                    show_unimplemented("word_count", "字数统计")
+                    word_count_flow(paths)
                 elif choice == "5":
                     show_unimplemented("font_patch", "字体修补")
                 else:

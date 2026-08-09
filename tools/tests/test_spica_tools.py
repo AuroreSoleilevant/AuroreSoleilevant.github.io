@@ -22,6 +22,7 @@ from create_tag import build_tag
 from md_to_html import convert_text
 from spica_core import ChangeSet, OperationClock, ProjectPaths, parse_input_path
 from spica_transaction import commit_changes
+from word_count import count_html_text, process as count_process, update_all
 
 
 class SpicaToolTests(unittest.TestCase):
@@ -66,6 +67,13 @@ class SpicaToolTests(unittest.TestCase):
     def test_quoted_windows_style_path(self) -> None:
         self.assertEqual(parse_input_path(f'"{self.cover}"'), self.cover.resolve())
 
+    def test_word_count_matches_mots_unicode_ranges_and_main_only(self) -> None:
+        page = """
+        <html><body><main>汉字A，㐀豈𠀀<br>继续<script>脚本文字</script></main>
+        <div>正文外文字</div></body></html>
+        """
+        self.assertEqual(count_html_text(page), 7)
+
     def test_tag_builder_is_staged_until_commit(self) -> None:
         changes = ChangeSet(self.root)
         build_tag(changes, self.paths, "测试标签", "essai", self.clock)
@@ -96,11 +104,12 @@ class SpicaToolTests(unittest.TestCase):
             allow_html=False,
             clock=self.clock,
         )
+        count_process(changes, {"operation": "create_solo", "content_id": "090826A"})
         page = self.root / "article" / "090826A" / "index.html"
         self.assertFalse(page.exists())
         commit_changes(changes)
         entry = json.loads((self.root / "json" / "article.json").read_text(encoding="utf-8"))[0]
-        self.assertEqual(entry["word_count"], 0)
+        self.assertGreater(entry["word_count"], 0)
         self.assertEqual(entry["cover_image"], "/images/article/外部封面 测试.png")
         self.assertIn("&amp;", page.read_text(encoding="utf-8"))
         from PIL import Image
@@ -123,6 +132,7 @@ class SpicaToolTests(unittest.TestCase):
             allow_nonstandard_id=False,
             clock=self.clock,
         )
+        count_process(changes, {"operation": "create_serial_story", "content_id": "HTEST"})
         commit_changes(changes)
         copied = self.root / "json" / "histoire" / "HTEST.json"
         self.assertEqual(copied.read_bytes(), (self.root / "tools" / "template" / "chapter.json").read_bytes())
@@ -148,6 +158,7 @@ class SpicaToolTests(unittest.TestCase):
             allow_html=False,
             clock=later,
         )
+        count_process(changes, {"operation": "create_chapters", "story_id": "HTEST"})
         commit_changes(changes)
         rows = json.loads(copied.read_text(encoding="utf-8"))["chapters"]
         self.assertEqual([row["id"] for row in rows], [0, 1, 2])
@@ -155,6 +166,51 @@ class SpicaToolTests(unittest.TestCase):
         self.assertTrue((self.root / "histoire" / "HTEST" / "2" / "index.html").is_file())
         root_page = (self.root / "histoire" / "HTEST" / "index.html").read_text(encoding="utf-8")
         self.assertIn("上次更新：10/08/2026", root_page)
+        story_entry = json.loads((self.root / "json" / "histoire.json").read_text(encoding="utf-8"))[0]
+        expected = sum(
+            count_html_text(page.read_text(encoding="utf-8"))
+            for page in (
+                self.root / "histoire" / "HTEST" / "index.html",
+                self.root / "histoire" / "HTEST" / "1" / "index.html",
+                self.root / "histoire" / "HTEST" / "2" / "index.html",
+            )
+        )
+        self.assertEqual(story_entry["word_count"], expected)
+
+    def test_full_site_recurses_special_story_but_ignores_unlisted_folder(self) -> None:
+        story_dir = self.root / "histoire" / "HBRANCH"
+        child_dir = story_dir / "ENDING"
+        child_dir.mkdir(parents=True)
+        base_page = "<html><head></head><body><main>根页面</main></body></html>"
+        child_page = "<html><head></head><body><main>分支结局</main></body></html>"
+        (story_dir / "index.html").write_text(base_page, encoding="utf-8")
+        (child_dir / "index.html").write_text(child_page, encoding="utf-8")
+        unlisted = self.root / "histoire" / "HUNLISTED"
+        unlisted.mkdir()
+        (unlisted / "index.html").write_text(
+            "<html><head></head><body><main>不应统计的文字</main></body></html>", encoding="utf-8"
+        )
+        entries = [
+            {
+                "id": "HBRANCH",
+                "url": "/histoire/HBRANCH",
+                "title": "分支",
+                "description": "",
+                "cover_image": "",
+                "created_at": "2026-08-09T00:00:00Z",
+                "updated_at": "2026-08-09T00:00:00Z",
+                "word_count": 0,
+                "color": "rgba(0, 0, 0, 0)",
+                "tags": [],
+            }
+        ]
+        (self.root / "json" / "histoire.json").write_text(
+            json.dumps(entries, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        changes = ChangeSet(self.root)
+        update_all(changes, self.paths)
+        pending = json.loads(changes.read_text("json/histoire.json"))
+        self.assertEqual(pending[0]["word_count"], 7)
 
     def test_transaction_rolls_back_apply_failure(self) -> None:
         existing = self.root / "json" / "article.json"

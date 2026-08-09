@@ -27,8 +27,12 @@ python tools/create_tag.py --zh "爱情" --slug "amour" --dry-run
 python tools/create_solo.py --type article --id 090826A --title "示例" --description "简介" --image "D:\图片\封面.png" --color "rgba(48, 167, 255, 0.3)" --tags "爱情" --dry-run
 python tools/create_serial_story.py --id HABC --title "示例故事" --description "简介" --image "D:\图片\封面.png" --color "rgba(48, 167, 255, 0.3)" --dry-run
 python tools/create_chapters.py --story HABC --source "D:\章节" --title "第一章" --title "第二章" --dry-run
+python tools/word_count.py HABC --dry-run
+python tools/word_count.py ALL --dry-run
 ```
 
 创建器使用 `--dry-run` 时只进行检查和显示计划。非标准 ID 必须显式添加 `--allow-nonstandard-id`；命令行中需要同时创建的新标签使用可重复的 `--new-tag "中文=法语slug"`。
 
-字数统计和字体修补脚本目前仅提供后处理接口。新内容的 `word_count` 暂时写为 `0`。
+字数统计严格复刻 `/js/mots.js`：提取每个页面 `<main>` 的文本，只统计同一组 Unicode 中日韩统一表意文字。文章和单页故事统计首页；普通多章故事按照章节 JSON 合计；没有章节 JSON 但含子页面的互动故事会递归合计全部 `index.html`。
+
+字体修补脚本目前仅提供后处理接口。创建器会先把新内容的 `word_count` 初始化为 `0`，随后在同一事务中调用字数统计并写入最终数值。

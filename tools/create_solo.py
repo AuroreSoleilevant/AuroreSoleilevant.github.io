@@ -115,7 +115,9 @@ def main(argv: list[str] | None = None) -> int:
             allow_html=args.allow_html,
             clock=clock,
         )
-        run_postprocessors(changes, {"operation": "create_solo"})
+        run_postprocessors(
+            changes, {"operation": "create_solo", "content_id": args.id}
+        )
         print_plan(changes)
         if args.dry_run:
             print("检查完成：dry-run 未修改任何文件。")

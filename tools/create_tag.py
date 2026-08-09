@@ -14,7 +14,6 @@ from spica_core import (
     load_json,
     normalized_key,
     render_template,
-    run_postprocessors,
     safe_segment,
     stage_json,
 )
@@ -73,7 +72,6 @@ def main(argv: list[str] | None = None) -> int:
         paths = ProjectPaths.discover()
         changes = ChangeSet(paths.root)
         build_tag(changes, paths, args.zh, args.slug, OperationClock.capture())
-        run_postprocessors(changes, {"operation": "create_tag"})
         print_plan(changes)
         if args.dry_run:
             print("检查完成：dry-run 未修改任何文件。")

@@ -186,7 +186,9 @@ def main(argv: list[str] | None = None) -> int:
             allow_html=args.allow_html,
             clock=OperationClock.capture(),
         )
-        run_postprocessors(changes, {"operation": "create_chapters"})
+        run_postprocessors(
+            changes, {"operation": "create_chapters", "story_id": args.story}
+        )
         print_plan(changes)
         if args.dry_run:
             print("检查完成：dry-run 未修改任何文件。")
