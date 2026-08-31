@@ -16,7 +16,7 @@ def convert_text(text: str, *, allow_html: bool = False) -> str:
         if not line.strip():
             continue
         content = line if allow_html else html.escape(line, quote=False)
-        paragraphs.append(f"<p>{content}</p>")
+        paragraphs.append(f"<p>　　{content}</p>")
     return "\n".join(paragraphs)
 
 

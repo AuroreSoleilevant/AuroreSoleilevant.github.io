@@ -194,7 +194,7 @@
 
     if (nextId !== null) {
       const nextHref = `${info.basePath}/${nextId}`;
-      const nextBtn = makeLinkBtn("下一章", nextHref, "next");
+      const nextBtn = makeLinkBtn(cur === 0 ? "开始阅读" : "下一章", nextHref, "next");
       container.appendChild(nextBtn);
     }
 
