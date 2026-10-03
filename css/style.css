@@ -52,6 +52,28 @@
   /* 正文流式水平尺寸 */
   --content-gutter: clamp(12px, 2.5vw, 32px);
   --reading-gutter: clamp(12px, calc(6vw - 12px), 96px);
+
+  /* 正文左右边距：默认对称（移动端 ≤768px 保持不变） */
+  --reading-gutter-left: var(--reading-gutter);
+  --reading-gutter-right: var(--reading-gutter);
+}
+
+/* 桌面端：让正文位于「吉祥物右缘」与「按钮区左缘」的正中间。
+   左侧占用宽度 --mascot-zone（吉祥物宽度 + 它离左边缘的距离）
+   右侧占用宽度 --button-zone（回顶按钮宽度 + 右偏移）
+   把对称边距整体平移 (左占用 − 右占用) / 2，即可让两侧间隙相等；
+   平移量用 min() 限制在 (对称边距 − 12px) 以内，窄屏下右侧不会被挤成负值。 */
+@media (min-width: 769px) {
+  :root {
+    --mascot-zone: 115px;
+    --button-zone: calc(var(--backtop-right) + var(--backtop-size));
+    --reading-shift: min(
+      calc((var(--mascot-zone) - var(--button-zone)) / 2),
+      calc(var(--reading-gutter) - 12px)
+    );
+    --reading-gutter-left: calc(var(--reading-gutter) + var(--reading-shift));
+    --reading-gutter-right: calc(var(--reading-gutter) - var(--reading-shift));
+  }
 }
 
 /* ---------- 顶栏：开始 ---------- */
@@ -926,17 +948,17 @@ main.loaded {
 
 /* 段落间距设定 */
 main p {
-  margin-inline: var(--reading-gutter);
+  margin-inline: var(--reading-gutter-left) var(--reading-gutter-right);
   line-height: 1.6;
 }
 
 /* 标题间距设定 */
 main h1 {
-  margin-inline: var(--reading-gutter);
+  margin-inline: var(--reading-gutter-left) var(--reading-gutter-right);
 }
 
 main h2 {
-  margin-inline: var(--reading-gutter);
+  margin-inline: var(--reading-gutter-left) var(--reading-gutter-right);
   font-size: 2.5rem;
 }
 
@@ -952,7 +974,7 @@ p {
 ul {
   /* 列表统一字号 */
   font-size: 20px;
-  margin-inline: var(--reading-gutter);
+  margin-inline: var(--reading-gutter-left) var(--reading-gutter-right);
 }
 
 main > h3,
@@ -961,7 +983,7 @@ main > h5,
 main > h6,
 main > ol,
 main > blockquote {
-  margin-inline: var(--reading-gutter);
+  margin-inline: var(--reading-gutter-left) var(--reading-gutter-right);
 }
 
 h1.shaking-text {
