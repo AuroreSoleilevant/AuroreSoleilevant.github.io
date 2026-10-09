@@ -25,6 +25,10 @@
     "HLDXDHGN_FR": {
       "kind": "taxonomy-source",
       "sourceId": "HLDXDHGN"
+    },
+    "H26-27XXJ_FR": {
+      "kind": "taxonomy-source",
+      "sourceId": "H26-27XXJ"
     }
   }
 }
