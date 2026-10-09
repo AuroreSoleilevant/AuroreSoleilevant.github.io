@@ -114,6 +114,24 @@
   overflow-wrap: anywhere;
 }
 
+/* 非首页章节：编号与标题分列，标题换行后保持左对齐 */
+#chapter-sidebar .chapter-list a:not([data-id="0"]) {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: baseline;
+}
+
+/* 保留编号后的空格 */
+#chapter-sidebar .chapter-list a .chapter-number {
+  white-space: pre;
+}
+
+/* 允许标题在可用空间内正常换行 */
+#chapter-sidebar .chapter-list a .chapter-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 /* hover 效果（轻微上升 + 背景小框，大概是拨玻璃那样吧） */
 #chapter-sidebar .chapter-list a:hover {
   background: rgba(0, 0, 0, 0.03);
@@ -134,7 +152,7 @@
 }
 
 /* 仅作品首页：已记录的最近阅读章节 */
-#chapter-sidebar .chapter-list a.last-read::after {
+#chapter-sidebar .chapter-list a.last-read .chapter-name::after {
   content: "上次阅读";
   display: inline-block;
   margin-inline-start: 0.55em;
@@ -246,7 +264,7 @@ html[data-theme="dark"] #chapter-sidebar .chapter-list a.active {
   border-left-color: #829aca;
 }
 
-html[data-theme="dark"] #chapter-sidebar .chapter-list a.last-read::after {
+html[data-theme="dark"] #chapter-sidebar .chapter-list a.last-read .chapter-name::after {
   border-color: rgba(147, 203, 209, 0.3);
   color: #b9e0df;
   background: rgba(62, 104, 119, 0.42);

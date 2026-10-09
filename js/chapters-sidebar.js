@@ -305,9 +305,22 @@
       const a = document.createElement("a");
       a.href = href;
       a.setAttribute("data-id", String(id));
-      // 显示格式： id + 空格 + title；但 id===0 时只显示 title（不显示 0）
-      a.textContent = id === 0 ? title : `${id} ${title}`;
-      a.setAttribute("role", "link");
+      // 显示格式：id===0 时保持原始文本结构，其余章节分离编号与标题
+      if (id === 0) {
+        a.textContent = title;
+      } else {
+        const number = document.createElement("span");
+        number.className = "chapter-number";
+        number.textContent = `${id} `;
+
+        const name = document.createElement("span");
+        name.className = "chapter-name";
+        name.textContent = title;
+
+        a.append(number, name);
+      }
+
+a.setAttribute("role", "link");
 
       // 点击默认由 anchor 导航；仍然在 click 时关闭侧栏以保持体验
       a.addEventListener("click", (ev) => {
