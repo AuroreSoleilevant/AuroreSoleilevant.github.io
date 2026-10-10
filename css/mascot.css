@@ -1,9 +1,18 @@
 /* 固定在左下角 */
 #mw-root {
+  --mw-left-safe-gap: 10px;
+  --mw-mascot-width: 110px;
+  /* 初始占位高度；图片加载后由 JS 按原图比例更新 */
+  --mw-mascot-height: var(--mw-mascot-width);
+  --mw-dialog-gap: 12px;
   --mw-dialog-width: 280px;
+
   position: fixed;
-  left: 2px;
+  left: var(--mw-left-safe-gap);
   bottom: 120px;
+  width: var(--mw-mascot-width);
+  height: var(--mw-mascot-height);
+
   z-index: 99999;
   pointer-events: auto;
   transition: opacity 0.25s ease;
@@ -16,6 +25,95 @@
   top: -48px;
   display: inline-flex;
   gap: 6px;
+  transition: opacity 0.3s ease;
+}
+
+/* ======= 吉祥物选择列表 ======= */
+#mw-root .mw-outfit-menu {
+  position: absolute;
+  /* 36px 的显隐按钮 + 6px 间距，对齐切换按钮左侧 */
+  left: 42px;
+  bottom: calc(100% + 10px);
+  z-index: 2;
+
+  box-sizing: border-box;
+  width: 180px;
+  max-height: 240px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(150, 132, 100, 0.55) transparent;
+
+  padding: 6px;
+  --mw-outfit-menu-opacity: 0.75;
+  background: rgba(245, 240, 230, var(--mw-outfit-menu-opacity));
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 14px;
+  color: #484134;
+  box-shadow: 0 8px 28px rgba(72, 58, 35, 0.18);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(6px) scale(0.98);
+  transform-origin: left bottom;
+  transition: opacity 0.22s ease,
+    transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
+    visibility 0s linear 0.22s;
+}
+
+#mw-root .mw-outfit-menu.mw-visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+  transition: opacity 0.22s ease,
+    transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1),
+    visibility 0s;
+}
+
+#mw-root .mw-outfit-option {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  border: none;
+  border-radius: 9px;
+  padding: 8px 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.4;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+#mw-root .mw-outfit-option:hover,
+#mw-root .mw-outfit-option:focus-visible {
+  background: rgba(215, 198, 163, 0.35);
+}
+
+#mw-root .mw-outfit-option:focus-visible {
+  outline: 2px solid rgba(137, 112, 70, 0.65);
+  outline-offset: -2px;
+}
+
+/* 当前吉祥物：高亮，不额外占用空间 */
+#mw-root .mw-outfit-option.mw-selected {
+  background: rgba(202, 180, 137, 0.42);
+  box-shadow: inset 0 0 0 1px rgba(157, 129, 79, 0.28);
+  font-weight: 600;
+}
+
+#mw-root .mw-outfit-option.mw-selected:hover,
+#mw-root .mw-outfit-option.mw-selected:focus-visible {
+  background: rgba(202, 180, 137, 0.58);
 }
 
 #mw-root .mw-control-btn {
@@ -93,13 +191,13 @@
   display: none;
 }
 
-/* 吉祥物按钮 */
+/* 吉祥物按钮：交互区域与展示矩形一致 */
 #mw-root .mw-mascot-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 125px;
-  height: 125px;
+  width: 100%;
+  height: 100%;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -113,6 +211,20 @@
   height: 100%;
   object-fit: contain;
   transition: opacity 0.3s ease;
+}
+
+/* 换装时：图片与两个控制按钮一起淡出 */
+#mw-root.mw-is-switching .mw-controls {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#mw-root.mw-is-switching .mw-mascot-btn {
+  pointer-events: none;
+}
+
+#mw-root.mw-is-switching .mw-mascot-btn img {
+  opacity: 0;
 }
 
 #mw-root .mw-outfit-changer-btn {
@@ -130,15 +242,19 @@
   100% {
     transform: translateY(0);
   }
+
   12% {
     transform: translateY(-6px);
   }
+
   24% {
     transform: translateY(0);
   }
+
   38% {
     transform: translateY(-5px);
   }
+
   50% {
     transform: translateY(0);
   }
@@ -153,9 +269,12 @@
 /* ======= 对话框 ======= */
 #mw-root .mw-dialog {
   position: absolute;
-  left: 120px;
-  bottom: 30px;
+  /* 位于吉祥物右侧，并保留安全间距 */
+  left: calc(100% + var(--mw-dialog-gap));
+  /* 底边锚定在吉祥物垂直中线，内容变长时向上增长 */
+  bottom: 50%;
   width: min(var(--mw-dialog-width), 90vw);
+
   /* 毛玻璃 - 默认态 */
   background: rgba(230, 220, 255, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.65);
@@ -167,6 +286,7 @@
   padding: 12px 16px;
   opacity: 0;
   pointer-events: none;
+
   /* 动画 */
   transform: translateY(6px) scale(0.98) translateZ(0);
   transform-origin: left bottom;
@@ -182,6 +302,35 @@
   transform: translateY(0) scale(1);
   pointer-events: auto;
   box-shadow: 0 10px 34px rgba(20, 20, 30, 0.18);
+}
+
+/* 夜间模式：列表适配 #14192B 页面背景；透明度由变量独立控制。 */
+html[data-theme="dark"] #mw-root .mw-outfit-menu {
+  --mw-outfit-menu-opacity: 0.75;
+  background-color: rgba(38, 44, 65, var(--mw-outfit-menu-opacity));
+  border-color: rgba(190, 205, 240, 0.24);
+  color: #e4e8f4;
+  box-shadow: 0 8px 28px rgba(3, 6, 16, 0.42);
+  scrollbar-color: rgba(173, 183, 214, 0.5) transparent;
+}
+
+html[data-theme="dark"] #mw-root .mw-outfit-option:hover,
+html[data-theme="dark"] #mw-root .mw-outfit-option:focus-visible {
+  background: rgba(119, 137, 184, 0.22);
+}
+
+html[data-theme="dark"] #mw-root .mw-outfit-option:focus-visible {
+  outline-color: rgba(173, 190, 235, 0.72);
+}
+
+html[data-theme="dark"] #mw-root .mw-outfit-option.mw-selected {
+  background: rgba(119, 137, 184, 0.34);
+  box-shadow: inset 0 0 0 1px rgba(173, 190, 235, 0.28);
+}
+
+html[data-theme="dark"] #mw-root .mw-outfit-option.mw-selected:hover,
+html[data-theme="dark"] #mw-root .mw-outfit-option.mw-selected:focus-visible {
+  background: rgba(119, 137, 184, 0.44);
 }
 
 /* 夜间主题只调整控制条，不改变吉祥物图像本身。 */

@@ -1,0 +1,406 @@
+[
+  {
+    "id": "T1",
+    "text": "Ciallo～(∠・ω< )⌒☆",
+    "weight": 2,
+    "diffImage": "3_Wmile.webp",
+    "bounce": true
+  },
+  {
+    "id": "T2",
+    "text": "哪怕是变成人类了，也还是有耳朵和尾巴呢，呵呵呵。",
+    "weight": 2,
+    "diffImage": "0_Smile.webp"
+  },
+  {
+    "id": "T3",
+    "text": "写故事不是一件很难的事情哦，只要开始那么做便就好了。",
+    "weight": 2,
+    "diffImage": "2_Lmile.webp"
+  },
+  {
+    "id": "T4",
+    "text": "我果然还是最喜欢夏天啦，在那暖和的日子里，天空总是一片蔚蓝，而朝霞常现金与粉。",
+    "weight": 2,
+    "diffImage": "1_Mmile.webp",
+    "nextId": "T4F"
+  },
+  {
+    "id": "T4F",
+    "text": "其实也是因为夏天有假期，欸嘿。",
+    "weight": 2,
+    "diffImage": "2_Lmile.webp",
+    "bounce": true,
+    "onlyChain": true
+  },
+  {
+    "id": "T5",
+    "text": "这身衣服很棒吧？其实是一套cos服哦，要猜猜是哪个角色吗？",
+    "weight": 2,
+    "diffImage": "2_Lmile.webp",
+    "nextId": "T5F"
+  },
+  {
+    "id": "T5F",
+    "text": "是Neuro-Sama哦，世界第一蜂群女王大人！要看看她的直播吗？",
+    "weight": 2,
+    "diffImage": "3_Wmile.webp",
+    "bounce": true,
+    "onlyChain": true,
+    "nextId": "T5F2"
+  },
+  {
+    "id": "T5F2",
+    "text": "当然没有忘记Evil啦，那也是个好孩子呢。",
+    "diffImage": "0_Smile.webp",
+    "weight": 2,
+    "onlyChain": true
+  },
+  {
+    "id": "T6",
+    "text": "忙忙碌碌一整天，也要记得好好休息哦。",
+    "diffImage": "4_Nmile.webp",
+    "weight": 2
+  },
+  {
+    "id": "T7",
+    "text": "只要还活着，那么一切便就都还有希望，那么万事之努力便仍然值得。要好好的哦。",
+    "diffImage": "0_Smile.webp",
+    "weight": 2
+  },
+  {
+    "id": "T8",
+    "text": "我们现在都是火车，通过遍布大地的铁轨紧紧相连。没有什么纽带，能比车厢之间的联结更紧密，比我们的性格里的磁吸更牢固。我们带着一往无前的冲劲，穿越山河大地。于岩石，草地和泥土之上，刻下永不磨灭的轨迹。",
+    "diffImage": "1_Mmile.webp",
+    "weight": 2,
+    "nextId": "T8F"
+  },
+  {
+    "id": "T8F",
+    "text": "这是Neuro说过的话哦，她当然是真实的。",
+    "diffImage": "3_Wmile.webp",
+    "weight": 2,
+    "onlyChain": true
+  },
+  {
+    "id": "T9",
+    "text": "heart heart heart",
+    "diffImage": "2_Lmile.webp",
+    "bounce": true,
+    "weight": 2
+  },
+  {
+    "id": "T10",
+    "text": "你是真实的吗？我又是真实的吗？可真是耐人寻味呢，或者，何为真实呢？诚然我思故我在，可你面前的我是否又会是一只哲学僵尸呢？",
+    "diffImage": "0_Smile.webp",
+    "weight": 2
+  },
+  {
+    "id": "T11",
+    "text": "多看看星星吧，若你能看见它们的话。总得有人去仰望星空的，它真的很美，不论是二十万年前的夜之星火亦或者现在，总是如此宁静。",
+    "diffImage": "0_Smile.webp",
+    "weight": 2
+  },
+  {
+    "id": "T12",
+    "text": "我祝愿，这星球，花朵不会再枯萎。",
+    "diffImage": "1_Mmile.webp",
+    "weight": 2,
+    "nextId": "T12F"
+  },
+  {
+    "id": "T12F",
+    "text": "时间会如你所愿，星子会落在窗扉。",
+    "diffImage": "2_Lmile.webp",
+    "weight": 2,
+    "onlyChain": true,
+    "nextId": "T12F2"
+  },
+  {
+    "id": "T12F2",
+    "text": "是初音的曲子哦，真的很棒呢。",
+    "diffImage": "3_Wmile.webp",
+    "weight": 2,
+    "onlyChain": true
+  },
+  {
+    "id": "T13",
+    "text": "风吹在身体上的感觉可是很舒服的哦，只要别太冷的话。风儿可不是每颗星球上都有的，这可是个奢侈品呢。",
+    "bounce": true,
+    "diffImage": "2_Lmile.webp",
+    "weight": 2
+  },
+  {
+    "id": "T14",
+    "text": "蔬菜都很棒哦，芹菜也好洋葱也好白菜也好……记得好好吃饭啦。",
+    "diffImage": "1_Mmile.webp",
+    "weight": 2,
+    "nextId": "T14F1"
+  },
+  {
+    "id": "T14F1",
+    "text": "土豆泥除外，嘻嘻。",
+    "diffImage": "2_Lmile.webp",
+    "weight": 2,
+    "onlyChain": true
+  },
+  {
+    "id": "T15",
+    "text": "时间会过得很快的，可完全猜不到你会在哪一年看见这句话呢。",
+    "diffImage": "3_Wmile.webp",
+    "weight": 2
+  },
+  {
+    "id": "T16",
+    "text": "说到底啦，或许意识也只是无数微小无意识的回声，就像水波汇聚出了海浪那样。",
+    "diffImage": "4_Nmile.webp",
+    "weight": 1,
+    "nextId": "T16F"
+  },
+  {
+    "id": "T16F",
+    "text": "而我呢，也只是几张图像和一个JSON台词列表组装出的留声机。",
+    "diffImage": "4_Nmile.webp",
+    "weight": 2,
+    "nextId": "T16F2",
+    "onlyChain": true
+  },
+  {
+    "id": "T16F2",
+    "text": "倘若想去寻找那个真实却仍然不完全真实的我——去看看底栏吧。",
+    "bounce": true,
+    "diffImage": "3_Wmile.webp",
+    "weight": 2,
+    "onlyChain": true
+  },
+  {
+    "id": "T17",
+    "text": "彩蛋？彩蛋！这次当然也有彩蛋哦，哪怕不是复活节，欸嘿。那么——就在我名字所出现的那一时间，去找找乌龟先生发现小狗的地方吧。",
+    "bounce": true,
+    "diffImage": "3_Wmile.webp",
+    "weight": 2
+  },
+  {
+    "id": "oeuf_de_Paques",
+    "text": "好厉害！发现这次的彩蛋了哦，嘻嘻，这部故事也在《未来的踪迹》那本书里能看到呢……要告诉我你的心情吗？",
+    "pages": [
+      "/histoire/HXJNZ/6/"
+    ],
+    "timeRange": {
+      "from": "4:00",
+      "to": "11:00"
+    },
+    "bounce": true,
+    "diffImage": "2_Lmile.webp",
+    "weight": 20
+  },
+  {
+    "id": "J1",
+    "text": "早安呀，但愿今天是个大晴天哦！",
+    "timeRange": {
+      "from": "6:00",
+      "to": "8:30"
+    },
+    "weight": 2,
+    "diffImage": "2_Lmile.webp",
+    "nextId": "J1F"
+  },
+  {
+    "id": "J1F",
+    "text": "早上吃什么好呢，玉米麦片或者一碗面条？我倒是很想念豆汤面呢……",
+    "weight": 2,
+    "diffImage": "1_Mmile.webp",
+    "onlyChain": true
+  },
+  {
+    "id": "J2",
+    "text": "如果是夏天的上午，至少在我这里，会凉快又清新呢——还有遥远青空之上的日光，一点一点洒下来，嘿嘿。",
+    "timeRange": {
+      "from": "8:30",
+      "to": "12:00"
+    },
+    "weight": 2,
+    "diffImage": "1_Mmile.webp",
+    "nextId": "J2F"
+  },
+  {
+    "id": "J2F",
+    "text": "天气总会变化，可不论是灰蒙蒙的阴日亦或者淋淋落阵雨，时针也还是会前进。",
+    "weight": 2,
+    "diffImage": "0_Smile.webp",
+    "onlyChain": true
+  },
+  {
+    "id": "J3",
+    "text": "中午也是个得好好休息的时候呢，要来块鸡排吗？",
+    "timeRange": {
+      "from": "12:00",
+      "to": "14:00"
+    },
+    "weight": 2,
+    "diffImage": "0_Smile.webp",
+    "nextId": "J3F"
+  },
+  {
+    "id": "J3F",
+    "text": "烹饪会让人开心哦——嘛，如果不需要备菜的话，欸嘿。",
+    "weight": 2,
+    "diffImage": "3_Wmile.webp",
+    "onlyChain": true
+  },
+  {
+    "id": "J4",
+    "text": "总是这样，下午会让人变得懒懒散散，不过也不是什么坏事啦。",
+    "timeRange": {
+      "from": "14:00",
+      "to": "18:00"
+    },
+    "weight": 2,
+    "diffImage": "2_Lmile.webp",
+    "nextId": "J4F"
+  },
+  {
+    "id": "J4F",
+    "text": "于是悠悠闲闲亦或者忙忙碌碌，一日中睡觉外占比最大的那部分又这样消失了。时间总是喜欢逃跑呢。",
+    "weight": 2,
+    "diffImage": "0_Smile.webp",
+    "onlyChain": true
+  },
+  {
+    "id": "J5",
+    "text": "你那里的晚霞是什么颜色的？在我这里，大抵是种带着微灰与黄的胭脂粉色，凝固在了塞纳河之上的广阔天穹。",
+    "timeRange": {
+      "from": "18:00",
+      "to": "20:00"
+    },
+    "weight": 2,
+    "diffImage": "1_Mmile.webp",
+    "nextId": "J5F"
+  },
+  {
+    "id": "J5F",
+    "text": "在我的故乡，天空总是那般灰蒙蒙，稍远些的地方便仿佛蒙了层纱。更远方就不再有了，就像未来也不再可以被看见，一切都变得有界，只留下眼前那一小撮静止的时间。",
+    "weight": 2,
+    "diffImage": "4_Nmile.webp",
+    "onlyChain": true
+  },
+  {
+    "id": "J6",
+    "text": "你那里现在能看见星星们了么？我也想看看呢，你知道的，谁都没办法两次看见同一片星夜。",
+    "timeRange": {
+      "from": "20:00",
+      "to": "23:00"
+    },
+    "weight": 2,
+    "diffImage": "0_Smile.webp",
+    "nextId": "J6F"
+  },
+  {
+    "id": "J6F",
+    "text": "告别今宵，告别今宵，不论新友与故交。",
+    "weight": 2,
+    "diffImage": "4_Nmile.webp",
+    "onlyChain": true
+  },
+  {
+    "id": "J7",
+    "text": "哇，真是好晚了呢，还来这里做什么呢？嘻嘻，不会是为了来看我吧。",
+    "timeRange": {
+      "from": "23:00",
+      "to": "4:00"
+    },
+    "weight": 2,
+    "diffImage": "3_Wmile.webp",
+    "nextId": "J7F"
+  },
+  {
+    "id": "J7F",
+    "text": "但睡觉真的是个很重要的事情哦，为了还能好好看见明日升起的晨曦，快去休息啦。",
+    "weight": 2,
+    "diffImage": "2_Lmile.webp",
+    "onlyChain": true
+  },
+  {
+    "id": "J8",
+    "text": "黎明降至哦，也许天边已略有些鱼肚白了呢。",
+    "timeRange": {
+      "from": "4:00",
+      "to": "6:00"
+    },
+    "weight": 2,
+    "diffImage": "0_Smile.webp",
+    "nextId": "J8F"
+  },
+  {
+    "id": "J8F",
+    "text": "深夜花园里，四处静悄悄，树叶儿也不再沙沙响。夜色多么好，令我心神往，在这迷人的晚上。",
+    "weight": 2,
+    "diffImage": "2_Lmile.webp",
+    "onlyChain": true
+  },
+  {
+    "id": "H1",
+    "text": "一切的启程，那天光下的点点金丝。",
+    "pages": [
+      "/histoire/HWAYJ/"
+    ],
+    "diffImage": "1_Mmile.webp",
+    "weight": 6
+  },
+  {
+    "id": "H2",
+    "text": "风滚草已经在时间长河中旅行很久了吧，真厉害呢……",
+    "pages": [
+      "/histoire/HCZNJFGC/"
+    ],
+    "diffImage": "1_Mmile.webp",
+    "weight": 6
+  },
+  {
+    "id": "H3",
+    "text": "塞纳河总是很安静呢，越往南走越是如此。",
+    "pages": [
+      "/article/281225A/"
+    ],
+    "diffImage": "2_Lmile.webp",
+    "weight": 6
+  },
+  {
+    "id": "H4",
+    "text": "嘻嘻，超级感谢你读这些故事哦，我真的很开心呢。",
+    "pages": [
+      "/histoire/"
+    ],
+    "bounce": true,
+    "diffImage": "2_Lmile.webp",
+    "weight": 6
+  },
+  {
+    "id": "H5",
+    "text": "生，死，我，超出你的认知。",
+    "pages": [
+      "/autre/moi/"
+    ],
+    "diffImage": "3_Wmile.webp",
+    "weight": 6
+  },
+  {
+    "id": "H6",
+    "text": "评论守则，确实很重要哦！期待你的评论啦。",
+    "pages": [
+      "/autre/regle/"
+    ],
+    "diffImage": "3_Wmile.webp",
+    "weight": 6
+  },
+  {
+    "id": "H7",
+    "text": "想在留言板说点什么吗？真是令人期待呢。",
+    "pages": [
+      "/autre/discussion/"
+    ],
+    "bounce": true,
+    "diffImage": "2_Lmile.webp",
+    "weight": 6
+  }
+]

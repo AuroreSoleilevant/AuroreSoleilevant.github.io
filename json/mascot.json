@@ -2,6 +2,17 @@
   "outfits": [
     {
       "id": "1",
+      "label": "牛肉风味",
+      "image": "/images/mascot/neuro/",
+      "imageDirectory": true,
+      "defaultImage": "0_Smile.webp",
+      "sentencesUrl": "/json/mascot/neuro.json",
+      "dialogBg": "rgba(185, 215, 230, 0.55)",
+      "dialogBorder": "rgba(120, 185, 210, 0.65)",
+      "dialogTextColor": "#143C5A"
+    },
+    {
+      "id": "2",
       "label": "天使",
       "image": "/images/mascot/天使.webp",
       "sentencesUrl": "/json/mascot/天使.json",
@@ -10,7 +21,7 @@
       "dialogTextColor": "#5a3e2b"
     },
     {
-      "id": "2",
+      "id": "3",
       "label": "女巫",
       "image": "/images/mascot/女巫.webp",
       "sentencesUrl": "/json/mascot/女巫.json",
@@ -19,7 +30,7 @@
       "dialogTextColor": "#3a3228"
     },
     {
-      "id": "3",
+      "id": "4",
       "label": "汉服",
       "image": "/images/mascot/汉服.webp",
       "sentencesUrl": "/json/mascot/汉服.json",
