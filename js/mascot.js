@@ -1,37 +1,10 @@
 /* mascot.js — 左下角小马 */
 
-/* ========== 配置区 ========== */
+/* ========== 外部配置 ========== */
+var MASCOT_CONFIG_URL = "/json/mascot.json";
+var MASCOT_CONFIG_WAS_PROVIDED = Boolean(window.MASCOT_CONFIG);
 var MASCOT_CONFIG = window.MASCOT_CONFIG || {
-  outfits: [
-    {
-      id: "1",
-      label: "天使",
-      image: "/images/mascot/天使.webp",
-      sentencesUrl: "/json/mascot/天使.json",
-      dialogBg: "rgba(255, 248, 235, 0.55)",
-      dialogBorder: "rgba(255, 210, 160, 0.8)",
-      dialogTextColor: "#5a3e2b",
-    },
-    {
-      id: "2",
-      label: "女巫",
-      image: "/images/mascot/女巫.webp",
-      sentencesUrl: "/json/mascot/女巫.json",
-      dialogBg: "rgba(230, 220, 255, 0.55)",
-      dialogBorder: "rgba(255,255,255,0.65)",
-      dialogTextColor: "#3a3228",
-    },
-    {
-      id: "3",
-      label: "汉服",
-      image: "/images/mascot/汉服.webp",
-      sentencesUrl: "/json/mascot/汉服.json",
-      dialogBg: "rgba(215, 244, 233, 0.55)",
-      dialogBorder: "rgba(170, 220, 200, 0.8)",
-      dialogTextColor: "#1e3a34",
-    },
-  ],
-
+  outfits: [],
   autoShowDuration: 6000,
   minScreenWidthToShow: 1024,
 };
@@ -49,17 +22,13 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     lastShownId: null,
   };
   const STATE = window.__MASCOT_STATE;
+  const preloadedDiffImageUrls = new Set();
 
   // 防止重复注入
   if (window.__MASCOT_WIDGET_INJECTED) {
     return;
   }
   window.__MASCOT_WIDGET_INJECTED = true;
-
-  // 小屏幕直接不注入
-  if (window.innerWidth < (MASCOT_CONFIG.minScreenWidthToShow || 1024)) {
-    return;
-  }
 
   const ID = "mw-root";
   const PLACEHOLDER_TEXT = "Ciallo～(∠・ω< )⌒☆";
@@ -142,6 +111,23 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     );
   }
 
+  function getOutfitImageUrl(outfit, filename) {
+    if (!outfit) return "";
+    if (!outfit.imageDirectory) return outfit.image || "";
+
+    const name = String(filename || outfit.defaultImage || "").trim().replace(/^\/+/, "");
+    if (!name) return "";
+    const directory = String(outfit.image || "").replace(/\/+$/, "");
+    return `${directory}/${name}`;
+  }
+
+  function getDefaultOutfitImage(outfit) {
+    if (!outfit) return "";
+    return outfit.imageDirectory
+      ? getOutfitImageUrl(outfit, outfit.defaultImage)
+      : outfit.image || "";
+  }
+
   function switchToNextOutfit() {
     currentOutfitIndex =
       (currentOutfitIndex + 1) % (MASCOT_CONFIG.outfits.length || 1);
@@ -164,6 +150,7 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     return new Promise((resolve, reject) => {
       const nextImage = new Image();
       nextImage.decoding = "async";
+      nextImage.fetchPriority = "high";
       nextImage.onload = () => {
         if (typeof nextImage.decode !== "function") {
           resolve();
@@ -172,8 +159,50 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
         nextImage.decode().then(resolve).catch(resolve);
       };
       nextImage.onerror = reject;
-      nextImage.src = outfit.image;
+      nextImage.src = getDefaultOutfitImage(outfit);
     });
+  }
+
+  function preloadLowPriorityImage(src) {
+    return new Promise((resolve) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.fetchPriority = "low";
+      image.onload = () => {
+        if (typeof image.decode !== "function") {
+          resolve(true);
+          return;
+        }
+        image.decode().then(() => resolve(true)).catch(() => resolve(true));
+      };
+      image.onerror = () => resolve(false);
+      image.src = src;
+    });
+  }
+
+  // 不能可靠地通过浏览器枚举目录，因此预加载台词 JSON 中实际引用的差分图。
+  // 逐张、低优先级加载，不阻塞当前吉祥物和台词的初始化。
+  async function preloadDifferenceImages(outfit, sentences) {
+    if (!outfit || !outfit.imageDirectory || !Array.isArray(sentences)) return;
+
+    const defaultName = String(outfit.defaultImage || "").trim().replace(/^\/+/, "");
+    const filenames = [
+      ...new Set(
+        sentences
+          .map((sentence) =>
+            typeof sentence?.diffImage === "string" ? sentence.diffImage.trim().replace(/^\/+/, "") : ""
+          )
+          .filter((name) => name && name !== defaultName)
+      ),
+    ];
+
+    for (const filename of filenames) {
+      const src = getOutfitImageUrl(outfit, filename);
+      if (!src || preloadedDiffImageUrls.has(src)) continue;
+      preloadedDiffImageUrls.add(src);
+      const succeeded = await preloadLowPriorityImage(src);
+      if (!succeeded) preloadedDiffImageUrls.delete(src);
+    }
   }
 
   async function updateMascotImage(outfit) {
@@ -191,7 +220,7 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     img.style.opacity = "0";
     return new Promise((resolve) => {
       window.setTimeout(() => {
-        img.src = outfit.image;
+        img.src = getDefaultOutfitImage(outfit);
         img.alt = `左下角的${outfit.label}`;
         requestAnimationFrame(() => {
           img.style.opacity = "1";
@@ -222,11 +251,13 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     const mountPoint = document.querySelector("main") || document.body;
     mountPoint.appendChild(root);
 
-    // 预加载当前皮肤图片
+    // 首屏默认图像使用高优先级加载；多图吉祥物只加载指定的默认差分。
+    const initialImage = getDefaultOutfitImage(currentOutfit);
     const img = new Image();
-    img.src = currentOutfit.image;
+    img.src = initialImage;
     img.decoding = "async";
     img.loading = "eager";
+    img.fetchPriority = "high";
 
     img.onload = () => {
       // 图片加载完成后再安全挂载内部结构
@@ -240,7 +271,7 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
         </button>
       </div>
       <button class="mw-mascot-btn" aria-haspopup="dialog" aria-expanded="false" type="button">
-        <img src="${currentOutfit.image}" alt="左下角的${currentOutfit.label}">
+        <img src="${initialImage}" alt="左下角的${currentOutfit.label}">
       </button>
       <div class="mw-dialog" role="dialog" aria-hidden="true">${escapeHtml(
         PLACEHOLDER_TEXT
@@ -311,6 +342,8 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
           throw new Error("sentences JSON must be an array");
         STATE.sentences = j;
         STATE.lastLoadedOutfitId = currentOutfit.id;
+        // 后台逐张预热差分图片，不等待队列完成。
+        void preloadDifferenceImages(currentOutfit, j);
         console.info(
           "Mascot: loaded",
           STATE.sentences.length,
@@ -445,6 +478,31 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     return pick;
   }
 
+  function applySentenceEffects(root, sentenceObj) {
+    if (!sentenceObj) return;
+
+    const outfit = getCurrentOutfit();
+    if (outfit && outfit.imageDirectory && sentenceObj.diffImage) {
+      const img = $(".mw-mascot-btn img", root);
+      const diffImageUrl = getOutfitImageUrl(outfit, sentenceObj.diffImage);
+      if (img && diffImageUrl && img.getAttribute("src") !== diffImageUrl) {
+        // 直接替换 src，不执行换装淡出/淡入动画。
+        img.fetchPriority = "high";
+        img.src = diffImageUrl;
+      }
+    }
+
+    if (sentenceObj.bounce) {
+      const mascotBtn = $(".mw-mascot-btn", root);
+      if (mascotBtn) {
+        mascotBtn.classList.remove("mw-bounce");
+        // 强制重排，确保同一句台词再次触发时也会重新播放动画。
+        void mascotBtn.offsetWidth;
+        mascotBtn.classList.add("mw-bounce");
+      }
+    }
+  }
+
   // ---------------- 显示 / 隐藏（仅在变化时写入） ----------------
   let autoTimer = null;
   function showText(root, sentenceObj) {
@@ -456,6 +514,7 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     if (dialog && dialog.textContent !== safeText) {
       dialog.textContent = safeText;
     }
+    applySentenceEffects(root, sentenceObj);
     if (dialog && !dialog.classList.contains("mw-visible")) {
       dialog.classList.add("mw-visible");
       dialog.setAttribute("aria-hidden", "false");
@@ -635,9 +694,51 @@ window.MASCOT_CONFIG = MASCOT_CONFIG;
     });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
+  async function start() {
+    if (!MASCOT_CONFIG_WAS_PROVIDED) {
+      try {
+        const response = await fetch(MASCOT_CONFIG_URL);
+        if (!response.ok) throw new Error("fetch failed " + response.status);
+        const loadedConfig = await response.json();
+        if (!loadedConfig || !Array.isArray(loadedConfig.outfits) || loadedConfig.outfits.length === 0) {
+          throw new Error("mascot config JSON must contain a non-empty outfits array");
+        }
+        const invalidOutfit = loadedConfig.outfits.find(
+          (outfit) =>
+            !outfit ||
+            !outfit.id ||
+            !outfit.image ||
+            (outfit.imageDirectory && !outfit.defaultImage)
+        );
+        if (invalidOutfit) {
+          throw new Error("each outfit needs id/image; imageDirectory:true also requires defaultImage");
+        }
+        MASCOT_CONFIG = {
+          autoShowDuration: 6000,
+          minScreenWidthToShow: 1024,
+          ...loadedConfig,
+        };
+        window.MASCOT_CONFIG = MASCOT_CONFIG;
+      } catch (e) {
+        console.warn("Mascot: failed to load config JSON:", e);
+        return;
+      }
+    }
+
+    if (!Array.isArray(MASCOT_CONFIG.outfits) || MASCOT_CONFIG.outfits.length === 0) {
+      console.warn("Mascot: no outfits configured");
+      return;
+    }
+
+    // 配置加载后再判断屏幕宽度，以保留 minScreenWidthToShow 的可配置性。
+    if (window.innerWidth < (MASCOT_CONFIG.minScreenWidthToShow || 1024)) return;
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+      init();
+    }
   }
+
+  void start();
 })();
