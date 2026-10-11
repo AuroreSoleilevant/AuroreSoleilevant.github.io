@@ -402,5 +402,15 @@
     "bounce": true,
     "diffImage": "2_Lmile.webp",
     "weight": 6
+  },
+  {
+    "id": "H8",
+    "text": "未来的踪迹……你有找到吗？",
+    "pages": [
+      "/article/010826A/"
+    ],
+    "bounce": true,
+    "diffImage": "0_Smile.webp",
+    "weight": 6
   }
 ]
