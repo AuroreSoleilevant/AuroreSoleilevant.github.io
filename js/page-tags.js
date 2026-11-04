@@ -59,7 +59,9 @@
       const sourceEntry = entries.find(
         (item) => item && item.id === fallback.sourceId
       );
-      return sourceEntry ? { entry: sourceEntry, title: sourceEntry.title } : null;
+      return sourceEntry
+      ? { entry: sourceEntry, title: fallback.title || sourceEntry.title }
+      : null;
     }
     return fallback?.title ? { entry: null, title: fallback.title, fallback } : null;
   }
