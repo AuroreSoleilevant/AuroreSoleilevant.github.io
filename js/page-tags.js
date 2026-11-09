@@ -8,7 +8,7 @@
     if (segments[0] === "histoire" && segments[1]) {
       return {
         type: segments.length === 2 ? "story" : "chapter",
-        id: segments[1],
+        id: segments[1].toUpperCase(),
       };
     }
     if (segments[0] === "article" && segments.length === 2) {
