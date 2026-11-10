@@ -138,14 +138,14 @@
   const fontPreloads = [
     {
       rel: "preload",
-      href: "/fonts/LXGWWenKai-latin-symbols.woff2",
+      href: "/fonts/LXGWWenKai-latin-symbols.woff2?v=2ff123b640eb",
       as: "font",
       type: "font/woff2",
       crossorigin: true,
     },
     {
       rel: "preload",
-      href: "/fonts/LXGWWenKai-cjk-core.woff2?v=7aa20377442d",
+      href: "/fonts/LXGWWenKai-cjk-core.woff2?v=5577318b09d6",
       as: "font",
       type: "font/woff2",
       crossorigin: true,
@@ -154,7 +154,7 @@
   if (location.pathname !== "/" && location.pathname !== "/index.html") {
     fontPreloads.push({
       rel: "preload",
-      href: "/fonts/LXGWWenKai-cjk-site-extra.woff2?v=a08c7db0a142",
+      href: "/fonts/LXGWWenKai-cjk-site-extra.woff2?v=ca19b83149bf",
       as: "font",
       type: "font/woff2",
       crossorigin: true,

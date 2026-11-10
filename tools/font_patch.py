@@ -438,6 +438,12 @@ def _rewrite_preload(script: str, filename: str, version: str, label: str) -> st
     return updated
 
 
+def _rewrite_optional_reference(text: str, filename: str, version: str) -> str:
+    """更新（或补上）文件名后的 ?v= 缓存版本；没有引用时原样返回。"""
+    pattern = re.compile(re.escape(filename) + r"(?:\?v=[0-9A-Fa-f]+)?")
+    return pattern.sub(f"{filename}?v={version}", text)
+
+
 def process(changes: ChangeSet, context: dict | None = None) -> None:
     """创建器后处理接口：按变更集中的新页面更新字体子集。"""
     paths = ProjectPaths(changes.root)
@@ -466,20 +472,43 @@ def process(changes: ChangeSet, context: dict | None = None) -> None:
     new_core_cmap = old_core_cmap | ((core_candidates & master_cmap) - latin_cmap)
     new_extra_cmap = supported - latin_cmap - new_core_cmap
 
+    force_rebuild = bool((context or {}).get("force_rebuild"))
+    old_extra_cmap = _font_cmap(old_extra_data, EXTRA_NAME)
+    if force_rebuild:
+        # 母版更新后可能不再包含旧子集中的某些字符；强制重建时只保留母版仍支持的字符。
+        dropped = (old_core_cmap | old_extra_cmap) - master_cmap
+        if dropped:
+            sample = "、".join(f"U+{cp:04X}" for cp in sorted(dropped)[:10])
+            print(
+                f"提示：母版中已不存在 {len(dropped)} 个旧子集字符，将从子集中移除"
+                f"（示例：{sample}）。"
+            )
+        new_core_cmap &= master_cmap
+        new_extra_cmap &= master_cmap
+
     new_core_data = (
         build_subset(master_data, new_core_cmap)
-        if new_core_cmap != old_core_cmap
+        if force_rebuild or new_core_cmap != old_core_cmap
         else old_core_data
     )
-    old_extra_cmap = _font_cmap(old_extra_data, EXTRA_NAME)
     new_extra_data = (
         build_subset(master_data, new_extra_cmap)
-        if new_extra_cmap != old_extra_cmap
+        if force_rebuild or new_extra_cmap != old_extra_cmap
         else old_extra_data
     )
+    # Latin 子集：平时不动；强制重建时沿用其现有字符集（仅保留母版仍支持的字符）。
+    new_latin_data = latin_data
+    if force_rebuild:
+        new_latin_cmap = latin_cmap & master_cmap
+        if new_latin_cmap != latin_cmap:
+            print(f"提示：母版中已不存在 {len(latin_cmap - new_latin_cmap)} 个旧 Latin 子集字符，将被移除。")
+        new_latin_data = build_subset(master_data, new_latin_cmap)
+    latin_hash = hashlib.sha256(new_latin_data).hexdigest()[:12]
     core_hash = hashlib.sha256(new_core_data).hexdigest()[:12]
     extra_hash = hashlib.sha256(new_extra_data).hexdigest()[:12]
 
+    if new_latin_data != latin_data:
+        changes.set_bytes(latin_path, new_latin_data, "重建 Latin/符号字体子集")
     if new_core_data != old_core_data:
         changes.set_bytes(core_path, new_core_data, "重建首页优先 Core 字体子集")
     if new_extra_data != old_extra_data:
@@ -489,6 +518,8 @@ def process(changes: ChangeSet, context: dict | None = None) -> None:
     style = changes.read_text(style_path)
     updated_style = _rewrite_font_face(style, CORE_NAME, new_core_cmap, core_hash)
     updated_style = _rewrite_font_face(updated_style, EXTRA_NAME, new_extra_cmap, extra_hash)
+    if new_latin_data != latin_data:
+        updated_style = _rewrite_optional_reference(updated_style, LATIN_NAME, latin_hash)
     if updated_style != style:
         changes.set_text(style_path, updated_style, "同步字体 unicode-range 与缓存版本")
 
@@ -496,6 +527,8 @@ def process(changes: ChangeSet, context: dict | None = None) -> None:
         script = changes.read_text(relative)
         updated = _rewrite_preload(script, CORE_NAME, core_hash, relative)
         updated = _rewrite_preload(updated, EXTRA_NAME, extra_hash, relative)
+        if new_latin_data != latin_data:
+            updated = _rewrite_optional_reference(updated, LATIN_NAME, latin_hash)
         if updated != script:
             changes.set_text(relative, updated, "同步字体预加载缓存版本")
 
@@ -503,6 +536,11 @@ def process(changes: ChangeSet, context: dict | None = None) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="扫描全站可渲染文字并修补 WOFF2 字体子集。")
     parser.add_argument("--dry-run", action="store_true", help="只扫描并显示文件计划，不写入")
+    parser.add_argument(
+        "--force-rebuild",
+        action="store_true",
+        help="即使字符集未变化，也用当前母版 TTF 强制重建 Latin/Core/Extra 全部子集（母版更新后使用）",
+    )
     return parser
 
 
@@ -512,7 +550,10 @@ def main(argv: list[str] | None = None) -> int:
     try:
         paths = ProjectPaths.discover()
         changes = ChangeSet(paths.root)
-        process(changes, {"operation": "manual_font_patch"})
+        process(
+            changes,
+            {"operation": "manual_font_patch", "force_rebuild": args.force_rebuild},
+        )
         if not changes.writes:
             print("字体覆盖已经完整，不需要修改。")
             return 0

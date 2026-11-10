@@ -384,6 +384,25 @@ def font_patch_flow(paths: ProjectPaths) -> None:
     finalize(changes, "manual_font_patch", run_hooks=False)
 
 
+def font_rebuild_flow(paths: ProjectPaths) -> None:
+    from font_patch import process
+
+    print(
+        "将使用 fonts/LXGWWenKai.ttf 母版，强制重建 Latin、Core、Extra 全部 WOFF2 子集，"
+        "即使字符集没有变化。\n同时会同步 style.css 的 unicode-range 和各处预加载的缓存版本。"
+        "\n此功能不会替换母版；如果母版有更新，请先手动替换 fonts/LXGWWenKai.ttf。"
+        "\n重建可能需要较长时间，请耐心等待。"
+    )
+    if not confirm("确认开始完全重建吗？", default=True):
+        raise UserCancelled
+    changes = ChangeSet(paths.root)
+    process(changes, {"operation": "manual_font_rebuild", "force_rebuild": True})
+    if not changes.writes:
+        print("重建结果与现有字体完全一致，不需要修改。")
+        return
+    finalize(changes, "manual_font_rebuild", run_hooks=False)
+
+
 def main() -> int:
     configure_console()
     try:
@@ -405,6 +424,7 @@ def main() -> int:
                 "\n  3. 为多章故事添加章节"
                 "\n  4. 立刻进行字数统计"
                 "\n  5. 立刻进行全站字体修补"
+                "\n  6. 更新全站字体版本（强制完全重建全部字体子集）"
                 "\n  0. 退出"
             )
             choice = ask("请选择功能：")
@@ -422,8 +442,10 @@ def main() -> int:
                     word_count_flow(paths)
                 elif choice == "5":
                     font_patch_flow(paths)
+                elif choice == "6":
+                    font_rebuild_flow(paths)
                 else:
-                    print("无效选择，请输入 0 到 5。")
+                    print("无效选择，请输入 0 到 6。")
             except UserCancelled:
                 print("当前操作已取消；尚未提交，因此项目文件未被修改。")
             except SpicaError as exc:
