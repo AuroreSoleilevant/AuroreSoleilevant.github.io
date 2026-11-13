@@ -154,7 +154,7 @@
   if (location.pathname !== "/" && location.pathname !== "/index.html") {
     fontPreloads.push({
       rel: "preload",
-      href: "/fonts/LXGWWenKai-cjk-site-extra.woff2?v=521af61ad185",
+      href: "/fonts/LXGWWenKai-cjk-site-extra.woff2?v=6deea061f02d",
       as: "font",
       type: "font/woff2",
       crossorigin: true,
